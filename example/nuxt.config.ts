@@ -1,3 +1,5 @@
+import fs from 'fs'
+import path from 'path'
 import { NuxtOptions } from '@nuxt/types'
 import DotEnv from 'dotenv'
 import {
@@ -64,7 +66,11 @@ export default {
   head: headConfig,
   server: {
     host: process.env.APP_HOST || '0.0.0.0',
-    port: process.env.APP_PORT || '8080'
+    port: process.env.APP_PORT || '8080',
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'localhost.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'localhost.crt'))
+    }
   },
   axios: axiosConfig,
   vuetify: vuetifyConfig,

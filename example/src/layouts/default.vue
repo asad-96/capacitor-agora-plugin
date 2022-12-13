@@ -3,7 +3,7 @@
     <v-main>
       <Nuxt keep-alive />
     </v-main>
-    <w-bottom-menu :menu-items="menuItems" max="4" />
+    <w-bottom-menu :menu-items="menuItems" :max="4" />
   </v-app>
 </template>
 <script lang="ts">

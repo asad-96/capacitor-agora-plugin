@@ -6,9 +6,22 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@CapacitorPlugin(name = "CapacitorPluginStarter")
-public class CapacitorPluginStarterPlugin extends Plugin {
+import android.util.Base64;
+import androidx.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.agora.iris.IrisApiEngine;
+import io.agora.iris.IrisEventHandler;
+
+@CapacitorPlugin(name = "CapacitorPluginStarter")
+public class CapacitorPluginStarterPlugin extends Plugin implements IrisEventHandler {
+  public static final String NAME = "CapacitorPluginStarter";
+  public IrisApiEngine irisApiEngine;
   private CapacitorPluginStarter implementation = new CapacitorPluginStarter();
 
   @PluginMethod

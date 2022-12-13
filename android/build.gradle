@@ -48,10 +48,13 @@ repositories {
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    api 'io.agora.rtc:agora-special-full:4.0.0.5'
+    implementation 'io.agora.rtc:full-screen-sharing:4.0.0.5'
+    implementation 'io.agora.rtc:iris-rtc:4.0.0-rc.1'
 }
