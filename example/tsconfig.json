@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "lib": ["esnext", "esnext.asynciterable", "dom"],
+    "outDir": "dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "declaration": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "types": [
+      "@nuxt/types",
+      "@nuxtjs/dayjs",
+      "@nuxtjs/i18n",
+      "@nuxtjs/toast",
+      "@nuxtjs/vuetify",
+      "@types/node"
+    ],
+    "paths": {
+      "~/*": ["./src/*"],
+      "@/*": ["./src/*"],
+      "@type": [
+        "nuxt-utils",
+        "shims-vue",
+        "shims-tsx",
+        "nuxt-user-agent",
+        "vuex-composition-map-fields"
+      ]
+    }
+  },
+  "include": ["src/**/*.ts", "src/*.jsons", "src/**/*.json"],
+  "exclude": ["node_modules", "dist"]
+}

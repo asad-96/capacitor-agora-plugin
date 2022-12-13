@@ -1,0 +1,79 @@
+{
+  "name": "@wellcare/capacitor-plugin-starter",
+  "version": "0.0.1",
+  "description": "Boilerplate for Capacitor Plugin",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "unpkg": "dist/plugin.js",
+  "files": [
+    "android/src/main/",
+    "android/build.gradle",
+    "dist/",
+    "ios/Plugin/",
+    "CapacitorPluginStarter.podspec"
+  ],
+  "author": "Wellcare",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wellcare/capacitor-plugin-starter.git",
+    "directory": "packages/capacitor-plugin-starter"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },  
+  "bugs": {
+    "url": "https://github.com/wellcare/capacitor-plugin-starter/issues"
+  },
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
+    "clean": "rimraf ./dist",
+    "docgen": "docgen --api CapacitorPluginStarterPlugin --output-readme README.md --output-json dist/docs.json",
+    "eslint": "eslint . --ext ts",
+    "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix --format",
+    "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
+    "prepublishOnly": "npm run build",
+    "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
+    "publish:package": "cd dist/ && npm publish",
+    "swiftlint": "node-swiftlint",
+    "verify:android": "cd android && ./gradlew clean build test && cd ..",
+    "verify:ios": "cd ios && pod install && xcodebuild -workspace Plugin.xcworkspace -scheme Plugin -destination generic/platform=iOS && cd ..",
+    "verify:web": "npm run build",
+    "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^4.0.0",
+    "@capacitor/core": "^4.0.0",
+    "@capacitor/docgen": "^0.0.18",
+    "@capacitor/ios": "^4.0.0",
+    "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "7.20.0",
+    "prettier": "~2.3.0",
+    "prettier-plugin-java": "~1.0.2",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.32.0",
+    "swiftlint": "^1.0.1",
+    "typescript": "~4.1.5"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^4.0.0"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  }
+}

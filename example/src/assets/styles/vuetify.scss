@@ -1,0 +1,10 @@
+// Ref: https://github.com/nuxt-community/vuetify-module#customvariables
+//
+// The variables you want to modify are:
+$font-weight-medium: 600;
+$font-weights: ('thin': 100, 'light': 300, 'regular': 400, 'medium': 600, 'bold': 700, 'black': 900);
+$btn-border-radius: 30px !default;
+$btn-text-transform: unset;
+
+
+@import '~vuetify/src/styles/styles.sass';
