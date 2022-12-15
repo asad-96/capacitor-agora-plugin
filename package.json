@@ -22,7 +22,7 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
-  },  
+  },
   "bugs": {
     "url": "https://github.com/wellcare/capacitor-plugin-agora/issues"
   },
@@ -75,5 +75,8 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "agora-rtc-sdk-ng": "^4.15.1"
   }
 }

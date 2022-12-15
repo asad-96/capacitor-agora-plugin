@@ -38,7 +38,6 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from 'capacitor-plugin-agora'
-import AgoraRTC from 'agora-rtc-sdk-ng'
 
 export default defineComponent({
   name: 'HomePage',
@@ -55,8 +54,35 @@ export default defineComponent({
         false
       )
     }
+    const options = reactive({
+      // Pass your App ID here.
+      appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
+      // Set the channel name.
+      channel: 'test',
+      // Pass your temp token here.
+      token:
+        '007eJxTYODcUePbHGZiMO9M95I1R+WMNRkmsq+NnLvzzZ+T+n8XH0tQYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU023CozO7khkJHhlYI/MyMDBIL4LAwlqcUlDAwAOHYfTQ==',
+      // Set the user ID.
+      uid: 0
+    })
+    const channelParameters: any = reactive({
+      // A variable to hold a local audio track.
+      localAudioTrack: null,
+      // A variable to hold a local video track.
+      localVideoTrack: null,
+      // A variable to hold a remote audio track.
+      remoteAudioTrack: null,
+      // A variable to hold a remote video track.
+      remoteVideoTrack: null,
+      // A variable to hold the remote user id.s
+      remoteUid: null
+    })
+
     // Create an instance of the Agora Engine
-    const agoraEngine = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
+    const agoraEngine = CapacitorPluginAgora.createClient({
+      mode: 'rtc',
+      codec: 'vp8'
+    })
     agoraEngine.on(
       'user-published',
       (user: any, mediaType: 'audio' | 'video') => {
@@ -90,7 +116,7 @@ export default defineComponent({
           channelParameters.remoteAudioTrack.play()
         }
         // Listen for the "user-unpublished" event.
-        agoraEngine.on('user-unpublished', (user) => {
+        agoraEngine.on('user-unpublished', (user: any) => {
           logs.value.push(user.uid + 'has left the channel')
         })
       }
@@ -99,29 +125,6 @@ export default defineComponent({
     const remotePlayerContainer = document.createElement('div')
     // Dynamically create a container in the form of a DIV element to play the local video track.
     const localPlayerContainer = document.createElement('div')
-    const options = reactive({
-      // Pass your App ID here.
-      appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
-      // Set the channel name.
-      channel: 'test',
-      // Pass your temp token here.
-      token:
-        '007eJxTYODcUePbHGZiMO9M95I1R+WMNRkmsq+NnLvzzZ+T+n8XH0tQYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU023CozO7khkJHhlYI/MyMDBIL4LAwlqcUlDAwAOHYfTQ==',
-      // Set the user ID.
-      uid: 0
-    })
-    const channelParameters: any = reactive({
-      // A variable to hold a local audio track.
-      localAudioTrack: null,
-      // A variable to hold a local video track.
-      localVideoTrack: null,
-      // A variable to hold a remote audio track.
-      remoteAudioTrack: null,
-      // A variable to hold a remote video track.
-      remoteVideoTrack: null,
-      // A variable to hold the remote user id.s
-      remoteUid: null
-    })
 
     const startBasicCall = () => {
       // Specify the ID of the DIV container. You can use the uid of the local user.
@@ -157,10 +160,10 @@ export default defineComponent({
       )
       // Create a local audio track from the audio sampled by a microphone.
       channelParameters.localAudioTrack =
-        await AgoraRTC.createMicrophoneAudioTrack()
+        await CapacitorPluginAgora.createMicrophoneAudioTrack()
       // Create a local video track from the video captured by a camera.
       channelParameters.localVideoTrack =
-        await AgoraRTC.createCameraVideoTrack()
+        await CapacitorPluginAgora.createCameraVideoTrack()
       // Append the local video container to the page body.
       // document.body.append(localPlayerContainer)
       document.getElementById('local')?.appendChild(localPlayerContainer)
