@@ -1,20 +1,38 @@
 <template>
-  <v-container>
-    <h1>{{ $t('name') }}</h1>
-    <h2>config</h2>
-    <v-text-field v-model="options.appId" label="appId" />
-    <v-text-field v-model="options.channel" label="channel" />
-    <v-text-field v-model="options.token" label="token" />
-    <v-text-field v-model="options.uid" label="uid" />
-    <a href="https://webdemo.agora.io/basicVideoCall/index.html"
-      >Agora Web Demo</a
-    >
-    <v-btn @click="echo">echo</v-btn>
-    <v-btn @click="join">join</v-btn>
-    <v-btn @click="leave">leave</v-btn>
-    <h2>Logs:</h2>
-    <p v-for="(item, index) in logs" :key="index">{{ item }}</p>
-  </v-container>
+  <div>
+    <v-container>
+      <h1>{{ $t('name') }}</h1>
+
+      <v-btn @click="drawer = !drawer">Config</v-btn>
+      <v-btn @click="join">join</v-btn>
+      <v-btn @click="leave">leave</v-btn>
+      <v-row>
+        <v-col>
+          <v-row id="local"></v-row>
+          <v-row id="remote"></v-row>
+        </v-col>
+        <v-col>
+          <h3>Logs:</h3>
+          <v-divider />
+          <p v-for="(item, index) in logs" :key="index">{{ item }}</p>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-navigation-drawer v-model="drawer" absolute temporary right>
+      <v-container>
+        <h2>CONFIG</h2>
+        <v-text-field v-model="options.appId" label="appId" />
+        <v-text-field v-model="options.channel" label="channel" />
+        <v-text-field v-model="options.token" label="token" />
+        <v-text-field v-model="options.uid" label="uid" />
+        <a
+          href="https://webdemo.agora.io/basicVideoCall/index.html"
+          target="_blank"
+          >Agora Web Demo</a
+        >
+      </v-container>
+    </v-navigation-drawer>
+  </div>
 </template>
 
 <script lang="ts">
@@ -25,6 +43,7 @@ import AgoraRTC from 'agora-rtc-sdk-ng'
 export default defineComponent({
   name: 'HomePage',
   setup() {
+    const drawer = ref(false)
     const logs = ref(['setup...'])
     if (process.client) {
       logs.value.push('loading client')
@@ -49,7 +68,7 @@ export default defineComponent({
       channel: 'test',
       // Pass your temp token here.
       token:
-        '007eJxTYLAxd9leINl4nfvh4tqyZV5v2VYsXVX6P+jvq22uuwX/XM1UYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU02bI2bkdwQyMjgb+fPxMgAgSA+C0NJanEJAwMApfggUg==',
+        '007eJxTYODcUePbHGZiMO9M95I1R+WMNRkmsq+NnLvzzZ+T+n8XH0tQYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU023CozO7khkJHhlYI/MyMDBIL4LAwlqcUlDAwAOHYfTQ==',
       // Set the user ID.
       uid: 0
     })
@@ -100,7 +119,10 @@ export default defineComponent({
             remotePlayerContainer.textContent =
               'Remote user ' + user.uid.toString()
             // Append the remote container to the page body.
-            document.body.append(remotePlayerContainer)
+            // document.body.append(remotePlayerContainer)
+            document
+              .getElementById('remote')
+              ?.appendChild(remotePlayerContainer)
             // Play the remote video track.
             channelParameters.remoteVideoTrack.play(remotePlayerContainer)
           }
@@ -127,12 +149,6 @@ export default defineComponent({
       }
     }
 
-    const echo = () => {
-      CapacitorPluginAgora.echo({ value: 'echo' }).then((res) =>
-        logs.value.push(res.value)
-      )
-    }
-
     const join = async () => {
       // Join a channel.
       await agoraEngine.join(
@@ -148,7 +164,8 @@ export default defineComponent({
       channelParameters.localVideoTrack =
         await AgoraRTC.createCameraVideoTrack()
       // Append the local video container to the page body.
-      document.body.append(localPlayerContainer)
+      // document.body.append(localPlayerContainer)
+      document.getElementById('local')?.appendChild(localPlayerContainer)
       // Publish the local audio and video tracks in the channel.
       await agoraEngine.publish([
         channelParameters.localAudioTrack,
@@ -181,7 +198,7 @@ export default defineComponent({
     }
     startBasicCall()
 
-    return { logs, echo, channelParameters, options, join, leave }
+    return { logs, channelParameters, options, join, leave, drawer }
   }
 })
 </script>
