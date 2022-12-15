@@ -9,7 +9,7 @@ export interface CapacitorPluginAgoraPlugin {
   /**
  * createClient input value
  */
-  createClient(options: ClientConfig): Promise<IAgoraRTCClient>
+  createClient(options: ClientConfig): IAgoraRTCClient
   /**
 * createMicrophoneAudioTrack input value
 */

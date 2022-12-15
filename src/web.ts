@@ -1,7 +1,7 @@
 import { WebPlugin } from '@capacitor/core'
 
 import type { CapacitorPluginAgoraPlugin } from './definitions'
-import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, CameraVideoTrackInitConfig, ClientConfig, MicrophoneAudioTrackInitConfig, IMicrophoneAudioTrack } from 'agora-rtc-sdk-ng'
+import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, CameraVideoTrackInitConfig, MicrophoneAudioTrackInitConfig, IMicrophoneAudioTrack } from 'agora-rtc-sdk-ng'
 
 export class CapacitorPluginAgoraWeb
   extends WebPlugin
@@ -9,17 +9,17 @@ export class CapacitorPluginAgoraWeb
 
   constructor() {
     super(WebPlugin)
+    this.agoraEngine = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
   }
 
-  agoraEngine: any
+  agoraEngine: IAgoraRTCClient
 
   async echo(options: { value: string }): Promise<{ value: string }> {
     console.log('ECHO', options)
     return options
   }
 
-  async createClient(options: ClientConfig): Promise<IAgoraRTCClient> {
-    this.agoraEngine = AgoraRTC.createClient(options)
+  createClient(): IAgoraRTCClient {
     return this.agoraEngine
   }
 

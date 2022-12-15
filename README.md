@@ -46,7 +46,7 @@ echo input value
 ### createClient(...)
 
 ```typescript
-createClient(options: ClientConfig) => Promise<IAgoraRTCClient>
+createClient(options: ClientConfig) => IAgoraRTCClient
 ```
 
 createClient input value
@@ -55,7 +55,7 @@ createClient input value
 | ------------- | ----------------------------------------------------- |
 | **`options`** | <code><a href="#clientconfig">ClientConfig</a></code> |
 
-**Returns:** <code>Promise&lt;<a href="#iagorartcclient">IAgoraRTCClient</a>&gt;</code>
+**Returns:** <code><a href="#iagorartcclient">IAgoraRTCClient</a></code>
 
 --------------------
 
