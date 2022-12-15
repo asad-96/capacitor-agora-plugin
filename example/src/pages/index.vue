@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-container>
+    <p>{{ $config.agora }}</p>
+    <!-- <v-container>
       <h1>{{ $t('name') }}</h1>
 
       <v-btn @click="drawer = !drawer">Config</v-btn>
@@ -31,18 +32,24 @@
           >Agora Web Demo</a
         >
       </v-container>
-    </v-navigation-drawer>
+    </v-navigation-drawer> -->
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  reactive,
+  ref,
+  useContext
+} from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from 'capacitor-plugin-agora'
 
 export default defineComponent({
   name: 'HomePage',
   setup() {
     const drawer = ref(false)
+    const { $config } = useContext()
     const logs = ref(['setup...'])
     if (process.client) {
       logs.value.push('loading client')
@@ -56,12 +63,11 @@ export default defineComponent({
     }
     const options = reactive({
       // Pass your App ID here.
-      appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
+      appId: $config.agora.appId,
       // Set the channel name.
-      channel: 'test',
+      channel: $config.agora.channel,
       // Pass your temp token here.
-      token:
-        '007eJxTYODcUePbHGZiMO9M95I1R+WMNRkmsq+NnLvzzZ+T+n8XH0tQYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU023CozO7khkJHhlYI/MyMDBIL4LAwlqcUlDAwAOHYfTQ==',
+      token: $config.agora.token,
       // Set the user ID.
       uid: 0
     })

@@ -18,6 +18,14 @@ export default {
   ssr: false,
   components: true,
   srcDir: process.cwd() + '/src/',
+  publicRuntimeConfig: {
+    agora: {
+      appId: process.env.AGORA_APPID || 'ba4643f2b3a145f29575b8783d3a5ec1',
+      channel: process.env.AGORA_CHANNEL || 'test',
+      token: process.env.AGORA_TOKEN || '',
+      uid: process.env.AGORA_UID || 0
+    }
+  },
   dir: {
     assets: 'assets',
     layouts: 'layouts',
