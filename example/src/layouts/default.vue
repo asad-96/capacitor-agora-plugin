@@ -7,7 +7,7 @@
   </v-app>
 </template>
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   transition: 'page',
@@ -24,12 +24,6 @@ export default defineComponent({
         icon: '$shieldBugOutline',
         activeIcon: '$shieldBug',
         to: 'debug'
-      },
-      {
-        text: 'Account',
-        icon: '$accountCircleOutline',
-        activeIcon: '$accountCircle',
-        to: 'account'
       }
     ]
     return { menuItems }

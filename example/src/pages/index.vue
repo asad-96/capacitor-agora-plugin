@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from '@nuxtjs/composition-api'
-import { CapacitorPluginStarter } from 'capacitor-plugin-starter'
+import { CapacitorPluginAgora } from 'capacitor-plugin-agora'
 import AgoraRTC from 'agora-rtc-sdk-ng'
 
 export default defineComponent({
@@ -128,7 +128,7 @@ export default defineComponent({
     }
 
     const echo = () => {
-      CapacitorPluginStarter.echo({ value: 'echo' }).then((res) =>
+      CapacitorPluginAgora.echo({ value: 'echo' }).then((res) =>
         logs.value.push(res.value)
       )
     }
@@ -158,13 +158,13 @@ export default defineComponent({
       channelParameters.localVideoTrack.play(localPlayerContainer)
       logs.value.push('publish success!')
 
-      CapacitorPluginStarter.echo({ value: 'join' }).then((res) =>
+      CapacitorPluginAgora.echo({ value: 'join' }).then((res) =>
         logs.value.push(res.value)
       )
     }
 
     const leave = () => {
-      CapacitorPluginStarter.echo({ value: 'leave' }).then((res) =>
+      CapacitorPluginAgora.echo({ value: 'leave' }).then((res) =>
         logs.value.push(res.value)
       )
       // Destroy the local audio and video tracks.

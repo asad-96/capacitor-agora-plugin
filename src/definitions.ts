@@ -1,4 +1,4 @@
-export interface CapacitorPluginStarterPlugin {
+export interface CapacitorPluginAgoraPlugin {
   /**
    * echo input value
    */
@@ -10,17 +10,17 @@ export interface CapacitorPluginStarterPlugin {
   // setupVideoSDKEngine(options: { value: string }): Promise<{ value: string }>
 
   // /**
-  //  * registerEventHandler 
+  //  * registerEventHandler
   //  */
   // registerEventHandler(options: { value: string }): Promise<{ value: string }>
 
   // /**
-  //  * initialize 
+  //  * initialize
   //  */
   // initialize(options: { value: string }): Promise<{ value: string }>
 
   //   /**
-  //  * enableVideo 
+  //  * enableVideo
   //  */
   // enableVideo(options: { value: string }): Promise<{ value: string }>
 }

@@ -1,28 +1,27 @@
 package vn.wellcare.plugins.capacitor.starter;
 
+import android.util.Base64;
+import androidx.annotation.NonNull;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
-import android.util.Base64;
-import androidx.annotation.NonNull;
-
+import io.agora.iris.IrisApiEngine;
+import io.agora.iris.IrisEventHandler;
+import java.util.ArrayList;
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+@CapacitorPlugin(name = "CapacitorPluginAgora")
+public class CapacitorPluginAgoraPlugin
+  extends Plugin
+  implements IrisEventHandler {
 
-import io.agora.iris.IrisApiEngine;
-import io.agora.iris.IrisEventHandler;
-
-@CapacitorPlugin(name = "CapacitorPluginStarter")
-public class CapacitorPluginStarterPlugin extends Plugin implements IrisEventHandler {
-  public static final String NAME = "CapacitorPluginStarter";
+  public static final String NAME = "CapacitorPluginAgora";
   public IrisApiEngine irisApiEngine;
-  private CapacitorPluginStarter implementation = new CapacitorPluginStarter();
+  private CapacitorPluginAgora implementation = new CapacitorPluginAgora();
 
   @PluginMethod
   public void echo(PluginCall call) {

@@ -1,5 +1,5 @@
 {
-  "name": "@wellcare/capacitor-plugin-starter",
+  "name": "@wellcare/capacitor-plugin-agora",
   "version": "0.0.1",
   "description": "Boilerplate for Capacitor Plugin",
   "main": "dist/plugin.cjs.js",
@@ -11,20 +11,20 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "CapacitorPluginStarter.podspec"
+    "CapacitorPluginAgora.podspec"
   ],
   "author": "Wellcare",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wellcare/capacitor-plugin-starter.git",
-    "directory": "packages/capacitor-plugin-starter"
+    "url": "git+https://github.com/wellcare/capacitor-plugin-agora.git",
+    "directory": "packages/capacitor-plugin-agora"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },  
   "bugs": {
-    "url": "https://github.com/wellcare/capacitor-plugin-starter/issues"
+    "url": "https://github.com/wellcare/capacitor-plugin-agora/issues"
   },
   "keywords": [
     "capacitor",
@@ -34,8 +34,8 @@
   "scripts": {
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
-    "docgen": "docgen --api CapacitorPluginStarterPlugin --output-readme README.md --output-json dist/docs.json",
-    "eslint": "eslint . --ext ts",
+    "docgen": "docgen --api CapacitorPluginAgoraPlugin --output-readme README.md --output-json dist/docs.json",
+    "eslint": "eslint . --ext ts --fix",
     "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix --format",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
     "prepublishOnly": "npm run build",

@@ -12,7 +12,7 @@ def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
   pod 'SentryCapacitor', :path => '../../node_modules/@sentry/capacitor'
-  pod 'CapacitorPluginStarter', :path => '../../node_modules/capacitor-plugin-starter'
+  pod 'CapacitorPluginAgora', :path => '../../node_modules/capacitor-plugin-agora'
 end
 
 target 'App' do

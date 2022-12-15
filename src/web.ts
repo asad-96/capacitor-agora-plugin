@@ -1,10 +1,10 @@
 import { WebPlugin } from '@capacitor/core'
 
-import type { CapacitorPluginStarterPlugin } from './definitions'
+import type { CapacitorPluginAgoraPlugin } from './definitions'
 
-export class CapacitorPluginStarterWeb
+export class CapacitorPluginAgoraWeb
   extends WebPlugin
-  implements CapacitorPluginStarterPlugin
+  implements CapacitorPluginAgoraPlugin
 {
   async echo(options: { value: string }): Promise<{ value: string }> {
     await console.log('ECHO', options)

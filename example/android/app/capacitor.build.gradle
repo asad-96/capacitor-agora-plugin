@@ -10,7 +10,7 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':sentry-capacitor')
-    implementation project(':capacitor-plugin-starter')
+    implementation project(':capacitor-plugin-agora')
 
 }
 

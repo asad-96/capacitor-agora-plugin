@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'vn.wellcare.capacitor.plugin.starter',
-  appName: 'CapacitorPluginStarter',
+  appName: 'CapacitorPluginAgora',
   webDir: 'dist',
   bundledWebRuntime: false,
   plugins: {

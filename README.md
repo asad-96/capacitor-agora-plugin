@@ -1,11 +1,11 @@
-# capacitor-plugin-starter
+# capacitor-plugin-agora
 
 Boilerplate for Capacitor Plugin
 
 ## Install
 
 ```bash
-npm install capacitor-plugin-starter
+npm install capacitor-plugin-agora
 npx cap sync
 ```
 
