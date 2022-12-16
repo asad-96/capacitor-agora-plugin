@@ -9,7 +9,7 @@ export interface CapacitorPluginAgoraPlugin {
   /**
  * createClient input value
  */
-  createClient(options: ClientConfig): IAgoraRTCClient
+  createClient(options: ClientConfig): Promise<IAgoraRTCClient>
   /**
 * createMicrophoneAudioTrack input value
 */
@@ -19,24 +19,4 @@ export interface CapacitorPluginAgoraPlugin {
 * createCameraVideoTrack input value
 */
   createCameraVideoTrack(config?: CameraVideoTrackInitConfig): Promise<ICameraVideoTrack>
-
-  // /**
-  //  * To implement Video Calling, you use Video SDK to create an Agora Engine instance
-  //  */
-  // setupVideoSDKEngine(options: { value: string }): Promise<{ value: string }>
-
-  // /**
-  //  * registerEventHandler
-  //  */
-  // registerEventHandler(options: { value: string }): Promise<{ value: string }>
-
-  // /**
-  //  * initialize
-  //  */
-  // initialize(options: { value: string }): Promise<{ value: string }>
-
-  //   /**
-  //  * enableVideo
-  //  */
-  // enableVideo(options: { value: string }): Promise<{ value: string }>
 }
