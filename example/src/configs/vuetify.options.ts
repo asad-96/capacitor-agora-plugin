@@ -17,13 +17,33 @@ import {
   mdiAccountCircleOutline,
   mdiMore,
   mdiDotsHorizontal,
-  mdiDotsHorizontalCircle
+  mdiDotsHorizontalCircle,
+  mdiAccountOutline,
+  mdiSettingsHelper,
+  mdiMicrophoneOutline,
+  mdiMicrophoneOff,
+  mdiCameraOutline,
+  mdiCameraFlipOutline,
+  mdiCameraOff,
+  mdiPhoneOff,
+  mdiPhoneOutline,
+  mdiPhone
 } from '@mdi/js'
 
 export default {
   icons: {
     iconfont: 'mdiSvg', // default
     values: {
+      phone: mdiPhone,
+      phoneOutline: mdiPhoneOutline,
+      phoneOff: mdiPhoneOff,
+      cameraOff: mdiCameraOff,
+      cameraOutline: mdiCameraOutline,
+      cameraFlipOutline: mdiCameraFlipOutline,
+      microphoneOutline: mdiMicrophoneOutline,
+      microphoneOff: mdiMicrophoneOff,
+      settingsHelper: mdiSettingsHelper,
+      accountOutline: mdiAccountOutline,
       more: mdiMore,
       dotsHorizontal: mdiDotsHorizontal,
       dotsHorizontalOutline: mdiDotsHorizontalCircle,

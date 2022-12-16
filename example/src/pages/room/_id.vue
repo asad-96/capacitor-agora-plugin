@@ -1,77 +1,55 @@
 <template>
   <div>
-    <v-container>
-      <h1>{{ $t('name') }}</h1>
-
-      <v-btn @click="drawer = !drawer">Config</v-btn>
-      <v-btn
-        @click="$router.push(`/room/${options.channel}?uid=${options.uid}`)"
-        >join</v-btn
-      >
-      <v-btn @click="leave">leave</v-btn>
-      <v-row>
-        <v-col>
-          <v-row id="local"></v-row>
-          <v-row id="remote"></v-row>
-        </v-col>
-        <v-col>
-          <h3>Logs:</h3>
-          <v-divider />
-          <p v-for="(item, index) in logs" :key="index">{{ item }}</p>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-navigation-drawer v-model="drawer" absolute temporary right>
-      <v-container>
-        <h2>CONFIG</h2>
-        <v-text-field v-model="options.appId" label="appId" />
-        <v-text-field v-model="options.channel" label="channel" />
-        <v-text-field v-model="options.token" label="token" />
-        <v-text-field v-model="options.uid" label="uid" />
-        <a
-          href="https://webdemo.agora.io/basicVideoCall/index.html"
-          target="_blank"
-          >Agora Web Demo</a
-        >
-      </v-container>
-    </v-navigation-drawer>
+    <w-video-kit
+      :auth-id="$route.query.uid"
+      :participants="[{ _id: $route.query.uid }]"
+      :camera-state="localCameraState"
+      :microphone-state="localAudioState"
+      @change:active-participant="onActiveParticipantChange"
+      @click:exit="leave"
+      @click:camera="onCameraClick"
+      @click:microphone="onMicrophoneClick"
+    ></w-video-kit>
+    <v-snackbar v-model="snackbar.show">{{ snackbar.message }}</v-snackbar>
   </div>
 </template>
-
 <script lang="ts">
 import {
   defineComponent,
-  reactive,
   ref,
-  useContext
+  useContext,
+  reactive,
+  useRoute,
+  useRouter,
+  computed
 } from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 
 export default defineComponent({
-  name: 'HomePage',
+  name: 'RoomPage',
+  layout: 'plain',
   setup() {
-    const drawer = ref(false)
-    const { $config } = useContext()
-    const logs = ref(['setup...'])
-    if (process.client) {
-      logs.value.push('loading client')
-      document.addEventListener(
-        'deviceready',
-        () => {
-          logs.value.push('deviceready')
-        },
-        false
-      )
+    const snackbar = reactive({
+      show: false,
+      message: ''
+    })
+    const showMessage = (message: string) => {
+      snackbar.show = true
+      snackbar.message = message
     }
+    const { $config } = useContext()
+    const route = useRoute()
+    const router = useRouter()
+    const logs = ref(['setup...'])
     const options = reactive({
       // Pass your App ID here.
       appId: $config.agora.appId,
       // Set the channel name.
-      channel: $config.agora.channel,
+      channel: route.value.params.id,
       // Pass your temp token here.
       token: $config.agora.token,
       // Set the user ID.
-      uid: 0
+      uid: route.value.query.uid || 0
     })
     const channelParameters: any = reactive({
       // A variable to hold a local audio track.
@@ -86,6 +64,13 @@ export default defineComponent({
       remoteUid: null
     })
 
+    const localCameraState = computed(
+      () => channelParameters?.localVideoTrack?._enabled || false
+    )
+
+    const localAudioState = computed(
+      () => channelParameters?.localAudioTrack?._enabled || false
+    )
     // Dynamically create a container in the form of a DIV element to play the remote video track.
     const remotePlayerContainer = document.createElement('div')
     // Dynamically create a container in the form of a DIV element to play the local video track.
@@ -95,15 +80,12 @@ export default defineComponent({
       // Specify the ID of the DIV container. You can use the uid of the local user.
       localPlayerContainer.id = options.uid.toString()
       // Set the textContent property of the local video container to the local user id.
-      localPlayerContainer.textContent = 'Local user ' + options.uid
       // Set the local video container size.
-      localPlayerContainer.style.width = '640px'
-      localPlayerContainer.style.height = '480px'
-      localPlayerContainer.style.padding = '15px 5px 5px 5px'
+      localPlayerContainer.style.width = '100%'
+      localPlayerContainer.style.height = '100%'
       // Set the remote video container size.
-      remotePlayerContainer.style.width = '640px'
-      remotePlayerContainer.style.height = '480px'
-      remotePlayerContainer.style.padding = '15px 5px 5px 5px'
+      remotePlayerContainer.style.width = '100%'
+      remotePlayerContainer.style.height = '100%'
       // Listen for the "user-published" event to retrieve a AgoraRTCRemoteUser object.
       // Create an instance of the Agora Engine
       agoraEngine.value = await CapacitorPluginAgora.createClient({
@@ -113,10 +95,11 @@ export default defineComponent({
       console.log('[index] agoraEngine: ', agoraEngine)
       agoraEngine.value.on(
         'user-published',
-        (user: any, mediaType: 'audio' | 'video') => {
+        async (user: any, mediaType: 'audio' | 'video') => {
           // Subscribe to the remote user when the SDK triggers the "user-published" event.
-          agoraEngine.value.subscribe(user, mediaType)
+          await agoraEngine.value.subscribe(user, mediaType)
           logs.value.push('subscribe success: ' + mediaType)
+          showMessage(`${user.uid.toString()} has joined.`)
           // Subscribe and play the remote video in the container If the remote user publishes a video track.
           if (mediaType === 'video') {
             // Retrieve the remote video track.
@@ -128,13 +111,11 @@ export default defineComponent({
             // Specify the ID of the DIV container. You can use the uid of the remote user.
             remotePlayerContainer.id = user.uid.toString()
             channelParameters.remoteUid = user.uid.toString()
-            remotePlayerContainer.textContent =
-              'Remote user ' + user.uid.toString()
             // Append the remote container to the page body.
             // document.body.append(remotePlayerContainer)
             document
-              .getElementById('remote')
-              ?.appendChild(remotePlayerContainer)
+              .getElementById('participant_active')
+              ?.replaceWith(remotePlayerContainer)
             // Play the remote video track.
             channelParameters.remoteVideoTrack.play(remotePlayerContainer)
           }
@@ -148,6 +129,7 @@ export default defineComponent({
           // Listen for the "user-unpublished" event.
           agoraEngine.value.on('user-unpublished', (user: any) => {
             logs.value.push(user.uid + 'has left the channel')
+            showMessage(`${user.uid.toString()} has left.`)
           })
         }
       )
@@ -160,6 +142,7 @@ export default defineComponent({
         Div.remove()
       }
     }
+
     const join = async () => {
       // Join a channel.
       await agoraEngine.value.join(
@@ -176,7 +159,9 @@ export default defineComponent({
         await CapacitorPluginAgora.createCameraVideoTrack()
       // Append the local video container to the page body.
       // document.body.append(localPlayerContainer)
-      document.getElementById('local')?.appendChild(localPlayerContainer)
+      document
+        .getElementById('participant_me')
+        ?.replaceWith(localPlayerContainer)
       // Publish the local audio and video tracks in the channel.
       await agoraEngine.value.publish([
         channelParameters.localAudioTrack,
@@ -204,10 +189,27 @@ export default defineComponent({
       // Leave the channel
       agoraEngine.value.leave()
       logs.value.push('You left the channel')
+      router.push('/')
       // Refresh the page for reuse
-      window.location.reload()
     }
-    // startBasicCall()
+
+    const onActiveParticipantChange = (uid: string) => {
+      console.log('on participant change', uid)
+    }
+
+    const onCameraClick = () => {
+      if (channelParameters.localVideoTrack._enabled) {
+        channelParameters.localVideoTrack.setEnabled(false)
+      } else channelParameters.localVideoTrack.setEnabled(true)
+    }
+
+    const onMicrophoneClick = () => {
+      if (channelParameters.localAudioTrack._enabled) {
+        channelParameters.localAudioTrack.setEnabled(false)
+      } else channelParameters.localAudioTrack.setEnabled(true)
+    }
+
+    startBasicCall().then(() => join())
 
     return {
       logs,
@@ -215,8 +217,12 @@ export default defineComponent({
       options,
       join,
       leave,
-      drawer,
-      startBasicCall
+      onActiveParticipantChange,
+      onCameraClick,
+      onMicrophoneClick,
+      localCameraState,
+      localAudioState,
+      snackbar
     }
   }
 })
