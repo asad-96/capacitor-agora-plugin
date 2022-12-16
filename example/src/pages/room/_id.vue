@@ -2,8 +2,12 @@
   <w-video-kit
     :auth-id="$route.query.uid"
     :participants="[{ _id: $route.query.uid }]"
+    :camera-state="localCameraState"
+    :microphone-state="localAudioState"
     @change:active-participant="onActiveParticipantChange"
     @click:exit="leave"
+    @click:camera="onCameraClick"
+    @click:microphone="onMicrophoneClick"
   ></w-video-kit>
 </template>
 <script lang="ts">
@@ -13,7 +17,8 @@ import {
   useContext,
   reactive,
   useRoute,
-  useRouter
+  useRouter,
+  computed
 } from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 
@@ -48,6 +53,13 @@ export default defineComponent({
       remoteUid: null
     })
 
+    const localCameraState = computed(
+      () => channelParameters?.localVideoTrack?._enabled || false
+    )
+
+    const localAudioState = computed(
+      () => channelParameters?.localAudioTrack?._enabled || false
+    )
     // Dynamically create a container in the form of a DIV element to play the remote video track.
     const remotePlayerContainer = document.createElement('div')
     // Dynamically create a container in the form of a DIV element to play the local video track.
@@ -172,6 +184,18 @@ export default defineComponent({
       console.log('on participant change', uid)
     }
 
+    const onCameraClick = () => {
+      if (channelParameters.localVideoTrack._enabled) {
+        channelParameters.localVideoTrack.setEnabled(false)
+      } else channelParameters.localVideoTrack.setEnabled(true)
+    }
+
+    const onMicrophoneClick = () => {
+      if (channelParameters.localAudioTrack._enabled) {
+        channelParameters.localAudioTrack.setEnabled(false)
+      } else channelParameters.localAudioTrack.setEnabled(true)
+    }
+
     startBasicCall().then(() => join())
 
     return {
@@ -180,7 +204,11 @@ export default defineComponent({
       options,
       join,
       leave,
-      onActiveParticipantChange
+      onActiveParticipantChange,
+      onCameraClick,
+      onMicrophoneClick,
+      localCameraState,
+      localAudioState
     }
   }
 })
