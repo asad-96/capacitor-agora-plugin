@@ -1,14 +1,20 @@
 import { WebPlugin } from '@capacitor/core'
 
 import type { CapacitorPluginAgoraPlugin } from './definitions'
-import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, CameraVideoTrackInitConfig, MicrophoneAudioTrackInitConfig, IMicrophoneAudioTrack } from 'agora-rtc-sdk-ng'
+import AgoraRTC, {
+  IAgoraRTCClient,
+  ICameraVideoTrack,
+  CameraVideoTrackInitConfig,
+  MicrophoneAudioTrackInitConfig,
+  IMicrophoneAudioTrack
+} from 'agora-rtc-sdk-ng'
 
 export class CapacitorPluginAgoraWeb
   extends WebPlugin
-  implements CapacitorPluginAgoraPlugin {
-
+  implements CapacitorPluginAgoraPlugin
+{
   constructor() {
-    super(WebPlugin)
+    super()
     this.agoraEngine = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
     console.log('[web] contructor')
   }
@@ -25,14 +31,21 @@ export class CapacitorPluginAgoraWeb
     return this.agoraEngine
   }
 
-  async createMicrophoneAudioTrack(config?: MicrophoneAudioTrackInitConfig): Promise<IMicrophoneAudioTrack> {
+  async createMicrophoneAudioTrack(
+    config?: MicrophoneAudioTrackInitConfig
+  ): Promise<IMicrophoneAudioTrack> {
     console.log('[web] createMicrophoneAudioTrack - config:', config)
     return AgoraRTC.createMicrophoneAudioTrack(config)
   }
 
-
-  async createCameraVideoTrack(config?: CameraVideoTrackInitConfig): Promise<ICameraVideoTrack> {
+  async createCameraVideoTrack(
+    config?: CameraVideoTrackInitConfig
+  ): Promise<ICameraVideoTrack> {
     console.log('[web] createMicrophoneAudioTrack - config: ', config)
     return AgoraRTC.createCameraVideoTrack(config)
   }
 }
+
+const CapacitorPluginAgora = new CapacitorPluginAgoraWeb()
+
+export { CapacitorPluginAgora }

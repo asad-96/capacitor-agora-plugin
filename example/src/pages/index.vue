@@ -43,6 +43,7 @@ import {
   useContext
 } from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
+import { IAgoraRTCClient } from 'agora-rtc-sdk-ng'
 
 export default defineComponent({
   name: 'HomePage',
