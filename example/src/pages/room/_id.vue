@@ -1,14 +1,17 @@
 <template>
-  <w-video-kit
-    :auth-id="$route.query.uid"
-    :participants="[{ _id: $route.query.uid }]"
-    :camera-state="localCameraState"
-    :microphone-state="localAudioState"
-    @change:active-participant="onActiveParticipantChange"
-    @click:exit="leave"
-    @click:camera="onCameraClick"
-    @click:microphone="onMicrophoneClick"
-  ></w-video-kit>
+  <div>
+    <w-video-kit
+      :auth-id="$route.query.uid"
+      :participants="[{ _id: $route.query.uid }]"
+      :camera-state="localCameraState"
+      :microphone-state="localAudioState"
+      @change:active-participant="onActiveParticipantChange"
+      @click:exit="leave"
+      @click:camera="onCameraClick"
+      @click:microphone="onMicrophoneClick"
+    ></w-video-kit>
+    <v-snackbar v-model="snackbar.show">{{ snackbar.message }}</v-snackbar>
+  </div>
 </template>
 <script lang="ts">
 import {
@@ -26,6 +29,14 @@ export default defineComponent({
   name: 'RoomPage',
   layout: 'plain',
   setup() {
+    const snackbar = reactive({
+      show: false,
+      message: ''
+    })
+    const showMessage = (message: string) => {
+      snackbar.show = true
+      snackbar.message = message
+    }
     const { $config } = useContext()
     const route = useRoute()
     const router = useRouter()
@@ -88,6 +99,7 @@ export default defineComponent({
           // Subscribe to the remote user when the SDK triggers the "user-published" event.
           await agoraEngine.value.subscribe(user, mediaType)
           logs.value.push('subscribe success: ' + mediaType)
+          showMessage(`${user.uid.toString()} has joined.`)
           // Subscribe and play the remote video in the container If the remote user publishes a video track.
           if (mediaType === 'video') {
             // Retrieve the remote video track.
@@ -117,6 +129,7 @@ export default defineComponent({
           // Listen for the "user-unpublished" event.
           agoraEngine.value.on('user-unpublished', (user: any) => {
             logs.value.push(user.uid + 'has left the channel')
+            showMessage(`${user.uid.toString()} has left.`)
           })
         }
       )
@@ -208,7 +221,8 @@ export default defineComponent({
       onCameraClick,
       onMicrophoneClick,
       localCameraState,
-      localAudioState
+      localAudioState,
+      snackbar
     }
   }
 })
