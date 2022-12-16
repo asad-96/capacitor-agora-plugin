@@ -6,29 +6,22 @@ import AgoraRTC, {
   ICameraVideoTrack,
   CameraVideoTrackInitConfig,
   MicrophoneAudioTrackInitConfig,
-  IMicrophoneAudioTrack
+  IMicrophoneAudioTrack,
+  ClientConfig
 } from 'agora-rtc-sdk-ng'
 
 export class CapacitorPluginAgoraWeb
   extends WebPlugin
   implements CapacitorPluginAgoraPlugin
 {
-  constructor() {
-    super()
-    this.agoraEngine = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
-    console.log('[web] contructor')
-  }
-
-  agoraEngine: IAgoraRTCClient
-
   async echo(options: { value: string }): Promise<{ value: string }> {
     console.log('[web] echo - options ', options)
     return options
   }
 
-  async createClient(): Promise<IAgoraRTCClient> {
-    console.log('[web] createClient - this.agoraEngine: ', this.agoraEngine)
-    return this.agoraEngine
+  async createClient(config: ClientConfig): Promise<IAgoraRTCClient> {
+    console.log('[web] createClient - config:', config)
+    return AgoraRTC.createClient(config)
   }
 
   async createMicrophoneAudioTrack(

@@ -43,7 +43,6 @@ import {
   useContext
 } from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
-import { IAgoraRTCClient } from 'agora-rtc-sdk-ng'
 
 export default defineComponent({
   name: 'HomePage',
@@ -90,44 +89,44 @@ export default defineComponent({
       codec: 'vp8'
     })
     console.log('[index] agoraEngine: ', agoraEngine)
-    // agoraEngine.on(
-    //   'user-published',
-    //   (user: any, mediaType: 'audio' | 'video') => {
-    //     // Subscribe to the remote user when the SDK triggers the "user-published" event.
-    //     agoraEngine.subscribe(user, mediaType)
-    //     logs.value.push('subscribe success: ' + mediaType)
-    //     // Subscribe and play the remote video in the container If the remote user publishes a video track.
-    //     if (mediaType === 'video') {
-    //       // Retrieve the remote video track.
-    //       channelParameters.remoteVideoTrack = user.videoTrack
-    //       // Retrieve the remote audio track.
-    //       channelParameters.remoteAudioTrack = user.audioTrack
-    //       // Save the remote user id for reuse.
-    //       channelParameters.remoteUid = user.uid.toString()
-    //       // Specify the ID of the DIV container. You can use the uid of the remote user.
-    //       remotePlayerContainer.id = user.uid.toString()
-    //       channelParameters.remoteUid = user.uid.toString()
-    //       remotePlayerContainer.textContent =
-    //         'Remote user ' + user.uid.toString()
-    //       // Append the remote container to the page body.
-    //       // document.body.append(remotePlayerContainer)
-    //       document.getElementById('remote')?.appendChild(remotePlayerContainer)
-    //       // Play the remote video track.
-    //       channelParameters.remoteVideoTrack.play(remotePlayerContainer)
-    //     }
-    //     // Subscribe and play the remote audio track If the remote user publishes the audio track only.
-    //     if (mediaType === 'audio') {
-    //       // Get the RemoteAudioTrack object in the AgoraRTCRemoteUser object.
-    //       channelParameters.remoteAudioTrack = user.audioTrack
-    //       // Play the remote audio track. No need to pass any DOM element.
-    //       channelParameters.remoteAudioTrack.play()
-    //     }
-    //     // Listen for the "user-unpublished" event.
-    //     agoraEngine.on('user-unpublished', (user: any) => {
-    //       logs.value.push(user.uid + 'has left the channel')
-    //     })
-    //   }
-    // )
+    agoraEngine.on(
+      'user-published',
+      (user: any, mediaType: 'audio' | 'video') => {
+        // Subscribe to the remote user when the SDK triggers the "user-published" event.
+        agoraEngine.subscribe(user, mediaType)
+        logs.value.push('subscribe success: ' + mediaType)
+        // Subscribe and play the remote video in the container If the remote user publishes a video track.
+        if (mediaType === 'video') {
+          // Retrieve the remote video track.
+          channelParameters.remoteVideoTrack = user.videoTrack
+          // Retrieve the remote audio track.
+          channelParameters.remoteAudioTrack = user.audioTrack
+          // Save the remote user id for reuse.
+          channelParameters.remoteUid = user.uid.toString()
+          // Specify the ID of the DIV container. You can use the uid of the remote user.
+          remotePlayerContainer.id = user.uid.toString()
+          channelParameters.remoteUid = user.uid.toString()
+          remotePlayerContainer.textContent =
+            'Remote user ' + user.uid.toString()
+          // Append the remote container to the page body.
+          // document.body.append(remotePlayerContainer)
+          document.getElementById('remote')?.appendChild(remotePlayerContainer)
+          // Play the remote video track.
+          channelParameters.remoteVideoTrack.play(remotePlayerContainer)
+        }
+        // Subscribe and play the remote audio track If the remote user publishes the audio track only.
+        if (mediaType === 'audio') {
+          // Get the RemoteAudioTrack object in the AgoraRTCRemoteUser object.
+          channelParameters.remoteAudioTrack = user.audioTrack
+          // Play the remote audio track. No need to pass any DOM element.
+          channelParameters.remoteAudioTrack.play()
+        }
+        // Listen for the "user-unpublished" event.
+        agoraEngine.on('user-unpublished', (user: any) => {
+          logs.value.push(user.uid + 'has left the channel')
+        })
+      }
+    )
     // Dynamically create a container in the form of a DIV element to play the remote video track.
     const remotePlayerContainer = document.createElement('div')
     // Dynamically create a container in the form of a DIV element to play the local video track.

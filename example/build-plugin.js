@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const nodeModulePath = 'node_modules/@wellcare/capacitor-plugin-agora'
+const nodeModulePath = './node_modules/@wellcare/capacitor-plugin-agora/'
 
 
 function copy(src, dest, condition = { extension: undefined }) {
@@ -26,15 +26,17 @@ function copy(src, dest, condition = { extension: undefined }) {
   }
 }
 
-copy(path.resolve(__dirname, '../dist'), path.resolve(__dirname, nodeModulePath))
+copy(path.resolve(__dirname, '../dist'), path.resolve(__dirname, `${nodeModulePath}/dist`))
+copy(path.resolve(__dirname, '../package.json'), path.resolve(__dirname, `${nodeModulePath}/package.json`))
+copy(path.resolve(__dirname, '../android'), path.resolve(__dirname, `${nodeModulePath}/android`))
+copy(path.resolve(__dirname, '../ios'), path.resolve(__dirname, `${nodeModulePath}/ios`))
 
-
-// write package.json
-const packageJson = require('../package.json')
-delete packageJson.devDependencies
-delete packageJson.scripts
-packageJson.version = process.env.GIT_TAG || packageJson.version
-fs.writeFileSync(
-  path.resolve(__dirname, nodeModulePath),
-  JSON.stringify(packageJson)
-)
+// // write package.json
+// const packageJson = require('../package.json')
+// delete packageJson.devDependencies
+// delete packageJson.scripts
+// packageJson.version = process.env.GIT_TAG || packageJson.version
+// fs.writeFileSync(
+//   path.resolve(__dirname, nodeModulePath),
+//   JSON.stringify(packageJson)
+// )

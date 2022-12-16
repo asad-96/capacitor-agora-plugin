@@ -11,7 +11,7 @@
   "author": "Wellcare",
   "scripts": {
     "analyze": "nuxt build --analyze",
-    "build:plugin": "cd ../ && yarn build && cd example && npm run clean:plugin && yarn",
+    "build:plugin": "cd ../ && yarn build && cd example && npm run clean:plugin && node build-plugin.js",
     "build": "nuxt build --modern",
     "cap:android": "yarn generate && npx cap sync android && npx cap open android",
     "cap:ios": "yarn generate && npx cap sync ios && npx cap open ios",
