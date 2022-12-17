@@ -93,13 +93,21 @@ export default defineComponent({
         codec: 'vp8'
       })
       console.log('[index] agoraEngine: ', agoraEngine)
+
+      agoraEngine.value.on('user-joined', (user: any) => {
+        showMessage(`${user.uid.toString()} has joined.`)
+      })
+
+      agoraEngine.value.on('user-left', (user: any) => {
+        showMessage(`${user.uid.toString()} has left.`)
+      })
+
       agoraEngine.value.on(
         'user-published',
         async (user: any, mediaType: 'audio' | 'video') => {
           // Subscribe to the remote user when the SDK triggers the "user-published" event.
           await agoraEngine.value.subscribe(user, mediaType)
           logs.value.push('subscribe success: ' + mediaType)
-          showMessage(`${user.uid.toString()} has joined.`)
           // Subscribe and play the remote video in the container If the remote user publishes a video track.
           if (mediaType === 'video') {
             // Retrieve the remote video track.
@@ -128,8 +136,7 @@ export default defineComponent({
           }
           // Listen for the "user-unpublished" event.
           agoraEngine.value.on('user-unpublished', (user: any) => {
-            logs.value.push(user.uid + 'has left the channel')
-            showMessage(`${user.uid.toString()} has left.`)
+            console.log('user-unpublished', user)
           })
         }
       )
