@@ -6,6 +6,10 @@ export interface CapacitorPluginAgoraPlugin {
    */
   echo(options: { value: string }): Promise<{ value: string }>
 
+  joinChannel(options: { room: string, uid: string  }): Promise<{ room: string, uid: string }>
+
+  leaveChannel(options: { room: string }): Promise<{ room: string }>
+
   /**
  * createClient input value
  */
