@@ -30,7 +30,7 @@ copy(path.resolve(__dirname, '../dist'), path.resolve(__dirname, `${nodeModulePa
 copy(path.resolve(__dirname, '../package.json'), path.resolve(__dirname, `${nodeModulePath}/package.json`))
 copy(path.resolve(__dirname, '../android'), path.resolve(__dirname, `${nodeModulePath}/android`))
 copy(path.resolve(__dirname, '../ios'), path.resolve(__dirname, `${nodeModulePath}/ios`))
-
+fs.copyFileSync(path.resolve(__dirname, '../WellcareCapacitorPluginAgora.podspec'), path.resolve(__dirname, `${nodeModulePath}/WellcareCapacitorPluginAgora.podspec`))
 // // write package.json
 // const packageJson = require('../package.json')
 // delete packageJson.devDependencies
