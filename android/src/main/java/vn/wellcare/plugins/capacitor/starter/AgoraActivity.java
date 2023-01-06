@@ -35,7 +35,7 @@ public class AgoraActivity extends AppCompatActivity {
     // Fill the channel name.
     private String channelName = "test1";
     // Fill the temp token generated on Agora Console.
-    private String token = "007eJxTYPBTMkx1ffTD4c+ptVNbij2vlNZsyPU4K6Ug2Bet1tm5XE6BwSw1LSXFyNQ4zTDZ3MTcxDgpxdjEOC3Z0jzZ0NgsxSz57eHtyQ2BjAz5y1IYGRkgEMRnZShJLS4xZGAAAGAEH/E=";
+    private String token = "007eJxTYDgmpi6ULnZpSqdTtFBA/rkT/huS2hqW2T55E1NVJXvFgU2BwSw1LSXFyNQ4zTDZ3MTcxDgpxdjEOC3Z0jzZ0NgsxSx55bPtyQ2BjAxmj3awMDJAIIjPylCSWlxiyMAAABOhH3s=";
     // An integer that identifies the local user.
     private int uid = -1;
     private boolean isJoined = false;
