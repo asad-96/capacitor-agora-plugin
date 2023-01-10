@@ -39,8 +39,8 @@ copy(
 )
 copy(path.resolve(__dirname, './ios'), path.resolve(__dirname, `./lib/ios`))
 fs.copyFileSync(
-  path.resolve(__dirname, './CapacitorPluginAgora.podspec'),
-  path.resolve(__dirname, `./lib/CapacitorPluginAgora.podspec`)
+  path.resolve(__dirname, './WellcareCapacitorPluginAgora.podspec'),
+  path.resolve(__dirname, `./lib/WellcareCapacitorPluginAgora.podspec`)
 )
 
 // write package.json
