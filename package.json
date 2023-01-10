@@ -38,7 +38,6 @@
     "eslint": "eslint . --ext ts --fix",
     "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix --format",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
-    "prepublishOnly": "npm run build",
     "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
     "publish:package": "cd lib/ && npm publish",
     "swiftlint": "node-swiftlint",
