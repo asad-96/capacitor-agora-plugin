@@ -11,7 +11,7 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "CapacitorPluginAgora.podspec"
+    "WellcareCapacitorPluginAgora.podspec"
   ],
   "author": "Wellcare",
   "license": "MIT",
