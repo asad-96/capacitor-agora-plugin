@@ -14,6 +14,8 @@ npx cap sync
 <docgen-index>
 
 * [`echo(...)`](#echo)
+* [`joinChannel(...)`](#joinchannel)
+* [`leaveChannel(...)`](#leavechannel)
 * [`createClient(...)`](#createclient)
 * [`createMicrophoneAudioTrack(...)`](#createmicrophoneaudiotrack)
 * [`createCameraVideoTrack(...)`](#createcameravideotrack)
@@ -39,6 +41,36 @@ echo input value
 | **`options`** | <code>{ value: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+
+--------------------
+
+
+### joinChannel(...)
+
+```typescript
+joinChannel(options: { room: string; uid: string; }) => Promise<{ room: string; uid: string; }>
+```
+
+| Param         | Type                                        |
+| ------------- | ------------------------------------------- |
+| **`options`** | <code>{ room: string; uid: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ room: string; uid: string; }&gt;</code>
+
+--------------------
+
+
+### leaveChannel(...)
+
+```typescript
+leaveChannel(options: { room: string; }) => Promise<{ room: string; }>
+```
+
+| Param         | Type                           |
+| ------------- | ------------------------------ |
+| **`options`** | <code>{ room: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ room: string; }&gt;</code>
 
 --------------------
 
