@@ -4,10 +4,7 @@
       <h1>{{ $t('name') }}</h1>
 
       <v-btn @click="drawer = !drawer">Config</v-btn>
-      <v-btn
-        @click="$router.push(`/room/${options.channel}?uid=${options.uid}`)"
-        >join</v-btn
-      >
+      <v-btn @click="joinChannel()">join</v-btn>
       <v-btn @click="leave">leave</v-btn>
       <v-row>
         <v-col>
@@ -217,6 +214,15 @@ export default defineComponent({
       leave,
       drawer,
       startBasicCall
+    }
+  },
+  methods: {
+    joinChannel() {
+      const options = { room: 'test1', uid: '0' }
+      CapacitorPluginAgora.joinChannel(options).then((res: any) => {
+        console.log('res: ', res)
+      })
+      return ''
     }
   }
 })

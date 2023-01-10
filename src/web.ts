@@ -19,6 +19,15 @@ export class CapacitorPluginAgoraWeb
     return options
   }
 
+  async joinChannel(options: { room: string, uid: string }): Promise<{ room: string, uid: string }> {
+    console.log('joinChannel', options)
+    return options
+  }
+  async leaveChannel(options: { room: string }): Promise<{ room: string }> {
+    console.log('leaveChannel', options)
+    return options
+  }
+
   async createClient(config: ClientConfig): Promise<IAgoraRTCClient> {
     console.log('[web] createClient - config:', config)
     return AgoraRTC.createClient(config)
