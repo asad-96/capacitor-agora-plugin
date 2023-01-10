@@ -1,4 +1,11 @@
-import { CameraVideoTrackInitConfig, ClientConfig, IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, MicrophoneAudioTrackInitConfig } from "agora-rtc-sdk-ng"
+import {
+  CameraVideoTrackInitConfig,
+  ClientConfig,
+  IAgoraRTCClient,
+  ICameraVideoTrack,
+  IMicrophoneAudioTrack,
+  MicrophoneAudioTrackInitConfig
+} from 'agora-rtc-sdk-ng'
 
 export interface CapacitorPluginAgoraPlugin {
   /**
@@ -6,21 +13,28 @@ export interface CapacitorPluginAgoraPlugin {
    */
   echo(options: { value: string }): Promise<{ value: string }>
 
-  joinChannel(options: { room: string, uid: string  }): Promise<{ room: string, uid: string }>
+  joinChannel(options: {
+    room: string
+    uid: string
+  }): Promise<{ room: string; uid: string }>
 
   leaveChannel(options: { room: string }): Promise<{ room: string }>
 
   /**
- * createClient input value
- */
+   * createClient input value
+   */
   createClient(options: ClientConfig): Promise<IAgoraRTCClient>
   /**
-* createMicrophoneAudioTrack input value
-*/
-  createMicrophoneAudioTrack(config?: MicrophoneAudioTrackInitConfig): Promise<IMicrophoneAudioTrack>
+   * createMicrophoneAudioTrack input value
+   */
+  createMicrophoneAudioTrack(
+    config?: MicrophoneAudioTrackInitConfig
+  ): Promise<IMicrophoneAudioTrack>
 
   /**
-* createCameraVideoTrack input value
-*/
-  createCameraVideoTrack(config?: CameraVideoTrackInitConfig): Promise<ICameraVideoTrack>
+   * createCameraVideoTrack input value
+   */
+  createCameraVideoTrack(
+    config?: CameraVideoTrackInitConfig
+  ): Promise<ICameraVideoTrack>
 }
