@@ -19,7 +19,7 @@ RUN yarn install --silent
 COPY . .
 COPY .env.build .env
 ARG GIT_TAG
-ENV GIT_TAG=${GIT_TAG}
+ENV GIT_TAG=$GIT_TAG
 RUN yarn build
 
 # step 3: TESTS
@@ -30,6 +30,6 @@ RUN node build.js
 
 # step 4: release and publish
 FROM mhealthvn/node-builder:master 
-COPY --from=mobile-builder /usr/src/app/dist dist
+COPY --from=mobile-builder /usr/src/app/lib lib
 COPY package.json .
 RUN yarn publish:package
