@@ -1,5 +1,8 @@
 package vn.wellcare.plugins.capacitor.starter;
 
+import static io.agora.rtc2.Constants.LOG_FILTER_CRITICAL;
+import static io.agora.rtc2.Constants.LOG_FILTER_OFF;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -18,6 +21,10 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.JSObject;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.Random;
 
 import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.Constants;
@@ -46,6 +53,15 @@ public class AgoraActivity extends AppCompatActivity {
     private SurfaceView localSurfaceView;
     //SurfaceView to render Remote video in a Container.
     private SurfaceView remoteSurfaceView;
+    public static OnAgoraEvent onAgoraEvent;
+
+    public interface OnAgoraEvent {
+        void onEvent(JSObject jsonObject);
+    }
+
+    public static void setOnAgoraEvent(OnAgoraEvent onAgoraEvent1){
+        onAgoraEvent = onAgoraEvent1;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +100,13 @@ public class AgoraActivity extends AppCompatActivity {
             config.mAppId = appId;
             config.mEventHandler = mRtcEventHandler;
             agoraEngine = RtcEngine.create(config);
+            agoraEngine.setLogFilter(LOG_FILTER_OFF);
+            agoraEngine.setLogLevel(LOG_FILTER_OFF);
             // By default, the video module is disabled, call enableVideo to enable it.
             agoraEngine.enableVideo();
         } catch (Exception e) {
-            showMessage(e.toString());
+            e.printStackTrace();
+            Log.e("setupVideoSDKEngine err",e.getMessage());
         }
     }
 
@@ -95,7 +114,14 @@ public class AgoraActivity extends AppCompatActivity {
         @Override
         // Listen for the remote host joining the channel to get the uid of the host.
         public void onUserJoined(int uid, int elapsed) {
-            showMessage("Remote user joined " + uid);
+            if (onAgoraEvent != null) {
+                JSObject jsObject = new JSObject();
+                jsObject.put("event", "onUserJoined");
+                jsObject.put("uid", uid);
+                jsObject.put("elapsed", elapsed);
+                onAgoraEvent.onEvent(jsObject);
+            }
+//            showMessage("Remote user joined " + uid);
 
             // Set the remote video view
             runOnUiThread(() -> setupRemoteVideo(uid));
@@ -104,12 +130,27 @@ public class AgoraActivity extends AppCompatActivity {
         @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
             isJoined = true;
-            showMessage("Joined Channel " + channel);
+            if (onAgoraEvent != null) {
+                JSObject jsObject = new JSObject();
+                jsObject.put("event", "onJoinChannelSuccess");
+                jsObject.put("channel", channel);
+                jsObject.put("uid", uid);
+                jsObject.put("elapsed", elapsed);
+                onAgoraEvent.onEvent(jsObject);
+            }
+//            showMessage("Joined Channel " + channel);
         }
 
         @Override
         public void onUserOffline(int uid, int reason) {
-            showMessage("Remote user offline " + uid + " " + reason);
+            if (onAgoraEvent != null) {
+                JSObject jsObject = new JSObject();
+                jsObject.put("event", "onUserOffline");
+                jsObject.put("uid", uid);
+                jsObject.put("reason", reason);
+                onAgoraEvent.onEvent(jsObject);
+            }
+//            showMessage("Remote user offline " + uid + " " + reason);
             runOnUiThread(() -> remoteSurfaceView.setVisibility(View.GONE));
         }
 
@@ -132,6 +173,16 @@ public class AgoraActivity extends AppCompatActivity {
         public void onStreamMessageError(int uid, int streamId, int error, int missed, int cached) {
             super.onStreamMessageError(uid, streamId, error, missed, cached);
         }
+
+        @Override
+        public void onLeaveChannel(RtcStats stats) {
+            super.onLeaveChannel(stats);
+            if (onAgoraEvent != null) {
+                JSObject jsObject = new JSObject();
+                jsObject.put("event", "onLeaveChannel");
+                jsObject.put("uid", stats.users);
+                onAgoraEvent.onEvent(jsObject);
+            }
     };
 
     void showMessage(String message) {
