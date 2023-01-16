@@ -218,9 +218,12 @@ export default defineComponent({
   },
   methods: {
     joinChannel() {
-      (CapacitorPluginAgora as any).addListener('onEventReceived', (info: any) => {
-        console.log('onEventReceived from agora: ', info)
-      })
+      ;(CapacitorPluginAgora as any).addListener(
+        'onEventReceived',
+        (info: any) => {
+          console.log('onEventReceived from agora: ', info)
+        }
+      )
       const options = { room: 'test1', uid: '0' }
       CapacitorPluginAgora.joinChannel(options).then((res: any) => {
         console.log('res: ', res)

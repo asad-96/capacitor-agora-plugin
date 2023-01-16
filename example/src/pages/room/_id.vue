@@ -1,14 +1,12 @@
 <template>
   <div>
     <w-video-kit
-      :auth-id="$route.query.uid"
-      :participants="[{ _id: $route.query.uid }]"
+      :auth-id="authUser._id"
+      :active-id="activeId"
+      :participants="[...participants, authUser]"
       :camera-state="localCameraState"
       :microphone-state="localAudioState"
-      @change:active-participant="onActiveParticipantChange"
-      @click:exit="leave"
-      @click:camera="onCameraClick"
-      @click:microphone="onMicrophoneClick"
+      @click:participant="onActiveParticipantChange"
     ></w-video-kit>
     <v-snackbar v-model="snackbar.show">{{ snackbar.message }}</v-snackbar>
   </div>
@@ -21,24 +19,37 @@ import {
   reactive,
   useRoute,
   useRouter,
-  computed
+  computed,
+  Ref
 } from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
-
+import { IAgoraRTCClient } from 'agora-rtc-sdk-ng'
 export default defineComponent({
   name: 'RoomPage',
-  layout: 'plain',
+  layout: 'meeting-room',
   setup() {
+    const route = useRoute()
     const snackbar = reactive({
       show: false,
       message: ''
     })
+    const activeId = ref(route.value.query.uid)
+    const authUser = ref({
+      _id: route.value.query.uid,
+      avatar: {
+        url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8czLLczg6As4Noqb2sanBsq4n6lf4anQY4g&usqp=CAU'
+      },
+      name: route.value.query.uid,
+      role: 'Patient',
+      signal: 0
+    })
+    const participants: any = ref([])
     const showMessage = (message: string) => {
       snackbar.show = true
       snackbar.message = message
     }
+
     const { $config } = useContext()
-    const route = useRoute()
     const router = useRouter()
     const logs = ref(['setup...'])
     const options = reactive({
@@ -75,7 +86,7 @@ export default defineComponent({
     const remotePlayerContainer = document.createElement('div')
     // Dynamically create a container in the form of a DIV element to play the local video track.
     const localPlayerContainer = document.createElement('div')
-    const agoraEngine = ref()
+    const agoraEngine: Ref<IAgoraRTCClient> | Ref<any> = ref()
     const startBasicCall = async () => {
       // Specify the ID of the DIV container. You can use the uid of the local user.
       localPlayerContainer.id = options.uid.toString()
@@ -96,10 +107,23 @@ export default defineComponent({
 
       agoraEngine.value.on('user-joined', (user: any) => {
         showMessage(`${user.uid.toString()} has joined.`)
+        const participant = {
+          _id: user.uid.toString(),
+          avatar: {
+            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8czLLczg6As4Noqb2sanBsq4n6lf4anQY4g&usqp=CAU'
+          },
+          name: user.uid.toString(),
+          role: 'Participant',
+          signal: 0
+        }
+        participants.value.push(participant)
       })
 
       agoraEngine.value.on('user-left', (user: any) => {
         showMessage(`${user.uid.toString()} has left.`)
+        participants.value = participants.value.filter(
+          (participant: any) => !participant._id
+        )
       })
 
       agoraEngine.value.on(
@@ -122,8 +146,13 @@ export default defineComponent({
             // Append the remote container to the page body.
             // document.body.append(remotePlayerContainer)
             document
-              .getElementById('participant_active')
-              ?.replaceWith(remotePlayerContainer)
+              .getElementById(`participant_${user.uid.toString()}`)
+              ?.querySelector('.image-placeholder')
+              ?.remove()
+
+            document
+              .getElementById(`participant_${user.uid.toString()}`)
+              ?.appendChild(remotePlayerContainer)
             // Play the remote video track.
             channelParameters.remoteVideoTrack.play(remotePlayerContainer)
           }
@@ -156,7 +185,7 @@ export default defineComponent({
         options.appId,
         options.channel,
         options.token,
-        options.uid
+        authUser.value._id
       )
       // Create a local audio track from the audio sampled by a microphone.
       channelParameters.localAudioTrack =
@@ -168,7 +197,12 @@ export default defineComponent({
       // document.body.append(localPlayerContainer)
       document
         .getElementById('participant_me')
-        ?.replaceWith(localPlayerContainer)
+        ?.querySelector('.image-placeholder')
+        ?.remove()
+
+      document
+        .getElementById('participant_me')
+        ?.appendChild(localPlayerContainer)
       // Publish the local audio and video tracks in the channel.
       await agoraEngine.value.publish([
         channelParameters.localAudioTrack,
@@ -201,7 +235,7 @@ export default defineComponent({
     }
 
     const onActiveParticipantChange = (uid: string) => {
-      console.log('on participant change', uid)
+      activeId.value = uid
     }
 
     const onCameraClick = () => {
@@ -229,7 +263,11 @@ export default defineComponent({
       onMicrophoneClick,
       localCameraState,
       localAudioState,
-      snackbar
+      snackbar,
+      authUser,
+      activeId,
+      participants,
+      agoraEngine
     }
   }
 })
