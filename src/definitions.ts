@@ -16,6 +16,7 @@ export interface CapacitorPluginAgoraPlugin {
   joinChannel(options: {
     room: string
     uid: string
+    token: string
   }): Promise<{ room: string; uid: string }>
 
   leaveChannel(options: { room: string }): Promise<{ room: string }>
