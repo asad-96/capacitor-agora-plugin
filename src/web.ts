@@ -1,6 +1,5 @@
 import { WebPlugin } from '@capacitor/core'
 
-import type { CapacitorPluginAgoraPlugin } from './definitions'
 import AgoraRTC, {
   IAgoraRTCClient,
   ICameraVideoTrack,
@@ -9,6 +8,7 @@ import AgoraRTC, {
   IMicrophoneAudioTrack,
   ClientConfig
 } from 'agora-rtc-sdk-ng'
+import type { CapacitorPluginAgoraPlugin } from './definitions'
 
 export class CapacitorPluginAgoraWeb
   extends WebPlugin
@@ -19,10 +19,14 @@ export class CapacitorPluginAgoraWeb
     return options
   }
 
-  async joinChannel(options: { room: string, uid: string }): Promise<{ room: string, uid: string }> {
+  async joinChannel(options: {
+    room: string
+    uid: string
+  }): Promise<{ room: string; uid: string }> {
     console.log('joinChannel', options)
     return options
   }
+
   async leaveChannel(options: { room: string }): Promise<{ room: string }> {
     console.log('leaveChannel', options)
     return options

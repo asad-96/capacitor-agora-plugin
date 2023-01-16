@@ -48,12 +48,12 @@ echo input value
 ### joinChannel(...)
 
 ```typescript
-joinChannel(options: { room: string; uid: string; }) => Promise<{ room: string; uid: string; }>
+joinChannel(options: { room: string; uid: string; token: string; }) => Promise<{ room: string; uid: string; }>
 ```
 
-| Param         | Type                                        |
-| ------------- | ------------------------------------------- |
-| **`options`** | <code>{ room: string; uid: string; }</code> |
+| Param         | Type                                                       |
+| ------------- | ---------------------------------------------------------- |
+| **`options`** | <code>{ room: string; uid: string; token: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ room: string; uid: string; }&gt;</code>
 
