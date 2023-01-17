@@ -25,8 +25,7 @@ import {
   computed,
   Ref
 } from '@nuxtjs/composition-api'
-import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
-import { IAgoraRTCClient } from 'agora-rtc-sdk-ng'
+import AgoraRTC, { IAgoraRTCClient } from 'agora-rtc-sdk-ng'
 export default defineComponent({
   name: 'RoomPage',
   layout: 'meeting-room',
@@ -108,16 +107,15 @@ export default defineComponent({
 
     const localPlayerContainer = document.createElement('div')
     const agoraEngine: Ref<IAgoraRTCClient> | Ref<any> = ref()
-    const startBasicCall = async () => {
+    const startBasicCall = () => {
       localPlayerContainer.id = options.uid.toString()
       localPlayerContainer.style.width = '100%'
       localPlayerContainer.style.height = '100%'
 
-      agoraEngine.value = await CapacitorPluginAgora.createClient({
+      agoraEngine.value = AgoraRTC.createClient({
         mode: 'rtc',
         codec: 'vp8'
       })
-
       agoraEngine.value.on('user-joined', (user: any) => {
         showMessage(`${user.uid.toString()} has joined.`)
       })
@@ -165,10 +163,8 @@ export default defineComponent({
         authUser.value._id
       )
 
-      channelParameters.localAudioTrack =
-        await CapacitorPluginAgora.createMicrophoneAudioTrack()
-      channelParameters.localVideoTrack =
-        await CapacitorPluginAgora.createCameraVideoTrack()
+      channelParameters.localAudioTrack = AgoraRTC.createMicrophoneAudioTrack()
+      channelParameters.localVideoTrack = AgoraRTC.createCameraVideoTrack()
 
       document
         .getElementById('participant_me')
@@ -217,7 +213,8 @@ export default defineComponent({
       } else channelParameters.localAudioTrack.setEnabled(true)
     }
 
-    startBasicCall().then(() => join())
+    startBasicCall()
+    join()
 
     return {
       channelParameters,
