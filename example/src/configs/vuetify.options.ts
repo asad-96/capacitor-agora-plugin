@@ -27,7 +27,24 @@ import {
   mdiCameraOff,
   mdiPhoneOff,
   mdiPhoneOutline,
-  mdiPhone
+  mdiPhone,
+  mdiVolumeHigh,
+  mdiVideoOutline,
+  mdiTune,
+  mdiCellphoneSound,
+  mdiCamera,
+  mdiCameraFlip,
+  mdiSignalCellular1,
+  mdiSignalCellular2,
+  mdiSignalCellular3,
+  mdiSignalCellularOutline,
+  mdiSpeaker,
+  mdiViewDashboardOutline,
+  mdiOrbitVariant,
+  mdiMessageText,
+  mdiMicrophone,
+  mdiChevronLeft,
+  mdiCheck
 } from '@mdi/js'
 
 export default {
@@ -60,7 +77,24 @@ export default {
       information: mdiInformation,
       magnify: mdiMagnify,
       weatherNight: mdiWeatherNight,
-      weatherSunny: mdiWeatherSunny
+      weatherSunny: mdiWeatherSunny,
+      volumnHigh: mdiVolumeHigh,
+      videoOutline: mdiVideoOutline,
+      tune: mdiTune,
+      cellphoneSound: mdiCellphoneSound,
+      camera: mdiCamera,
+      cameraFlip: mdiCameraFlip,
+      signalLow: mdiSignalCellular1,
+      signalMed: mdiSignalCellular2,
+      signalHigh: mdiSignalCellular3,
+      signalNone: mdiSignalCellularOutline,
+      speaker: mdiSpeaker,
+      viewDashboardOutline: mdiViewDashboardOutline,
+      orbitVariant: mdiOrbitVariant,
+      messageText: mdiMessageText,
+      microphone: mdiMicrophone,
+      chevronLeft: mdiChevronLeft,
+      check: mdiCheck
     }
   } as IconsOptions,
   theme: {

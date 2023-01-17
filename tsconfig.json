@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowUnreachableCode": false,
-    "declaration": true,
+    "declaration": false,
     "esModuleInterop": true,
     "inlineSources": true,
     "lib": ["dom", "es2017"],
