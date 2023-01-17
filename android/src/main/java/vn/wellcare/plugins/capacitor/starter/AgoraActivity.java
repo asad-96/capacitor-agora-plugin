@@ -35,9 +35,9 @@ public class AgoraActivity extends AppCompatActivity {
     // Fill the App ID of your project generated on Agora Console.
     private final String appId = "6efdd253f1c74743bd343fc97c136d6c";
     // Fill the channel name.
-    private String channelName = "test1";
+    private String channelName = "test";
     // Fill the temp token generated on Agora Console.
-    private final String token = "007eJxTYDgmpi6ULnZpSqdTtFBA/rkT/huS2hqW2T55E1NVJXvFgU2BwSw1LSXFyNQ4zTDZ3MTcxDgpxdjEOC3Z0jzZ0NgsxSx55bPtyQ2BjAxmj3awMDJAIIjPylCSWlxiyMAAABOhH3s=";
+    private final String token = "007eJxTYOB4MlV809aYkPo25Wrua0qGjpmdweud9TP5zzRYfbjkNF2BISnRxMzEOM0oyTjR0MQ0zcjS1Nw0ycLcwjjFONE0Ndlwoc2x5IZARgab6tmMjAwQCOKzMJSkFpcwMAAAohMdXA==";
     // An integer that identifies the local user.
     private int uid = -1;
     //A flag that will update the status of channel joining
