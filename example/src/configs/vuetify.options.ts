@@ -43,7 +43,8 @@ import {
   mdiOrbitVariant,
   mdiMessageText,
   mdiMicrophone,
-  mdiChevronLeft
+  mdiChevronLeft,
+  mdiCheck
 } from '@mdi/js'
 
 export default {
@@ -92,7 +93,8 @@ export default {
       orbitVariant: mdiOrbitVariant,
       messageText: mdiMessageText,
       microphone: mdiMicrophone,
-      chevronLeft: mdiChevronLeft
+      chevronLeft: mdiChevronLeft,
+      check: mdiCheck
     }
   } as IconsOptions,
   theme: {

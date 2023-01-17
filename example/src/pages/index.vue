@@ -21,7 +21,7 @@ export default defineComponent({
       room: 'test',
       uid: '0',
       token:
-        '007eJxTYAjN9zmzlFV9xbrQO3O2n1GPjVi0veyAuv9UnTfly85IKGUrMCQlmpiZGKcZJRknGpqYphlZmpqbJlmYWxinGCeapiYbruE/mtwQyMiw8bMqAyMUgvgsDCWpxSUMDAA71h9Y'
+        '007eJxTYBCt00g/ceDqLCGx/6wXVsT9irkg0LH3sqozp/e5X75COXcUGJISTcxMjNOMkowTDU1M04wsTc1NkyzMLYxTjBNNU5MNf6ceS24IZGSQtb7OysgAgSA+C0NJanEJAwMAR5sfjg=='
     })
     return { options }
   }

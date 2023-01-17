@@ -5,15 +5,20 @@
     :participants="[authUser, ...participants]"
     :show-alert="true"
     :show-back-button="true"
-    @call="onCall"
-    @call-nudge="onCallNudge"
+    :devices="devices"
     @back="$router.back()"
+    @click:device-microphone="($data) => (devices.microphoneId = $data)"
+    @click:device-speaker="($data) => (devices.speakerId = $data)"
+    @click:device-camera="($data) => (devices.cameraId = $data)"
   >
     <template #default>
-      <div id="cameraPreview"></div>
+      <div id="cameraPreview">
+        <v-btn class="mt-16" @click="joinMeeting">Start meeting</v-btn>
+      </div>
     </template>
   </w-video-waiting-room>
 </template>
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts">
 import {
   computed,
@@ -23,30 +28,17 @@ import {
   reactive,
   Ref,
   ref,
-  useContext
+  useContext,
+  useRouter,
+  watch
 } from '@nuxtjs/composition-api'
+import { useDevicesList } from '@vueuse/core'
 import { CameraPreview, CameraPreviewOptions } from '@capgo/camera-preview'
 export default defineComponent({
-  layout: 'waiting-room',
+  layout: 'meeting-room',
   setup() {
     const { $vuetify, app, route } = useContext()
-    const logs: any = reactive([])
-    const options = {
-      appId: computed(() => route.value.query.appId),
-      room: computed(() => route.value.query.room),
-      uid: computed(() => route.value.query.uid),
-      token: computed(() => route.value.query.token)
-    }
-    const socket = app.$nuxtSocket({
-      name: 'Video-Conference',
-      channel: '/Video-Conference'
-    })
-    socket.emit('join', { user: options.uid, room: options.uid })
-    socket.on('participant-join', (data: any) => {
-      logs.push('[participant-join] ' + JSON.stringify(data))
-    })
-
-    const imagesCapture = reactive([]) as any
+    const router = useRouter()
     const cameraPreviewOptions: Ref<CameraPreviewOptions> = ref({
       position: 'front',
       height: 250,
@@ -55,7 +47,7 @@ export default defineComponent({
     })
     const permissions = reactive([
       {
-        type: 'audio',
+        type: 'speaker',
         icon: {
           on: '$volumnHigh',
           off: '$volumnOff'
@@ -88,7 +80,7 @@ export default defineComponent({
         }
       },
       {
-        type: 'micro',
+        type: 'microphone',
         icon: {
           on: '$microphoneOutline',
           off: '$microphoneOff'
@@ -118,14 +110,6 @@ export default defineComponent({
       }
     ])
 
-    const onCall = (data: any) => {
-      console.log('onCall', { data })
-    }
-
-    const onCallNudge = (data: any) => {
-      console.log('onCallNudge', { data })
-    }
-
     const onStart = async () => {
       try {
         cameraPreviewOptions.value.height = $vuetify.breakpoint.height
@@ -144,39 +128,80 @@ export default defineComponent({
       }
     }
 
-    const onFlip = async () => {
-      try {
-        await CameraPreview.flip()
-      } catch (error) {
-        console.error(error)
-      }
+    onMounted(() => {
+      onStart()
+      emitReady()
+    })
+
+    onUnmounted(() => onStop())
+    // Waiting room with microphone testing
+    /* ------------ */
+    /* ------------ */
+    // Calling login
+    const {
+      videoInputs: cameras,
+      audioInputs: microphones,
+      audioOutputs: speakers
+    } = useDevicesList({
+      requestPermissions: true
+    })
+
+    const devices = ref()
+    const defaultDevices = computed(() => ({
+      cameraId: cameras.value[0]?.deviceId,
+      microphoneId: microphones.value[0]?.deviceId,
+      speakerId: speakers.value[0]?.deviceId
+    }))
+
+    watch(defaultDevices, () => (devices.value = defaultDevices.value))
+
+    const options = {
+      appId: computed(() => route.value.query.appId),
+      room: computed(() => route.value.params.id),
+      uid: computed(() => route.value.query.uid),
+      token: computed(() => route.value.query.token)
     }
 
-    const onCapture = async () => {
-      try {
-        const data = await CameraPreview.capture({ quality: 50 })
-        const base64 = 'data:image/png;base64,' + data.value
-        imagesCapture.push(base64)
-      } catch (error) {
-        console.error(error)
-      }
+    const socket = app.$nuxtSocket({
+      name: 'Video-Conference',
+      channel: '/Video-Conversation'
+    })
+
+    socket.emit('join', { user: options.uid.value, room: options.room.value })
+
+    const emitReady = () =>
+      socket.emit('participant-join', { user: options.uid.value })
+
+    const joinMeeting = () => {
+      router.push({
+        path: `/room/${options.room.value}/meeting`,
+        query: {
+          uid: options.uid.value,
+          token: options.token.value,
+          channel: options.room.value,
+          appId: options.appId.value,
+          microphoneId: devices.value.microphoneId,
+          speakerId: devices.value.speakerId,
+          cameraId: devices.value.cameraId
+        }
+      })
     }
-    onMounted(() => onStart())
-    onUnmounted(() => onStop())
+
+    socket.on('participant-join', (data: any) => {
+      console.log('[participant-join] ' + JSON.stringify(data))
+      joinMeeting()
+    })
+
     return {
       options,
       cameraPreviewOptions,
-      logs,
       onStart,
       onStop,
-      onFlip,
-      onCapture,
-      imagesCapture,
       authUser,
       participants,
       permissions,
-      onCall,
-      onCallNudge
+      devices,
+      joinMeeting
     }
   }
 })
