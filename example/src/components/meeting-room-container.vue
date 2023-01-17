@@ -35,6 +35,12 @@ export interface IRemoteSignal {
 export default defineComponent({
   name: 'RoomPage',
   layout: 'meeting-room',
+  props: {
+    config: {
+      type: Object,
+      default: () => {}
+    }
+  },
   setup() {
     const route = useRoute()
     const snackbar = reactive({
