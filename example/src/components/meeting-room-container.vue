@@ -55,7 +55,7 @@ export default defineComponent({
       show: false,
       message: ''
     })
-    const activeId = ref(props.config.uid)
+    const activeId = ref(props.config.uid) // show spotlight participant
     const localUser = computed(() => ({
       ...props.authUser,
       ...agoraEngine.value
@@ -146,10 +146,8 @@ export default defineComponent({
               ?.remove()
 
             if (remotePlayerContainer) {
-              console.log('[debug] already have remotePlayerContainer')
               user.videoTrack?.play(remotePlayerContainer)
             } else {
-              console.log('[debug] not have remotePlayerContainer yet')
               const newContainer = document.createElement('div')
               newContainer.id = user.uid.toString()
               newContainer.style.width = '100%'
