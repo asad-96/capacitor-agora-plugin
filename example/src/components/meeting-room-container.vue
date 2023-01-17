@@ -18,6 +18,7 @@
     <v-snackbar v-model="snackbar.show">{{ snackbar.message }}</v-snackbar>
   </div>
 </template>
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts">
 import {
   defineComponent,
@@ -55,19 +56,19 @@ export default defineComponent({
       show: false,
       message: ''
     })
-    const activeId = ref(props.config.uid)
+    const activeId = ref(props.config.uid) // show spotlight participant
     const localUser = computed(() => ({
       ...props.authUser,
       ...agoraEngine.value
     }))
+    const playbackDevice = ref(props.config.speakerId)
+    const devicesManager = computed(() => ({
+      cameraId: (localVideoTrack as any).value?._config.cameraId,
+      microphoneId: (localAudioTrack as any).value?._config.microphoneId,
+      speakerId: playbackDevice.value
+    }))
 
-    const devicesManager = ref({
-      cameraId: props.config.cameraId,
-      speakerId: props.config.speakerId,
-      microphoneId: props.config.microphoneId
-    })
-
-    const participants: any = computed(() => {
+    const participants = computed<any>(() => {
       // Mock only => will map with participant info in room info
       const extendMockData = {
         avatar: {
@@ -146,10 +147,8 @@ export default defineComponent({
               ?.remove()
 
             if (remotePlayerContainer) {
-              console.log('[debug] already have remotePlayerContainer')
               user.videoTrack?.play(remotePlayerContainer)
             } else {
-              console.log('[debug] not have remotePlayerContainer yet')
               const newContainer = document.createElement('div')
               newContainer.id = user.uid.toString()
               newContainer.style.width = '100%'
@@ -162,6 +161,7 @@ export default defineComponent({
           }
           if (mediaType === 'audio') {
             user.audioTrack?.play()
+            user.audioTrack?.setPlaybackDevice(devicesManager.value.speakerId)
           }
         }
       )
@@ -229,16 +229,57 @@ export default defineComponent({
       } else localAudioTrack.value?.setEnabled(true)
     }
 
-    const onCameraChangeManually = (deviceId: string) => {
-      console.log('onCameraChangeManually', deviceId)
+    const onCameraChangeManually = async (deviceId: string) => {
+      if (deviceId === devicesManager.value.cameraId) return
+      try {
+        localVideoTrack.value?.close()
+        await agoraEngine.value?.unpublish(localVideoTrack.value)
+        localVideoTrack.value = await AgoraRTC.createCameraVideoTrack({
+          cameraId: deviceId
+        })
+        agoraEngine.value?.publish(localVideoTrack.value)
+        localVideoTrack.value.play(localPlayerContainer)
+      } catch (error: any) {
+        console.log(
+          '[Error]: error when change camera manually',
+          error.message || error
+        )
+      }
     }
 
-    const onMicrophoneChangeManually = (deviceId: string) => {
-      console.log('onCameraChangeManually', deviceId)
+    const onMicrophoneChangeManually = async (deviceId: string) => {
+      if (deviceId === devicesManager.value.microphoneId) return
+      try {
+        await agoraEngine.value?.unpublish(localAudioTrack.value)
+        localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack({
+          microphoneId: deviceId
+        })
+        agoraEngine.value?.publish(localAudioTrack.value)
+      } catch (error: any) {
+        console.log(
+          '[Error]: error when change microphone manually',
+          error.message || error
+        )
+      }
     }
 
     const onSpeakerChangeManually = (deviceId: string) => {
-      console.log('onCameraChangeManually', deviceId)
+      if (deviceId === playbackDevice.value) return
+      if (participants.value.length === 0) {
+        playbackDevice.value = deviceId
+        return
+      }
+      try {
+        participants.value.forEach((participant: any) => {
+          participant._audioTrack?.setPlaybackDevice(deviceId)
+        })
+        playbackDevice.value = deviceId
+      } catch (error: any) {
+        console.log(
+          '[Error]: error when change speaker manually',
+          error.message || error
+        )
+      }
     }
 
     /// INIT
@@ -257,7 +298,6 @@ export default defineComponent({
       localUser,
       activeId,
       participants,
-      agoraEngine,
       localSignal,
       remoteSignals,
       onSpeakerChangeManually,
