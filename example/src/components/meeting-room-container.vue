@@ -3,11 +3,8 @@
     <w-video-kit
       :auth-id="authUser._id"
       :active-id="activeId"
-      :participants="[
-        ...participants,
-        { ...authUser, signal: localSignal || 0 }
-      ]"
-      :camera-state="localCameraState"
+      :participants="[...participants, { ...authUser, signal: localSignal }]"
+      :camera-state="localVideoState"
       :microphone-state="localAudioState"
       @click:participant="onActiveParticipantChange"
     ></w-video-kit>
@@ -22,10 +19,19 @@ import {
   reactive,
   useRoute,
   useRouter,
-  computed,
-  Ref
+  computed
 } from '@nuxtjs/composition-api'
-import AgoraRTC, { IAgoraRTCClient } from 'agora-rtc-sdk-ng'
+import AgoraRTC, {
+  IAgoraRTCClient,
+  ILocalAudioTrack,
+  ILocalVideoTrack,
+  NetworkQuality,
+  IAgoraRTCRemoteUser
+} from 'agora-rtc-sdk-ng'
+export type Signal = 0 | 1 | 2 | 3 | 4 | 5 | 6
+export interface IRemoteSignal {
+  [uid: string]: NetworkQuality
+}
 export default defineComponent({
   name: 'RoomPage',
   layout: 'meeting-room',
@@ -47,34 +53,34 @@ export default defineComponent({
     }))
 
     const participants: any = computed(() => {
-      const mock = {
+      // Mock only => will map with Wellcare user data
+      const extendMockData = {
         avatar: {
           url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8czLLczg6As4Noqb2sanBsq4n6lf4anQY4g&usqp=CAU'
         },
         role: 'Participant'
       }
       if (!agoraEngine.value) return []
-      const result = agoraEngine.value._users.map((u: any) => {
-        const user = {
-          _id: u.uid.toString(),
-          name: u.uid.toString(),
-          ...mock,
-          ...u,
-          signal:
-            remoteSignals.value &&
-            remoteSignals.value[u.uid] &&
-            remoteSignals.value[u.uid].downlinkNetworkQuality
-              ? 4 -
-                Math.ceil(remoteSignals.value[u.uid].downlinkNetworkQuality / 2)
-              : 0
+      const result = agoraEngine.value.remoteUsers.map(
+        (remoteUser: IAgoraRTCRemoteUser) => {
+          const participant = {
+            _id: remoteUser.uid.toString(),
+            name: remoteUser.uid.toString(),
+            signal:
+              remoteSignals.value && remoteSignals.value[remoteUser.uid]
+                ? remoteSignals.value[remoteUser.uid].downlinkNetworkQuality
+                : 0,
+            ...remoteUser,
+            ...extendMockData
+          }
+          return participant
         }
-        return user
-      })
+      )
       return result
     })
 
-    const remoteSignals = ref()
-    const localSignal = ref()
+    const remoteSignals = ref<IRemoteSignal>()
+    const localSignal = ref<Signal>(0)
     const showMessage = (message: string) => {
       snackbar.show = true
       snackbar.message = message
@@ -89,24 +95,16 @@ export default defineComponent({
       uid: route.value.query.uid || 0
     })
 
-    const channelParameters: any = reactive({
-      localAudioTrack: null,
-      localVideoTrack: null,
-      remoteAudioTrack: null,
-      remoteVideoTrack: null,
-      remoteUid: null
-    })
-
-    const localCameraState = computed(
-      () => channelParameters?.localVideoTrack?._enabled || false
+    const localAudioTrack = ref<ILocalAudioTrack>()
+    const localVideoTrack = ref<ILocalVideoTrack>()
+    const localVideoState = computed(
+      () => localVideoTrack.value?.enabled || false
     )
-
     const localAudioState = computed(
-      () => channelParameters?.localAudioTrack?._enabled || false
+      () => localAudioTrack.value?.enabled || false
     )
-
     const localPlayerContainer = document.createElement('div')
-    const agoraEngine: Ref<IAgoraRTCClient> | Ref<any> = ref()
+    const agoraEngine = ref<IAgoraRTCClient>()
     const startBasicCall = () => {
       localPlayerContainer.id = options.uid.toString()
       localPlayerContainer.style.width = '100%'
@@ -116,21 +114,22 @@ export default defineComponent({
         mode: 'rtc',
         codec: 'vp8'
       })
-      agoraEngine.value.on('user-joined', (user: any) => {
+
+      agoraEngine.value.on('user-joined', (user: IAgoraRTCRemoteUser) => {
         showMessage(`${user.uid.toString()} has joined.`)
       })
 
-      agoraEngine.value.on('user-left', (user: any) => {
-        showMessage(`${user.uid.toString()} has left.`)
-      })
+      agoraEngine.value.on(
+        'user-left',
+        (user: IAgoraRTCRemoteUser, reason: string) => {
+          showMessage(`${user.uid.toString()} has left. Reason: ${reason}`)
+        }
+      )
 
       agoraEngine.value.on(
         'user-published',
-        async (user: any, mediaType: 'audio' | 'video') => {
-          await agoraEngine.value.subscribe(user, mediaType)
-          const remoteUser = agoraEngine.value._users.find(
-            (u: any) => u.uid.toString() === user.uid.toString()
-          )
+        async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
+          await agoraEngine.value?.subscribe(user, mediaType)
           const remotePlayerContainer = document.createElement('div')
           remotePlayerContainer.style.width = '100%'
           remotePlayerContainer.style.height = '100%'
@@ -145,26 +144,25 @@ export default defineComponent({
               .getElementById(`participant_${user.uid.toString()}`)
               ?.appendChild(remotePlayerContainer)
 
-            remoteUser._videoTrack.play(remotePlayerContainer)
+            user.videoTrack?.play(remotePlayerContainer)
           }
           if (mediaType === 'audio') {
-            remoteUser._audioTrack.play()
+            user.audioTrack?.play()
           }
-          remoteUser._audio_muted_ = true
         }
       )
     }
 
     const join = async () => {
-      await agoraEngine.value.join(
+      await agoraEngine.value?.join(
         options.appId,
         options.channel,
         options.token,
-        authUser.value._id
+        authUser.value._id.toString()
       )
 
-      channelParameters.localAudioTrack = AgoraRTC.createMicrophoneAudioTrack()
-      channelParameters.localVideoTrack = AgoraRTC.createCameraVideoTrack()
+      localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack()
+      localVideoTrack.value = await AgoraRTC.createCameraVideoTrack()
 
       document
         .getElementById('participant_me')
@@ -175,25 +173,22 @@ export default defineComponent({
         .getElementById('participant_me')
         ?.appendChild(localPlayerContainer)
 
-      await agoraEngine.value.publish([
-        channelParameters.localAudioTrack,
-        channelParameters.localVideoTrack
+      await agoraEngine.value?.publish([
+        localAudioTrack.value,
+        localVideoTrack.value
       ])
 
-      channelParameters.localVideoTrack.play(localPlayerContainer)
-      channelParameters.localAudioTrack.setEnabled(false)
-      agoraEngine.value.on('network-quality', (stats: any) => {
+      localVideoTrack.value.play(localPlayerContainer)
+      agoraEngine.value?.on('network-quality', (stats: NetworkQuality) => {
         localSignal.value = stats.downlinkNetworkQuality
-          ? 4 - Math.ceil(stats.downlinkNetworkQuality / 2)
-          : 0
-        remoteSignals.value = agoraEngine.value.getRemoteNetworkQuality()
+        remoteSignals.value = agoraEngine.value?.getRemoteNetworkQuality()
       })
     }
 
     const leave = () => {
-      channelParameters.localAudioTrack.close()
-      channelParameters.localVideoTrack.close()
-      agoraEngine.value.leave()
+      localAudioTrack.value?.close()
+      localVideoTrack.value?.close()
+      agoraEngine.value?.leave()
       router.push('/')
     }
 
@@ -202,29 +197,28 @@ export default defineComponent({
     }
 
     const onCameraClick = () => {
-      if (channelParameters.localVideoTrack._enabled) {
-        channelParameters.localVideoTrack.setEnabled(false)
-      } else channelParameters.localVideoTrack.setEnabled(true)
+      if (localVideoState.value) {
+        localVideoTrack.value?.setEnabled(false)
+      } else localVideoTrack.value?.setEnabled(true)
     }
 
     const onMicrophoneClick = () => {
-      if (channelParameters.localAudioTrack._enabled) {
-        channelParameters.localAudioTrack.setEnabled(false)
-      } else channelParameters.localAudioTrack.setEnabled(true)
+      if (localAudioState.value) {
+        localAudioTrack.value?.setEnabled(false)
+      } else localAudioTrack.value?.setEnabled(true)
     }
 
     startBasicCall()
     join()
 
     return {
-      channelParameters,
       options,
       join,
       leave,
       onActiveParticipantChange,
       onCameraClick,
       onMicrophoneClick,
-      localCameraState,
+      localVideoState,
       localAudioState,
       snackbar,
       authUser,
