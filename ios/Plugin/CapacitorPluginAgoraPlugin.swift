@@ -22,10 +22,10 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     let appID = "6efdd253f1c74743bd343fc97c136d6c"
     
     // Update with the temporary token generated in Agora Console.
-    var token = "007eJxTYPBTMkx1ffTD4c+ptVNbij2vlNZsyPU4K6Ug2Bet1tm5XE6BwSw1LSXFyNQ4zTDZ3MTcxDgpxdjEOC3Z0jzZ0NgsxSz57eHtyQ2BjAz5y1IYGRkgEMRnZShJLS4xZGAAAGAEH/E="
+    var token = "007eJxTYOB4MlV809aYkPo25Wrua0qGjpmdweud9TP5zzRYfbjkNF2BISnRxMzEOM0oyTjR0MQ0zcjS1Nw0ycLcwjjFONE0Ndlwoc2x5IZARgab6tmMjAwQCOKzMJSkFpcwMAAAohMdXA=="
     
     // Update with the channel name you used to generate the token in Agora Console.
-    var channelName = "test1"
+    var channelName = "test"
     
     // The video feed for the local user is displayed here
     var localView = UIView()
