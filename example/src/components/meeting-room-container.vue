@@ -2,12 +2,12 @@
   <div>
     <w-video-kit
       :auth-id="authUser._id"
-      :active-id="activeId"
+      :spotlight-id="spotlightId"
       :participants="[...participants, { ...localUser, signal: localSignal }]"
       :video-state="localVideoState"
       :microphone-state="localAudioState"
       :devices="devicesManager"
-      @click:participant="onActiveParticipantChange"
+      :volumn-indicators="volumnIndicators"
       @click:exit="onExitCall"
       @click:camera="onCameraClick"
       @click:microphone="onMicrophoneClick"
@@ -32,11 +32,16 @@ import AgoraRTC, {
   ILocalAudioTrack,
   ILocalVideoTrack,
   NetworkQuality,
-  IAgoraRTCRemoteUser
+  IAgoraRTCRemoteUser,
+  UID
 } from 'agora-rtc-sdk-ng'
 export type Signal = 0 | 1 | 2 | 3 | 4 | 5 | 6
 export interface IRemoteSignal {
   [uid: string]: NetworkQuality
+}
+export interface IVolumnIndicator {
+  uid: UID
+  level: number
 }
 export default defineComponent({
   name: 'RoomPage',
@@ -56,7 +61,7 @@ export default defineComponent({
       show: false,
       message: ''
     })
-    const activeId = ref(props.config.uid) // show spotlight participant
+    const spotlightId = computed(() => participants.value[0]?._id)
     const localUser = computed(() => ({
       ...props.authUser,
       ...agoraEngine.value
@@ -68,6 +73,7 @@ export default defineComponent({
       speakerId: playbackDevice.value
     }))
 
+    const volumnIndicators = ref<IVolumnIndicator[]>([])
     const participants = computed<any>(() => {
       // Mock only => will map with participant info in room info
       const extendMockData = {
@@ -170,12 +176,11 @@ export default defineComponent({
     const join = async () => {
       const { appId, channel, token, uid, microphoneId, cameraId } =
         props.config
-
       console.log('[config]', token)
       await agoraEngine.value?.join(
         appId,
         channel,
-        '007eJxTYBCt00g/ceDqLCGx/6wXVsT9irkg0LH3sqozp/e5X75COXcUGJISTcxMjNOMkowTDU1M04wsTc1NkyzMLYxTjBNNU5MNf6ceS24IZGSQtb7OysgAgSA+C0NJanEJAwMAR5sfjg==',
+        '007eJxTYNh9dL3Yl6ijq76dXJZwXUlscfteJ8NNAk0nFj2VXXF3zW1hBYakRBMzE+M0oyTjREMT0zQjS1Nz0yQLcwvjFONE09Rkw42iJ5IbAhkZPk77xcAIhSA+C0NJanEJAwMAKOYirg==',
         uid
       )
       localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack({
@@ -204,6 +209,10 @@ export default defineComponent({
         localSignal.value = stats.downlinkNetworkQuality
         remoteSignals.value = agoraEngine.value?.getRemoteNetworkQuality()
       })
+      agoraEngine.value?.enableAudioVolumeIndicator()
+      agoraEngine.value?.on('volume-indicator', function (result) {
+        volumnIndicators.value = result
+      })
     }
 
     const onExitCall = () => {
@@ -211,10 +220,6 @@ export default defineComponent({
       localVideoTrack.value?.close()
       agoraEngine.value?.leave()
       router.push('/')
-    }
-
-    const onActiveParticipantChange = (uid: string) => {
-      activeId.value = uid
     }
 
     const onCameraClick = () => {
@@ -240,9 +245,9 @@ export default defineComponent({
         agoraEngine.value?.publish(localVideoTrack.value)
         localVideoTrack.value.play(localPlayerContainer)
       } catch (error: any) {
-        console.log(
-          '[Error]: error when change camera manually',
-          error.message || error
+        showMessage(
+          '[Error]: error when change camera manually: ' +
+            (error.message || error)
         )
       }
     }
@@ -256,9 +261,9 @@ export default defineComponent({
         })
         agoraEngine.value?.publish(localAudioTrack.value)
       } catch (error: any) {
-        console.log(
-          '[Error]: error when change microphone manually',
-          error.message || error
+        showMessage(
+          '[Error]: error when change microphone manually: ' +
+            (error.message || error)
         )
       }
     }
@@ -275,9 +280,9 @@ export default defineComponent({
         })
         playbackDevice.value = deviceId
       } catch (error: any) {
-        console.log(
-          '[Error]: error when change speaker manually',
-          error.message || error
+        showMessage(
+          '[Error]: error when change speaker manually: ' +
+            (error.message || error)
         )
       }
     }
@@ -289,21 +294,21 @@ export default defineComponent({
     return {
       join,
       onExitCall,
-      onActiveParticipantChange,
       onCameraClick,
       onMicrophoneClick,
       localVideoState,
       localAudioState,
       snackbar,
       localUser,
-      activeId,
+      spotlightId,
       participants,
       localSignal,
       remoteSignals,
       onSpeakerChangeManually,
       onMicrophoneChangeManually,
       onCameraChangeManually,
-      devicesManager
+      devicesManager,
+      volumnIndicators
     }
   }
 })

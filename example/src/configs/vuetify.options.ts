@@ -44,7 +44,10 @@ import {
   mdiMessageText,
   mdiMicrophone,
   mdiChevronLeft,
-  mdiCheck
+  mdiCheck,
+  mdiCard,
+  mdiViewGridOutline,
+  mdiViewGalleryOutline
 } from '@mdi/js'
 
 export default {
@@ -94,7 +97,10 @@ export default {
       messageText: mdiMessageText,
       microphone: mdiMicrophone,
       chevronLeft: mdiChevronLeft,
-      check: mdiCheck
+      check: mdiCheck,
+      card: mdiCard,
+      viewGridOutline: mdiViewGridOutline,
+      viewGalleryOutline: mdiViewGalleryOutline
     }
   } as IconsOptions,
   theme: {
