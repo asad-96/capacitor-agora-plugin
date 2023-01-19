@@ -7,95 +7,89 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-import org.json.JSONObject;
+import java.util.List;
 
 import io.agora.iris.IrisApiEngine;
 import io.agora.iris.IrisEventHandler;
-import io.agora.rtc2.IRtcEngineEventHandler;
-import io.agora.rtc2.RtcEngine;
-import vn.wellcare.plugins.capacitor.agora.R;
-
-import java.util.List;
+import vn.wellcare.plugins.capacitor.starter.util.Constant;
 
 @CapacitorPlugin(name = "CapacitorPluginAgora")
 public class CapacitorPluginAgoraPlugin
-  extends Plugin
-  implements IrisEventHandler, AgoraActivity.OnAgoraEvent {
+        extends Plugin
+        implements IrisEventHandler, AgoraActivity.OnAgoraEvent {
 
-  public static final String NAME = "CapacitorPluginAgora";
-  public IrisApiEngine irisApiEngine;
-  private CapacitorPluginAgora implementation = new CapacitorPluginAgora();
+    public static final String NAME = "CapacitorPluginAgora";
+    public IrisApiEngine irisApiEngine;
+    private CapacitorPluginAgora implementation = new CapacitorPluginAgora();
 
-  String TAG="CapacitorPluginAgoraPlugin";
+    String TAG = "CapacitorPluginAgoraPlugin";
 
 
-  public void sendEvent(JSObject data) {
-    notifyListeners("onEventReceived", data);
-  }
+    public void sendEvent(JSObject data) {
+        notifyListeners("onEventReceived", data);
+    }
 
-  @PluginMethod
-  public void joinChannel(PluginCall call) {
-    String room = call.getString("room");
-    Integer uid = call.getInt("uid");
+    @PluginMethod
+    public void joinChannel(PluginCall call) {
+        Intent i = new Intent(getActivity(), AgoraActivity.class);
+        i.putExtra(Constant.CHANNELNAME, call.getString(Constant.CHANNELNAME));
+        i.putExtra(Constant.UID, call.getInt(Constant.UID));
+        i.putExtra(Constant.TOKEN, call.getString(Constant.TOKEN));
+        i.putExtra(Constant.APPID, call.getString(Constant.APPID));
+        getActivity().startActivity(i);
 
-    Intent i = new Intent(getActivity(), AgoraActivity.class);
-    i.putExtra("room",room);
-    i.putExtra("uid",uid);
-    getActivity().startActivity(i);
-    
-    JSObject ret = new JSObject();
-    call.resolve(ret);
-    setOnAgoraEvent(this);
-  }
+        JSObject ret = new JSObject();
+        call.resolve(ret);
+        setOnAgoraEvent(this);
+    }
 
- @PluginMethod
- public void leaveChannel(PluginCall call) {
-   String value = call.getString("room");
-   JSObject ret = new JSObject();
-   ret.put("value", implementation.echo(value));
-   call.resolve(ret);
- }
+    @PluginMethod
+    public void leaveChannel(PluginCall call) {
+        String value = call.getString("room");
+        JSObject ret = new JSObject();
+        ret.put("value", implementation.echo(value));
+        call.resolve(ret);
+    }
 
-  @Override
-  public void OnEvent(String event, String data, List<byte[]> buffee) {
-    Log.e("OnEvent","event: "+event+" data: "+data);
-    Log.e("OnEvent","list: "+buffee.size());
-  }
+    @Override
+    public void OnEvent(String event, String data, List<byte[]> buffee) {
+        Log.e("OnEvent", "event: " + event + " data: " + data);
+        Log.e("OnEvent", "list: " + buffee.size());
+    }
 
     protected final void showLongToast(final String msg) {
-    runOnUIThread(() -> {
-      Context context = getContext();
-      if (context == null) {
-        return;
-      }
-      Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-    });
-  }
+        runOnUIThread(() -> {
+            Context context = getContext();
+            if (context == null) {
+                return;
+            }
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+        });
+    }
 
-  protected final void showShortToast(final String msg) {
-    runOnUIThread(() -> {
-      Context context = getContext();
-      if (context == null) {
-        return;
-      }
-      Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-    });
-  }
+    protected final void showShortToast(final String msg) {
+        runOnUIThread(() -> {
+            Context context = getContext();
+            if (context == null) {
+                return;
+            }
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+        });
+    }
 
-  protected final void runOnUIThread(Runnable runnable) {
-    this.runOnUIThread(runnable);
-  }
+    protected final void runOnUIThread(Runnable runnable) {
+        this.runOnUIThread(runnable);
+    }
 
 
-  @Override
-  public void onEvent(JSObject jsonObject) {
-    sendEvent(jsonObject);
-  }
+    @Override
+    public void onEvent(JSObject jsonObject) {
+        sendEvent(jsonObject);
+    }
 }

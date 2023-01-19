@@ -22,7 +22,9 @@ export class CapacitorPluginAgoraWeb
   async joinChannel(options: {
     room: string
     uid: string
-  }): Promise<{ room: string; uid: string }> {
+    token: string
+    appId: string
+  }): Promise<{ room: string; uid: string, token: string, appId: string }> {
     console.log('joinChannel', options)
     return options
   }
