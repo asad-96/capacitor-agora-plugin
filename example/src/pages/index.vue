@@ -9,22 +9,17 @@
   </v-container>
 </template>
 <script lang="ts">
-import {
-  defineComponent,
-  reactive,
-  useContext,
-  useRouter
-} from '@nuxtjs/composition-api'
+import { defineComponent, reactive, useRouter } from '@nuxtjs/composition-api'
 // import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 export default defineComponent({
   setup() {
-    const { $config } = useContext()
     const router = useRouter()
     const options = reactive({
-      appId: $config.agora.appId,
-      room: $config.agora.channel,
-      uid: $config.agora.uid,
-      token: ''
+      appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
+      room: 'test',
+      uid: '0',
+      token:
+        '007eJxTYAgztlwovDPfuNP3kE1f9OGt/lqie3SEyhufOyxe//rC9OcKDEmJJmYmxmlGScaJhiamaUaWpuamSRbmFsYpxommqcmGiYtOJTcEMjLsTpjIzMgAgSA+C0NJanEJAwMADgYfVA=='
     })
     const enterWaitingRoom = () => {
       const decodeToken = encodeURIComponent(options.token)
