@@ -4,26 +4,35 @@
     <v-text-field v-model="options.room" clearable label="room" />
     <v-text-field v-model="options.token" clearable label="token" />
     <v-text-field v-model="options.uid" clearable label="uid" />
-    <v-btn
-      :to="`/room/${options.room}/waiting?uid=${options.uid}&token=${options.token}&appId=${options.appId}`"
-      >ENTER WAITING ROOM</v-btn
-    >
+    <v-btn @click="enterWaitingRoom">ENTER WAITING ROOM</v-btn>
     <!-- <v-btn @click="joinChannel()">join</v-btn> -->
   </v-container>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, useContext } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  reactive,
+  useContext,
+  useRouter
+} from '@nuxtjs/composition-api'
 // import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 export default defineComponent({
   setup() {
     const { $config } = useContext()
+    const router = useRouter()
     const options = reactive({
       appId: $config.agora.appId,
       room: $config.agora.channel,
       uid: $config.agora.uid,
-      token: $config.agora.token
+      token: ''
     })
-    return { options }
+    const enterWaitingRoom = () => {
+      const decodeToken = encodeURIComponent(options.token)
+      router.push(
+        `/room/${options.room}/waiting?uid=${options.uid}&token=${decodeToken}&appId=${options.appId}`
+      )
+    }
+    return { options, enterWaitingRoom }
   }
   // methods: {
   //   joinChannel() {
