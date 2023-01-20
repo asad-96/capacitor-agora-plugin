@@ -1,0 +1,315 @@
+<template>
+  <div>
+    <w-video-kit
+      :auth-id="authUser._id"
+      :spotlight-id="spotlightId"
+      :participants="[...participants, { ...localUser, signal: localSignal }]"
+      :video-state="localVideoState"
+      :microphone-state="localAudioState"
+      :devices="devicesManager"
+      :volumn-indicators="volumnIndicators"
+      @click:exit="onExitCall"
+      @click:camera="onCameraClick"
+      @click:microphone="onMicrophoneClick"
+      @click:device-microphone="onMicrophoneChangeManually"
+      @click:device-speaker="onSpeakerChangeManually"
+      @click:device-camera="onCameraChangeManually"
+    ></w-video-kit>
+    <v-snackbar v-model="snackbar.show">{{ snackbar.message }}</v-snackbar>
+  </div>
+</template>
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  reactive,
+  useRouter,
+  computed
+} from '@nuxtjs/composition-api'
+import AgoraRTC, {
+  IAgoraRTCClient,
+  ILocalAudioTrack,
+  ILocalVideoTrack,
+  NetworkQuality,
+  IAgoraRTCRemoteUser,
+  UID
+} from 'agora-rtc-sdk-ng'
+export type Signal = 0 | 1 | 2 | 3 | 4 | 5 | 6
+export interface IRemoteSignal {
+  [uid: string]: NetworkQuality
+}
+export interface IVolumnIndicator {
+  uid: UID
+  level: number
+}
+export default defineComponent({
+  name: 'RoomPage',
+  layout: 'meeting-room',
+  props: {
+    config: {
+      type: Object,
+      default: () => {}
+    },
+    authUser: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  setup(props) {
+    const snackbar = reactive({
+      show: false,
+      message: ''
+    })
+    const spotlightId = computed(() => participants.value[0]?._id)
+    const localUser = computed(() => ({
+      ...props.authUser,
+      ...agoraEngine.value
+    }))
+    const playbackDevice = ref(props.config.speakerId)
+    const devicesManager = computed(() => ({
+      cameraId: (localVideoTrack as any).value?._config.cameraId,
+      microphoneId: (localAudioTrack as any).value?._config.microphoneId,
+      speakerId: playbackDevice.value
+    }))
+
+    const volumnIndicators = ref<IVolumnIndicator[]>([])
+    const participants = computed<any>(() => {
+      // Mock only => will map with participant info in room info
+      const extendMockData = {
+        avatar: {
+          url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8czLLczg6As4Noqb2sanBsq4n6lf4anQY4g&usqp=CAU'
+        },
+        role: 'Participant'
+      }
+      if (!agoraEngine.value) return []
+      const result = agoraEngine.value.remoteUsers.map((remoteUser: any) => {
+        const participant = {
+          _id: remoteUser.uid.toString(),
+          name: remoteUser.uid.toString(),
+          hasVideo: !remoteUser._video_muted_,
+          hasAudio: !remoteUser._audio_muted_,
+          signal:
+            remoteSignals.value && remoteSignals.value[remoteUser.uid]
+              ? remoteSignals.value[remoteUser.uid].downlinkNetworkQuality
+              : 0,
+          ...remoteUser,
+          ...extendMockData
+        }
+        return participant
+      })
+      return result
+    })
+
+    const remoteSignals = ref<IRemoteSignal>()
+    const localSignal = ref<Signal>(0)
+    const showMessage = (message: string) => {
+      snackbar.show = true
+      snackbar.message = message
+    }
+    const router = useRouter()
+    const localAudioTrack = ref<ILocalAudioTrack>()
+    const localVideoTrack = ref<ILocalVideoTrack>()
+    const localVideoState = computed(
+      () => localVideoTrack.value?.enabled || false
+    )
+    const localAudioState = computed(
+      () => localAudioTrack.value?.enabled || false
+    )
+    const localPlayerContainer = document.createElement('div')
+    const agoraEngine = ref<IAgoraRTCClient>()
+    const startBasicCall = () => {
+      localPlayerContainer.id = props.config.uid.toString()
+      localPlayerContainer.style.width = '100%'
+      localPlayerContainer.style.height = '100%'
+
+      agoraEngine.value = AgoraRTC.createClient({
+        mode: 'rtc',
+        codec: 'vp8'
+      })
+
+      agoraEngine.value.on('user-joined', (user: IAgoraRTCRemoteUser) => {
+        showMessage(`${user.uid.toString()} has joined.`)
+      })
+
+      agoraEngine.value.on(
+        'user-left',
+        (user: IAgoraRTCRemoteUser, reason: string) => {
+          showMessage(`${user.uid.toString()} has left. Reason: ${reason}`)
+        }
+      )
+
+      agoraEngine.value.on(
+        'user-published',
+        async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
+          await agoraEngine.value?.subscribe(user, mediaType)
+          const remotePlayerContainer = document.getElementById(
+            user.uid.toString()
+          )
+          if (mediaType === 'video') {
+            document
+              .getElementById(`participant_${user.uid.toString()}`)
+              ?.querySelector('.image-placeholder')
+              ?.remove()
+
+            if (remotePlayerContainer) {
+              user.videoTrack?.play(remotePlayerContainer)
+            } else {
+              const newContainer = document.createElement('div')
+              newContainer.id = user.uid.toString()
+              newContainer.style.width = '100%'
+              newContainer.style.height = '100%'
+              document
+                .getElementById(`participant_${user.uid.toString()}`)
+                ?.appendChild(newContainer)
+              user.videoTrack?.play(newContainer)
+            }
+          }
+          if (mediaType === 'audio') {
+            user.audioTrack?.play()
+            user.audioTrack?.setPlaybackDevice(devicesManager.value.speakerId)
+          }
+        }
+      )
+    }
+
+    const join = async () => {
+      const { appId, channel, token, uid, microphoneId, cameraId } =
+        props.config
+      console.log('[config]', token)
+      await agoraEngine.value?.join(
+        appId,
+        channel,
+        '007eJxTYNh9dL3Yl6ijq76dXJZwXUlscfteJ8NNAk0nFj2VXXF3zW1hBYakRBMzE+M0oyTjREMT0zQjS1Nz0yQLcwvjFONE09Rkw42iJ5IbAhkZPk77xcAIhSA+C0NJanEJAwMAKOYirg==',
+        uid
+      )
+      localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack({
+        microphoneId
+      })
+      localVideoTrack.value = await AgoraRTC.createCameraVideoTrack({
+        cameraId
+      })
+
+      document
+        .getElementById('participant_me')
+        ?.querySelector('.image-placeholder')
+        ?.remove()
+
+      document
+        .getElementById('participant_me')
+        ?.appendChild(localPlayerContainer)
+
+      await agoraEngine.value?.publish([
+        localAudioTrack.value,
+        localVideoTrack.value
+      ])
+
+      localVideoTrack.value.play(localPlayerContainer)
+      agoraEngine.value?.on('network-quality', (stats: NetworkQuality) => {
+        localSignal.value = stats.downlinkNetworkQuality
+        remoteSignals.value = agoraEngine.value?.getRemoteNetworkQuality()
+      })
+      agoraEngine.value?.enableAudioVolumeIndicator()
+      agoraEngine.value?.on('volume-indicator', function (result) {
+        volumnIndicators.value = result
+      })
+    }
+
+    const onExitCall = () => {
+      localAudioTrack.value?.close()
+      localVideoTrack.value?.close()
+      agoraEngine.value?.leave()
+      router.push('/')
+    }
+
+    const onCameraClick = () => {
+      if (localVideoState.value) {
+        localVideoTrack.value?.setEnabled(false)
+      } else localVideoTrack.value?.setEnabled(true)
+    }
+
+    const onMicrophoneClick = () => {
+      if (localAudioState.value) {
+        localAudioTrack.value?.setEnabled(false)
+      } else localAudioTrack.value?.setEnabled(true)
+    }
+
+    const onCameraChangeManually = async (deviceId: string) => {
+      if (deviceId === devicesManager.value.cameraId) return
+      try {
+        localVideoTrack.value?.close()
+        await agoraEngine.value?.unpublish(localVideoTrack.value)
+        localVideoTrack.value = await AgoraRTC.createCameraVideoTrack({
+          cameraId: deviceId
+        })
+        agoraEngine.value?.publish(localVideoTrack.value)
+        localVideoTrack.value.play(localPlayerContainer)
+      } catch (error: any) {
+        showMessage(
+          '[Error]: error when change camera manually: ' +
+            (error.message || error)
+        )
+      }
+    }
+
+    const onMicrophoneChangeManually = async (deviceId: string) => {
+      if (deviceId === devicesManager.value.microphoneId) return
+      try {
+        await agoraEngine.value?.unpublish(localAudioTrack.value)
+        localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack({
+          microphoneId: deviceId
+        })
+        agoraEngine.value?.publish(localAudioTrack.value)
+      } catch (error: any) {
+        showMessage(
+          '[Error]: error when change microphone manually: ' +
+            (error.message || error)
+        )
+      }
+    }
+
+    const onSpeakerChangeManually = (deviceId: string) => {
+      if (deviceId === playbackDevice.value) return
+      if (participants.value.length === 0) {
+        playbackDevice.value = deviceId
+        return
+      }
+      try {
+        participants.value.forEach((participant: any) => {
+          participant._audioTrack?.setPlaybackDevice(deviceId)
+        })
+        playbackDevice.value = deviceId
+      } catch (error: any) {
+        showMessage(
+          '[Error]: error when change speaker manually: ' +
+            (error.message || error)
+        )
+      }
+    }
+
+    /// INIT
+    startBasicCall()
+    join()
+
+    return {
+      join,
+      onExitCall,
+      onCameraClick,
+      onMicrophoneClick,
+      localVideoState,
+      localAudioState,
+      snackbar,
+      localUser,
+      spotlightId,
+      participants,
+      localSignal,
+      remoteSignals,
+      onSpeakerChangeManually,
+      onMicrophoneChangeManually,
+      onCameraChangeManually,
+      devicesManager,
+      volumnIndicators
+    }
+  }
+})
+</script>

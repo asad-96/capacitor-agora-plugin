@@ -8,6 +8,7 @@ import {
   dayjsConfig,
   headConfig,
   i18nConfig,
+  socketIoConfig,
   toastConfig,
   vuetifyConfig
 } from './src/configs/index'
@@ -42,7 +43,8 @@ export default {
     '@nuxtjs/dayjs',
     '@nuxtjs/i18n',
     '@nuxtjs/toast',
-    'cookie-universal-nuxt'
+    'cookie-universal-nuxt',
+    'nuxt-socket-io'
   ],
   buildModules: [
     '@nuxtjs/composition-api/module',
@@ -63,6 +65,7 @@ export default {
       cert: fs.readFileSync(path.resolve(__dirname, 'localhost.crt'))
     }
   },
+  io: socketIoConfig(process.env),
   axios: axiosConfig,
   vuetify: vuetifyConfig,
   i18n: i18nConfig,
