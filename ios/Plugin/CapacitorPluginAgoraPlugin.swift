@@ -131,7 +131,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     
     func joinChannel(channelName: String, uid: UInt, token: String) {
         if !self.checkForPermissions() {
-            showMessage(title: "Error", text: "Permissions were not granted")
             return
         }
         
@@ -156,18 +155,10 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         // Check if joining the channel was successful and set joined Bool accordingly
         if (result == 0) {
             joined = true
-            showMessage(title: "Success", text: "Successfully joined the channel as \(self.userRole)")
         }
     }
     
-    func showMessage(title: String, text: String, delay: Int = 2) -> Void {
-        let alert = UIAlertController(title: title, message: text, preferredStyle: .alert)
-        UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true)
-        let deadlineTime = DispatchTime.now() + .seconds(delay)
-        DispatchQueue.main.asyncAfter(deadline: deadlineTime, execute: {
-            alert.dismiss(animated: true, completion: nil)
-        })
-    }
+   
     
     func setupLocalVideo() {
         // Enable the video module
