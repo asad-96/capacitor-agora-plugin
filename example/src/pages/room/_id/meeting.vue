@@ -15,7 +15,7 @@ import WMeetingRoomContainer from '../../../components/meeting-room-container.vu
 
 export interface IMeetingConfig {
   appId: string
-  channel: string
+  room: string
   token: string
   uid: string
   microphoneId?: string
@@ -38,15 +38,18 @@ export default defineComponent({
       role: 'Me'
     }))
     // mock config
-    const meetingConfig = computed<IMeetingConfig>(() => ({
-      appId: route.value.query.appId.toString(),
-      channel: route.value.params.id.toString(),
-      token: route.value.query.token.toString(),
-      uid: route.value.query.uid.toString(),
-      microphoneId: route.value.query.microphoneId.toString(),
-      cameraId: route.value.query.cameraId.toString(),
-      speakerId: route.value.query.speakerId.toString()
-    }))
+    const meetingConfig = computed<IMeetingConfig>(() => {
+      const decodeToken = decodeURIComponent(route.value.query.token.toString())
+      return {
+        appId: route.value.query.appId.toString(),
+        room: route.value.params.id.toString(),
+        token: decodeToken,
+        uid: route.value.query.uid.toString(),
+        microphoneId: route.value.query.microphoneId.toString(),
+        cameraId: route.value.query.cameraId.toString(),
+        speakerId: route.value.query.speakerId.toString()
+      }
+    })
     if (isNative) {
       CapacitorPluginAgora.joinChannel(meetingConfig.value).then((res: any) => {
         console.log('res: ', res)

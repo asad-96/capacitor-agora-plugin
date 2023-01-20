@@ -174,15 +174,8 @@ export default defineComponent({
     }
 
     const join = async () => {
-      const { appId, channel, token, uid, microphoneId, cameraId } =
-        props.config
-      console.log('[config]', token)
-      await agoraEngine.value?.join(
-        appId,
-        channel,
-        '007eJxTYNh9dL3Yl6ijq76dXJZwXUlscfteJ8NNAk0nFj2VXXF3zW1hBYakRBMzE+M0oyTjREMT0zQjS1Nz0yQLcwvjFONE09Rkw42iJ5IbAhkZPk77xcAIhSA+C0NJanEJAwMAKOYirg==',
-        uid
-      )
+      const { appId, room, token, uid, microphoneId, cameraId } = props.config
+      await agoraEngine.value?.join(appId, room, token, uid)
       localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack({
         microphoneId
       })
