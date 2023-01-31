@@ -39,7 +39,7 @@ public class CapacitorPluginAgoraPlugin
     public void joinChannel(PluginCall call) {
         Intent i = new Intent(getActivity(), AgoraActivity.class);
         i.putExtra(Constant.CHANNELNAME, call.getString(Constant.CHANNELNAME));
-        i.putExtra(Constant.UID, call.getInt(Constant.UID));
+        i.putExtra(Constant.UID, call.getString(Constant.UID));
         i.putExtra(Constant.TOKEN, call.getString(Constant.TOKEN));
         i.putExtra(Constant.APPID, call.getString(Constant.APPID));
         getActivity().startActivity(i);

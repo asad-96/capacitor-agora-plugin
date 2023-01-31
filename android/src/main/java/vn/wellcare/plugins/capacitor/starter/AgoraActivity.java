@@ -1,5 +1,6 @@
 package vn.wellcare.plugins.capacitor.starter;
 
+import static android.text.TextUtils.isEmpty;
 import static io.agora.rtc2.Constants.LOG_FILTER_OFF;
 
 import android.Manifest;
@@ -19,6 +20,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.getcapacitor.JSObject;
+
+import java.util.Random;
 
 import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.Constants;
@@ -80,11 +83,23 @@ public class AgoraActivity extends AppCompatActivity {
      */
     private void init() {
         String channelName = getIntent().getStringExtra(Constant.CHANNELNAME);
-        Integer uid = getIntent().getIntExtra(Constant.UID, -1);
+        String uid = getIntent().getStringExtra(Constant.UID);
+        int uidN;
+        Random rand = new Random();
+        if (!isEmpty(uid)) {
+            try {
+                uidN = Integer.parseInt(uid);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                uidN = rand.nextInt(20);
+            }
+        } else {
+            uidN = rand.nextInt(20);
+        }
         String token = getIntent().getStringExtra(Constant.TOKEN);
         String appId = getIntent().getStringExtra(Constant.APPID);
         setupVideoSDKEngine(appId);
-        joinChannel(token, channelName, uid);
+        joinChannel(token, channelName, uidN);
     }
 
     //set up video RTC engine
@@ -319,11 +334,8 @@ public class AgoraActivity extends AppCompatActivity {
             };
 
     private boolean checkSelfPermission() {
-        if (ContextCompat.checkSelfPermission(this, REQUESTED_PERMISSIONS[0]) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, REQUESTED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        return true;
+        return ContextCompat.checkSelfPermission(this, REQUESTED_PERMISSIONS[0]) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, REQUESTED_PERMISSIONS[1]) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -369,7 +381,14 @@ public class AgoraActivity extends AppCompatActivity {
             local_video_view_container.removeView(localSurfaceView);
             remote_video_view_container.removeView(remoteSurfaceView);
             fl_local_container.addView(localSurfaceView);
-            container.addView(remoteSurfaceView);
+            if (remoteSurfaceView == null) {
+                remoteSurfaceView = new SurfaceView(getBaseContext());
+                remoteSurfaceView.setZOrderMediaOverlay(true);
+                container.addView(remoteSurfaceView);
+                remoteSurfaceView.setVisibility(View.VISIBLE);
+            } else {
+                container.addView(remoteSurfaceView);
+            }
             finish();
         } else {
             FloatWindowHelper.applyPermission(this);
