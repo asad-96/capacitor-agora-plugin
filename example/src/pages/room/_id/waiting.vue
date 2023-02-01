@@ -12,33 +12,28 @@
     @click:device-camera="($data) => (devices.cameraId = $data)"
   >
     <template #default>
-      <div id="cameraPreview">
-        <v-btn class="mt-16" @click="joinMeeting">Start meeting</v-btn>
-      </div>
+      <div id="cameraPreview"></div>
     </template>
   </w-video-waiting-room>
 </template>
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts">
 import {
-  computed,
   defineComponent,
   onMounted,
   onUnmounted,
   reactive,
   Ref,
   ref,
-  useContext,
-  useRouter,
-  watch
+  useContext
 } from '@nuxtjs/composition-api'
-import { useDevicesList } from '@vueuse/core'
 import { CameraPreview, CameraPreviewOptions } from '@capgo/camera-preview'
+import useWaitingRoom from '../../../composables/use-waiting-room'
 export default defineComponent({
   layout: 'meeting-room',
   setup() {
-    const { $vuetify, app, route } = useContext()
-    const router = useRouter()
+    const WaitingRoom = useWaitingRoom()
+    const { $vuetify } = useContext()
     const cameraPreviewOptions: Ref<CameraPreviewOptions> = ref({
       position: 'front',
       height: 250,
@@ -110,7 +105,7 @@ export default defineComponent({
       }
     ])
 
-    const onStart = async () => {
+    const onCameraPreviewStart = async () => {
       try {
         cameraPreviewOptions.value.height = $vuetify.breakpoint.height
         cameraPreviewOptions.value.width = $vuetify.breakpoint.width
@@ -120,7 +115,7 @@ export default defineComponent({
       }
     }
 
-    const onStop = async () => {
+    const onCameraPreviewStop = async () => {
       try {
         await CameraPreview.stop()
       } catch (error) {
@@ -129,79 +124,21 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      onStart()
-      emitReady()
+      onCameraPreviewStart()
+      WaitingRoom.initialize()
     })
 
-    onUnmounted(() => onStop())
+    onUnmounted(() => onCameraPreviewStop())
     // Waiting room with microphone testing
     /* ------------ */
     /* ------------ */
-    // Calling login
-    const {
-      videoInputs: cameras,
-      audioInputs: microphones,
-      audioOutputs: speakers
-    } = useDevicesList({
-      requestPermissions: true
-    })
-
-    const devices = ref()
-    const defaultDevices = computed(() => ({
-      cameraId: cameras.value[0]?.deviceId,
-      microphoneId: microphones.value[0]?.deviceId,
-      speakerId: speakers.value[0]?.deviceId
-    }))
-
-    watch(defaultDevices, () => (devices.value = defaultDevices.value))
-
-    const options = {
-      appId: computed(() => route.value.query.appId),
-      room: computed(() => route.value.params.id),
-      uid: computed(() => route.value.query.uid),
-      token: computed(() => route.value.query.token)
-    }
-
-    const socket = app.$nuxtSocket({
-      name: 'Video-Conference',
-      channel: '/Video-Conversation'
-    })
-
-    socket.emit('join', { user: options.uid.value, room: options.room.value })
-
-    const emitReady = () =>
-      socket.emit('participant-join', { user: options.uid.value })
-
-    const joinMeeting = () => {
-      router.push({
-        path: `/room/${options.room.value}/meeting`,
-        query: {
-          uid: options.uid.value,
-          token: options.token.value,
-          channel: options.room.value,
-          appId: options.appId.value,
-          microphoneId: devices.value.microphoneId,
-          speakerId: devices.value.speakerId,
-          cameraId: devices.value.cameraId
-        }
-      })
-    }
-
-    socket.on('participant-join', (data: any) => {
-      console.log('[participant-join] ' + JSON.stringify(data))
-      joinMeeting()
-    })
 
     return {
-      options,
       cameraPreviewOptions,
-      onStart,
-      onStop,
       authUser,
       participants,
       permissions,
-      devices,
-      joinMeeting
+      devices: WaitingRoom.devices
     }
   }
 })

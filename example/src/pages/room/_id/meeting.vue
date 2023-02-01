@@ -45,9 +45,9 @@ export default defineComponent({
         room: route.value.params.id.toString(),
         token: decodeToken,
         uid: route.value.query.uid.toString(),
-        microphoneId: route.value.query.microphoneId.toString(),
-        cameraId: route.value.query.cameraId.toString(),
-        speakerId: route.value.query.speakerId.toString()
+        microphoneId: route.value.query.microphoneId?.toString(),
+        cameraId: route.value.query.cameraId?.toString(),
+        speakerId: route.value.query.speakerId?.toString()
       }
     })
     if (isNative) {
