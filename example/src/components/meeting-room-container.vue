@@ -119,21 +119,15 @@ export default defineComponent({
     const localPlayerContainer = document.createElement('div')
     const agoraEngine = ref<IAgoraRTCClient>()
 
-    const startBasicCall = () => {
-      localPlayerContainer.id = props.config.uid.toString()
-      localPlayerContainer.style.width = '100%'
-      localPlayerContainer.style.height = '100%'
-
+    const initialArogaClient = () => {
       agoraEngine.value = AgoraRTC.createClient({
         mode: 'rtc',
         codec: 'vp8'
       })
-
       agoraEngine.value.on('user-joined', onUserJoined)
-
       agoraEngine.value.on('user-left', onUserleft)
-
       agoraEngine.value.on('user-published', onUserPublished)
+      agoraEngine.value.on('user-unpublished', onUserUnpublished)
     }
 
     const onUserJoined = (user: IAgoraRTCRemoteUser) =>
@@ -149,10 +143,12 @@ export default defineComponent({
       await agoraEngine.value?.subscribe(user, mediaType)
       const remotePlayerContainer = document.getElementById(user.uid.toString())
       if (mediaType === 'video') {
-        document
-          .getElementById(`participant_${user.uid.toString()}`)
-          ?.querySelector('.image-placeholder')
-          ?.remove()
+        const remoteVideoWrapper = document.getElementById(
+          `participant_${user.uid.toString()}`
+        )
+        const remoteImagePlaceholder =
+          remoteVideoWrapper?.querySelector('.image-placeholder')
+        remoteImagePlaceholder?.classList.add('hidden')
 
         if (remotePlayerContainer) {
           user.videoTrack?.play(remotePlayerContainer)
@@ -161,9 +157,7 @@ export default defineComponent({
           newRemotePlayerContainer.id = user.uid.toString()
           newRemotePlayerContainer.style.width = '100%'
           newRemotePlayerContainer.style.height = '100%'
-          document
-            .getElementById(`participant_${user.uid.toString()}`)
-            ?.appendChild(newRemotePlayerContainer)
+          remoteVideoWrapper?.appendChild(newRemotePlayerContainer)
           user.videoTrack?.play(newRemotePlayerContainer)
         }
       }
@@ -173,10 +167,32 @@ export default defineComponent({
       }
     }
 
+    const onUserUnpublished = async (
+      user: IAgoraRTCRemoteUser,
+      mediaType: 'audio' | 'video'
+    ) => {
+      await agoraEngine.value?.unsubscribe(user, mediaType)
+      if (mediaType === 'video') {
+        const remoteVideoWrapper = document.getElementById(
+          `participant_${user.uid.toString()}`
+        )
+        user.videoTrack?.stop()
+        const remoteImagePlaceholder =
+          remoteVideoWrapper?.querySelector('.image-placeholder')
+        remoteImagePlaceholder?.classList.remove('hidden')
+      }
+
+      if (mediaType === 'audio') {
+        user.audioTrack?.stop()
+      }
+    }
+
     const join = async () => {
+      localPlayerContainer.id = props.config.uid.toString()
+      localPlayerContainer.style.width = '100%'
+      localPlayerContainer.style.height = '100%'
       const { appId, room, token, uid, microphoneId, cameraId } = props.config
       await agoraEngine.value?.join(appId, room, token, uid)
-
       const defaultAgoraMicrophones = await AgoraRTC.getMicrophones()
       const defaultAgoraCameras = await AgoraRTC.getCameras()
 
@@ -197,14 +213,12 @@ export default defineComponent({
         cameraId: getCameraId()
       })
 
-      document
-        .getElementById('participant_me')
-        ?.querySelector('.image-placeholder')
-        ?.remove()
+      const localVideoWrapper = document.getElementById('participant_me')
+      const localImagePlaceholder =
+        localVideoWrapper?.querySelector('.image-placeholder')
 
-      document
-        .getElementById('participant_me')
-        ?.appendChild(localPlayerContainer)
+      localImagePlaceholder?.classList.add('hidden')
+      localVideoWrapper?.appendChild(localPlayerContainer)
 
       await agoraEngine.value?.publish([
         localAudioTrack.value,
@@ -230,9 +244,16 @@ export default defineComponent({
     }
 
     const onCameraClick = () => {
+      const localVideoWrapper = document.getElementById('participant_me')
+      const localImagePlaceholder =
+        localVideoWrapper?.querySelector('.image-placeholder')
       if (localVideoState.value) {
         localVideoTrack.value?.setEnabled(false)
-      } else localVideoTrack.value?.setEnabled(true)
+        localImagePlaceholder?.classList.remove('hidden')
+      } else {
+        localImagePlaceholder?.classList.add('hidden')
+        localVideoTrack.value?.setEnabled(true)
+      }
     }
 
     const onMicrophoneClick = () => {
@@ -294,10 +315,8 @@ export default defineComponent({
       }
     }
 
-    /// INIT
-    startBasicCall()
+    initialArogaClient()
     join()
-
     return {
       join,
       onExitCall,
