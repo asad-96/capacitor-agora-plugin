@@ -3,7 +3,7 @@ export const socketIoConfig = (env) => ({
     // Required
     {
       // At least one entry is required
-      name: 'Video-Conference',
+      name: 'Video-Conversation',
       url: env.SOCKET_ENDPOINT || 'https://socketio.wellcare.vn',
       default: true
     }

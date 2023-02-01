@@ -118,6 +118,7 @@ export default defineComponent({
     )
     const localPlayerContainer = document.createElement('div')
     const agoraEngine = ref<IAgoraRTCClient>()
+
     const startBasicCall = () => {
       localPlayerContainer.id = props.config.uid.toString()
       localPlayerContainer.style.width = '100%'
@@ -128,59 +129,72 @@ export default defineComponent({
         codec: 'vp8'
       })
 
-      agoraEngine.value.on('user-joined', (user: IAgoraRTCRemoteUser) => {
-        showMessage(`${user.uid.toString()} has joined.`)
-      })
+      agoraEngine.value.on('user-joined', onUserJoined)
 
-      agoraEngine.value.on(
-        'user-left',
-        (user: IAgoraRTCRemoteUser, reason: string) => {
-          showMessage(`${user.uid.toString()} has left. Reason: ${reason}`)
+      agoraEngine.value.on('user-left', onUserleft)
+
+      agoraEngine.value.on('user-published', onUserPublished)
+    }
+
+    const onUserJoined = (user: IAgoraRTCRemoteUser) =>
+      showMessage(`${user.uid.toString()} has joined.`)
+
+    const onUserleft = (user: IAgoraRTCRemoteUser, reason: string) =>
+      showMessage(`${user.uid.toString()} has left. Reason: ${reason}`)
+
+    const onUserPublished = async (
+      user: IAgoraRTCRemoteUser,
+      mediaType: 'audio' | 'video'
+    ) => {
+      await agoraEngine.value?.subscribe(user, mediaType)
+      const remotePlayerContainer = document.getElementById(user.uid.toString())
+      if (mediaType === 'video') {
+        document
+          .getElementById(`participant_${user.uid.toString()}`)
+          ?.querySelector('.image-placeholder')
+          ?.remove()
+
+        if (remotePlayerContainer) {
+          user.videoTrack?.play(remotePlayerContainer)
+        } else {
+          const newRemotePlayerContainer = document.createElement('div')
+          newRemotePlayerContainer.id = user.uid.toString()
+          newRemotePlayerContainer.style.width = '100%'
+          newRemotePlayerContainer.style.height = '100%'
+          document
+            .getElementById(`participant_${user.uid.toString()}`)
+            ?.appendChild(newRemotePlayerContainer)
+          user.videoTrack?.play(newRemotePlayerContainer)
         }
-      )
-
-      agoraEngine.value.on(
-        'user-published',
-        async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
-          await agoraEngine.value?.subscribe(user, mediaType)
-          const remotePlayerContainer = document.getElementById(
-            user.uid.toString()
-          )
-          if (mediaType === 'video') {
-            document
-              .getElementById(`participant_${user.uid.toString()}`)
-              ?.querySelector('.image-placeholder')
-              ?.remove()
-
-            if (remotePlayerContainer) {
-              user.videoTrack?.play(remotePlayerContainer)
-            } else {
-              const newContainer = document.createElement('div')
-              newContainer.id = user.uid.toString()
-              newContainer.style.width = '100%'
-              newContainer.style.height = '100%'
-              document
-                .getElementById(`participant_${user.uid.toString()}`)
-                ?.appendChild(newContainer)
-              user.videoTrack?.play(newContainer)
-            }
-          }
-          if (mediaType === 'audio') {
-            user.audioTrack?.play()
-            user.audioTrack?.setPlaybackDevice(devicesManager.value.speakerId)
-          }
-        }
-      )
+      }
+      if (mediaType === 'audio') {
+        user.audioTrack?.play()
+        user.audioTrack?.setPlaybackDevice(devicesManager.value.speakerId)
+      }
     }
 
     const join = async () => {
       const { appId, room, token, uid, microphoneId, cameraId } = props.config
       await agoraEngine.value?.join(appId, room, token, uid)
+
+      const defaultAgoraMicrophones = await AgoraRTC.getMicrophones()
+      const defaultAgoraCameras = await AgoraRTC.getCameras()
+
+      const getMicrophoneId = () => {
+        if (microphoneId) return microphoneId
+        return defaultAgoraMicrophones[0].deviceId
+      }
+
+      const getCameraId = () => {
+        if (cameraId) return cameraId
+        return defaultAgoraCameras[0].deviceId
+      }
+
       localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack({
-        microphoneId
+        microphoneId: getMicrophoneId()
       })
       localVideoTrack.value = await AgoraRTC.createCameraVideoTrack({
-        cameraId
+        cameraId: getCameraId()
       })
 
       document
