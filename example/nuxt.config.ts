@@ -25,6 +25,11 @@ export default {
       channel: process.env.AGORA_CHANNEL || 'test',
       token: process.env.AGORA_TOKEN || '',
       uid: process.env.AGORA_UID || 0
+    },
+    'nuxt-module-data-layer': {
+      baseURL: process.env.API_ENDPOINT,
+      accountBaseURL: process.env.ACCOUNT_BASE_URL,
+      xTenantId: 'wellcare'
     }
   },
   dir: {
@@ -38,6 +43,7 @@ export default {
   plugins: [],
   css: ['~/assets/styles/app'],
   modules: [
+    '@wellcare/nuxt-module-data-layer',
     '@nuxtjs/axios',
     'nuxt-user-agent',
     '@nuxtjs/dayjs',
@@ -53,7 +59,8 @@ export default {
     '@nuxt/typescript-build',
     '@nuxtjs/stylelint-module',
     'nuxt-typed-vuex',
-    ['@wellcare/vue-component', { prefix: 'w', level: 1 }]
+    ['@wellcare/vue-component', { prefix: 'w', level: 1 }],
+    ['@wellcare/nuxt-module-media', { prefix: 'w', level: 1 }]
   ],
   build: buildConfg,
   head: headConfig,
