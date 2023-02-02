@@ -30,17 +30,26 @@
 </template>
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts">
-import { defineComponent, reactive, useRouter } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  reactive,
+  useRouter,
+  useStore,
+  computed
+} from '@nuxtjs/composition-api'
 // import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 export default defineComponent({
+  middleware: 'authen',
   setup() {
+    const { state }: any = useStore()
+    const userId = computed(() => state.authen.user._id)
     const router = useRouter()
     const options = reactive({
       appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
       room: 'test',
-      uid: '0',
+      uid: userId.value,
       token:
-        '007eJxTYDjFoPh6udNGrz8sy9lSzb3Wnj+i/Gx332Gnp/4Wyl9c5Z4oMCQlmpiZGKcZJRknGpqYphlZmpqbJlmYWxinGCeapiYbzr5/M7khkJGBrXsLMyMDBIL4LAwlqcUlDAwAVSYf6Q==',
+        '007eJxTYHDts53NwlLw5/4OnRMztkxW2df5tv8xB/OO8o83A6vFdkkpMCQlmpiZGKcZJRknGpqYphlZmpqbJlmYWxinGCeapiYb+rffTm4IZGTYkePBwAiFID4LQ0lqcQkDAwBl6x/K',
       roomStatus: 'waiting',
       role: 'host'
     })

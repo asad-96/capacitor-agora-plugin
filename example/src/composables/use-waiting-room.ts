@@ -40,10 +40,10 @@ export default () => {
   watch(defaultDevices, () => (devices.value = defaultDevices.value))
 
   const options = {
-    appId: computed(() => route.value.query.appId),
-    room: computed(() => route.value.params.id),
-    uid: computed(() => route.value.query.uid),
-    token: computed(() => route.value.query.token)
+    appId: computed(() => route.value.query.appId?.toString()),
+    room: computed(() => route.value.params.id?.toString()),
+    uid: computed(() => route.value.query.uid?.toString()),
+    token: computed(() => route.value.query.token?.toString())
   }
 
   const emitData = {
@@ -58,15 +58,15 @@ export default () => {
 
   const joinMeeting = () => {
     router.push({
-      path: `/room/${options.room.value}/meeting`,
+      path: `/room/${options.room?.value}/meeting`,
       query: {
-        uid: options.uid.value,
-        token: options.token.value,
-        channel: options.room.value,
-        appId: options.appId.value,
-        microphoneId: devices.value.microphoneId,
-        speakerId: devices.value.speakerId,
-        cameraId: devices.value.cameraId
+        uid: options.uid?.value,
+        token: options.token?.value,
+        channel: options.room?.value,
+        appId: options.appId?.value,
+        microphoneId: devices.value?.microphoneId,
+        speakerId: devices.value?.speakerId,
+        cameraId: devices.value?.cameraId
       }
     })
     clearInterval(timer.value)
