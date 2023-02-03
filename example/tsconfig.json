@@ -20,6 +20,7 @@
       "@nuxtjs/i18n",
       "@nuxtjs/toast",
       "@nuxtjs/vuetify",
+      "@nuxtjs/firebase",
       "@types/node"
     ],
     "paths": {

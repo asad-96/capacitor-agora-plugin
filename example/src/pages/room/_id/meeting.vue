@@ -18,6 +18,7 @@ export interface IMeetingConfig {
   room: string
   token: string
   uid: string
+  chatRoom: string
   microphoneId?: string
   speakerId?: string
   cameraId?: string
@@ -39,15 +40,18 @@ export default defineComponent({
     }))
     // mock config
     const meetingConfig = computed<IMeetingConfig>(() => {
-      const decodeToken = decodeURIComponent(route.value.query.token.toString())
+      const decodeToken = decodeURIComponent(
+        route.value.query.token?.toString()
+      )
       return {
-        appId: route.value.query.appId.toString(),
-        room: route.value.params.id.toString(),
+        appId: route.value.query.appId?.toString(),
+        room: route.value.params.id?.toString(),
         token: decodeToken,
-        uid: route.value.query.uid.toString(),
+        uid: authUser.value._id,
         microphoneId: route.value.query.microphoneId?.toString(),
         cameraId: route.value.query.cameraId?.toString(),
-        speakerId: route.value.query.speakerId?.toString()
+        speakerId: route.value.query.speakerId?.toString(),
+        chatRoom: route.value.query.chatRoom?.toString()
       }
     })
     if (isNative) {
@@ -57,6 +61,11 @@ export default defineComponent({
     }
 
     return { meetingConfig, authUser, isNative }
+  },
+  async asyncData({ $fire }) {
+    const databaseFire = await $fire.databaseReady()
+    const authFire = await $fire.authReady()
+    return { databaseFire, authFire }
   }
 })
 </script>

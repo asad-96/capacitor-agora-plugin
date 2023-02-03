@@ -14,7 +14,26 @@
       @click:device-microphone="onMicrophoneChangeManually"
       @click:device-speaker="onSpeakerChangeManually"
       @click:device-camera="onCameraChangeManually"
-    ></w-video-kit>
+    >
+      <template #chat-area>
+        <div class="chat-container">
+          <w-chat-window
+            :key="authUser._id"
+            :theme="'dark'"
+            :room="config.chatRoom || authUser._id"
+            :user="authUser._id"
+            :should-show-header="false"
+            :background="'transparent'"
+            :from="'cam'"
+            :media-feat="{
+              voice: false,
+              image: false,
+              video: false
+            }"
+          ></w-chat-window>
+        </div>
+      </template>
+    </w-video-kit>
     <v-snackbar v-model="snackbar.show">{{ snackbar.message }}</v-snackbar>
   </div>
 </template>
@@ -62,10 +81,6 @@ export default defineComponent({
       message: ''
     })
     const spotlightId = computed(() => participants.value[0]?._id)
-    const localUser = computed(() => ({
-      ...props.authUser,
-      ...agoraEngine.value
-    }))
     const playbackDevice = ref(props.config.speakerId)
     const devicesManager = computed(() => ({
       cameraId: (localVideoTrack as any).value?._config.cameraId,
@@ -100,14 +115,18 @@ export default defineComponent({
       })
       return result
     })
-
-    const remoteSignals = ref<IRemoteSignal>()
-    const localSignal = ref<Signal>(0)
     const showMessage = (message: string) => {
       snackbar.show = true
       snackbar.message = message
     }
     const router = useRouter()
+    const remoteSignals = ref<IRemoteSignal>()
+
+    const localUser = computed(() => ({
+      ...props.authUser,
+      ...agoraEngine.value
+    }))
+    const localSignal = ref<Signal>(0)
     const localAudioTrack = ref<ILocalAudioTrack>()
     const localVideoTrack = ref<ILocalVideoTrack>()
     const localVideoState = computed(
@@ -117,6 +136,7 @@ export default defineComponent({
       () => localAudioTrack.value?.enabled || false
     )
     const localPlayerContainer = document.createElement('div')
+
     const agoraEngine = ref<IAgoraRTCClient>()
 
     const initialArogaClient = () => {
@@ -192,6 +212,7 @@ export default defineComponent({
       localPlayerContainer.style.width = '100%'
       localPlayerContainer.style.height = '100%'
       const { appId, room, token, uid, microphoneId, cameraId } = props.config
+      console.log({ appId, room, token, uid, microphoneId, cameraId })
       await agoraEngine.value?.join(appId, room, token, uid)
       const defaultAgoraMicrophones = await AgoraRTC.getMicrophones()
       const defaultAgoraCameras = await AgoraRTC.getCameras()
@@ -339,3 +360,9 @@ export default defineComponent({
   }
 })
 </script>
+<style scoped>
+.chat-container {
+  height: calc(100vh - 72px) !important;
+  width: 100%;
+}
+</style>
