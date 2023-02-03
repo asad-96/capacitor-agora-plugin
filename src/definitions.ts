@@ -2,10 +2,14 @@ import { ClientRole, DeviceInfo, NetworkQuality, UID } from 'agora-rtc-sdk-ng'
 
 import { PluginListenerHandle } from '@capacitor/core'
 
+declare interface IAvatar {
+  url: string
+}
+
 export interface IParticipant {
   _id: string
   name: string
-  avatar: { url: string }
+  avatar: IAvatar
   role: ClientRole
   subtitle: string
   hasJoined?: boolean

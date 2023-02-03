@@ -225,11 +225,18 @@ Network Quality
 | --------------- | ------------------------------------------------- |
 | **`_id`**       | <code>string</code>                               |
 | **`name`**      | <code>string</code>                               |
-| **`avatar`**    | <code>{ url: string; }</code>                     |
+| **`avatar`**    | <code><a href="#iavatar">IAvatar</a></code>       |
 | **`role`**      | <code><a href="#clientrole">ClientRole</a></code> |
 | **`subtitle`**  | <code>string</code>                               |
 | **`hasJoined`** | <code>boolean</code>                              |
 | **`uid`**       | <code><a href="#uid">UID</a></code>               |
+
+
+#### IAvatar
+
+| Prop      | Type                |
+| --------- | ------------------- |
+| **`url`** | <code>string</code> |
 
 
 #### PluginListenerHandle
