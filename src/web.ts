@@ -19,8 +19,8 @@ export class CapacitorPluginAgoraWeb
     this.unavailable()
     return participantId
   }
-  async showRecordingStatus(isShow: boolean): Promise<void> {
-    console.log(isShow)
+  async showRecordingStatus(isShown: boolean): Promise<void> {
+    console.log(isShown)
     this.unavailable()
   }
   async setCountdown(seconds: number): Promise<void> {

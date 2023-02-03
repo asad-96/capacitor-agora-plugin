@@ -42,7 +42,7 @@ export interface CapacitorPluginAgoraPlugin {
   /**
    * Show red icon for recording status. This recording is not meant to be performed on frontend.
    */
-  showRecordingStatus(isShow: boolean): Promise<void>
+  showRecordingStatus(isShown: boolean): Promise<void>
 
   /**
    * Show a countdown. A non-positive value will disable it.
