@@ -18,6 +18,7 @@ export interface IMeetingConfig {
   room: string
   token: string
   uid: string
+  chatRoom: string
   microphoneId?: string
   speakerId?: string
   cameraId?: string
@@ -49,7 +50,8 @@ export default defineComponent({
         uid: authUser.value._id,
         microphoneId: route.value.query.microphoneId?.toString(),
         cameraId: route.value.query.cameraId?.toString(),
-        speakerId: route.value.query.speakerId?.toString()
+        speakerId: route.value.query.speakerId?.toString(),
+        chatRoom: route.value.query.chatRoom?.toString()
       }
     })
     if (isNative) {

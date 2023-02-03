@@ -43,7 +43,8 @@ export default () => {
     appId: computed(() => route.value.query.appId?.toString()),
     room: computed(() => route.value.params.id?.toString()),
     uid: computed(() => route.value.query.uid?.toString()),
-    token: computed(() => route.value.query.token?.toString())
+    token: computed(() => route.value.query.token?.toString()),
+    chatRoom: computed(() => route.value.query.chatRoom?.toString())
   }
 
   const emitData = {
@@ -64,6 +65,7 @@ export default () => {
         token: options.token?.value,
         channel: options.room?.value,
         appId: options.appId?.value,
+        chatRoom: options.chatRoom?.value,
         microphoneId: devices.value?.microphoneId,
         speakerId: devices.value?.speakerId,
         cameraId: devices.value?.cameraId

@@ -20,7 +20,7 @@
           <w-chat-window
             :key="authUser._id"
             :theme="'dark'"
-            :room="authUser._id"
+            :room="config.chatRoom || authUser._id"
             :user="authUser._id"
             :should-show-header="false"
             :background="'transparent'"

@@ -3,7 +3,8 @@
     <v-text-field v-model="options.appId" clearable label="appId" />
     <v-text-field v-model="options.room" clearable label="room" />
     <v-text-field v-model="options.token" clearable label="token" />
-    <v-text-field v-model="options.uid" clearable label="uid" />
+    <v-text-field v-model="options.uid" clearable label="uid" readonly />
+    <v-text-field v-model="options.chatRoom" clearable label="chat room" />
     <v-select
       v-model="options.roomStatus"
       :items="[
@@ -48,6 +49,7 @@ export default defineComponent({
       appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
       room: 'test',
       uid: userId.value,
+      chatRoom: userId.value,
       token:
         '007eJxTYHDts53NwlLw5/4OnRMztkxW2df5tv8xB/OO8o83A6vFdkkpMCQlmpiZGKcZJRknGpqYphlZmpqbJlmYWxinGCeapiYb+rffTm4IZGTYkePBwAiFID4LQ0lqcQkDAwBl6x/K',
       roomStatus: 'waiting',
@@ -56,7 +58,7 @@ export default defineComponent({
     const enterWaitingRoom = () => {
       const decodeToken = encodeURIComponent(options.token)
       router.push(
-        `/room/${options.room}/waiting?uid=${options.uid}&token=${decodeToken}&appId=${options.appId}&roomStatus=${options.roomStatus}&role=${options.role}`
+        `/room/${options.room}/waiting?uid=${options.uid}&token=${decodeToken}&appId=${options.appId}&roomStatus=${options.roomStatus}&role=${options.role}&chatRoom=${options.chatRoom}`
       )
     }
     return { options, enterWaitingRoom }
