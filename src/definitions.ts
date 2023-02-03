@@ -8,10 +8,6 @@ import {
 } from 'agora-rtc-sdk-ng'
 
 export interface CapacitorPluginAgoraPlugin {
-  /**
-   * echo input value
-   */
-  echo(options: { value: string }): Promise<{ value: string }>
 
   joinChannel(options: {
     room: string
