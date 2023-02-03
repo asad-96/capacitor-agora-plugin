@@ -1,56 +1,45 @@
 import { WebPlugin } from '@capacitor/core'
 
-import AgoraRTC, {
-  IAgoraRTCClient,
-  ICameraVideoTrack,
-  CameraVideoTrackInitConfig,
-  MicrophoneAudioTrackInitConfig,
-  IMicrophoneAudioTrack,
-  ClientConfig
-} from 'agora-rtc-sdk-ng'
-import type { CapacitorPluginAgoraPlugin } from './definitions'
+import { UID } from 'agora-rtc-sdk-ng'
+import type { CapacitorPluginAgoraPlugin, IParticipant } from './definitions'
 
 export class CapacitorPluginAgoraWeb
   extends WebPlugin
   implements CapacitorPluginAgoraPlugin
 {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('[web] echo - options ', options)
-    return options
+  async updateParticipantLists(
+    participants: IParticipant[]
+  ): Promise<IParticipant[]> {
+    console.log(participants)
+    this.unavailable()
+    return participants
   }
-
+  async setSpotlight(participantId: string): Promise<UID> {
+    console.log(participantId)
+    this.unavailable()
+    return participantId
+  }
+  async showRecordingStatus(isShow: boolean): Promise<void> {
+    console.log(isShow)
+    this.unavailable()
+  }
+  async setCountdown(seconds: number): Promise<void> {
+    console.log(seconds)
+    this.unavailable()
+  }
   async joinChannel(options: {
     room: string
     uid: string
     token: string
     appId: string
-  }): Promise<{ room: string; uid: string, token: string, appId: string }> {
+  }): Promise<string> {
     console.log('joinChannel', options)
-    return options
+    this.unavailable()
+    return options.uid
   }
 
-  async leaveChannel(options: { room: string }): Promise<{ room: string }> {
-    console.log('leaveChannel', options)
-    return options
-  }
-
-  async createClient(config: ClientConfig): Promise<IAgoraRTCClient> {
-    console.log('[web] createClient - config:', config)
-    return AgoraRTC.createClient(config)
-  }
-
-  async createMicrophoneAudioTrack(
-    config?: MicrophoneAudioTrackInitConfig
-  ): Promise<IMicrophoneAudioTrack> {
-    console.log('[web] createMicrophoneAudioTrack - config:', config)
-    return AgoraRTC.createMicrophoneAudioTrack(config)
-  }
-
-  async createCameraVideoTrack(
-    config?: CameraVideoTrackInitConfig
-  ): Promise<ICameraVideoTrack> {
-    console.log('[web] createMicrophoneAudioTrack - config: ', config)
-    return AgoraRTC.createCameraVideoTrack(config)
+  async leaveChannel() {
+    console.log('leaveChannel')
   }
 }
 

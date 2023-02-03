@@ -1,11 +1,9 @@
 <template>
-  <div>
-    <w-meeting-room-container
-      v-if="!isNative"
-      :config="meetingConfig"
-      :auth-user="authUser"
-    />
-  </div>
+  <w-meeting-room-container
+    v-if="!isNative"
+    :config="meetingConfig"
+    :auth-user="authUser"
+  />
 </template>
 <script lang="ts">
 import { defineComponent, computed, useRoute } from '@nuxtjs/composition-api'

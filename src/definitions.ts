@@ -1,42 +1,101 @@
-import {
-  CameraVideoTrackInitConfig,
-  ClientConfig,
-  IAgoraRTCClient,
-  ICameraVideoTrack,
-  IMicrophoneAudioTrack,
-  MicrophoneAudioTrackInitConfig
-} from 'agora-rtc-sdk-ng'
+import { ClientRole, DeviceInfo, NetworkQuality, UID } from 'agora-rtc-sdk-ng'
+
+import { PluginListenerHandle } from '@capacitor/core'
+
+export interface IParticipant {
+  _id: string
+  name: string
+  role: ClientRole
+  subtitle: string
+  hasJoined?: boolean
+  uid?: UID
+}
 
 export interface CapacitorPluginAgoraPlugin {
-  /**
-   * echo input value
-   */
-  echo(options: { value: string }): Promise<{ value: string }>
+  // METHODS
 
+  /**
+   * Join Agora Channel
+   */
   joinChannel(options: {
     room: string
-    uid: string
+    uid: UID
     token: string
     appId: string
-  }): Promise<{ room: string; uid: string, token: string,appId: string }>
-
-  leaveChannel(options: { room: string }): Promise<{ room: string }>
+  }): Promise<UID>
 
   /**
-   * createClient input value
+   * Leave Agora Channel
    */
-  createClient(options: ClientConfig): Promise<IAgoraRTCClient>
-  /**
-   * createMicrophoneAudioTrack input value
-   */
-  createMicrophoneAudioTrack(
-    config?: MicrophoneAudioTrackInitConfig
-  ): Promise<IMicrophoneAudioTrack>
+  leaveChannel(room?: string): Promise<void>
 
   /**
-   * createCameraVideoTrack input value
+   * Update participant lists, including those who are not joined agora channel. Returned participants mapped with their hasJoined status.
    */
-  createCameraVideoTrack(
-    config?: CameraVideoTrackInitConfig
-  ): Promise<ICameraVideoTrack>
+  updateParticipantLists(participants: IParticipant[]): Promise<IParticipant[]>
+
+  /**
+   * Set a participant to spotlight. Spotlighted participant frame should be highlighted, and place reordered to 1st position in the participant list.
+   */
+  setSpotlight(participantId: string): Promise<UID>
+
+  /**
+   * Show red icon for recording status. This recording is not meant to be performed on frontend.
+   */
+  showRecordingStatus(isShow: boolean): Promise<void>
+
+  /**
+   * Show a countdown. A non-positive value will disable it.
+   */
+  setCountdown(seconds: number): Promise<void>
+
+  // EVENTS
+  /**
+   * Local media action events.
+   * @event
+   */
+  addListener(
+    eventName:
+      | 'onMicrophoneChanged'
+      | 'onCameraChanged'
+      | 'onPlaybackDeviceChanged',
+    listenerFunc: (deviceInfo: DeviceInfo) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle
+
+  /**
+   * Participant events
+   * @event
+   */
+  addListener(
+    eventName: 'onParticipantAction',
+    listenerFunc: (
+      participantId: string,
+      event:
+        | 'nudge'
+        | 'call'
+        | 'mute'
+        | 'unmute'
+        | 'enableCamera'
+        | 'disableCamera',
+      data?: any
+    ) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle
+
+  /**
+   * Exceptions
+   * @event
+   */
+  addListener(
+    eventName: 'exception',
+    listenerFunc: (event: { code: number; msg: string; uid: UID }) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle
+
+  /**
+   * Network Quality
+   * @event
+   */
+  addListener(
+    eventName: 'exception',
+    listenerFunc: (stats: NetworkQuality) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle
 }
