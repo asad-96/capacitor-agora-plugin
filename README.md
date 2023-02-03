@@ -225,6 +225,7 @@ Network Quality
 | --------------- | ------------------------------------------------- |
 | **`_id`**       | <code>string</code>                               |
 | **`name`**      | <code>string</code>                               |
+| **`avatar`**    | <code>{ url: string; }</code>                     |
 | **`role`**      | <code><a href="#clientrole">ClientRole</a></code> |
 | **`subtitle`**  | <code>string</code>                               |
 | **`hasJoined`** | <code>boolean</code>                              |

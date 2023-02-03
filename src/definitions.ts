@@ -5,6 +5,7 @@ import { PluginListenerHandle } from '@capacitor/core'
 export interface IParticipant {
   _id: string
   name: string
+  avatar: { url: string }
   role: ClientRole
   subtitle: string
   hasJoined?: boolean
