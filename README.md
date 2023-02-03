@@ -15,6 +15,7 @@ npx cap sync
 
 * [`joinChannel(...)`](#joinchannel)
 * [`leaveChannel(...)`](#leavechannel)
+* [`setMediaSource(...)`](#setmediasource)
 * [`updateParticipantLists(...)`](#updateparticipantlists)
 * [`setSpotlight(...)`](#setspotlight)
 * [`showRecordingStatus(...)`](#showrecordingstatus)
@@ -59,6 +60,22 @@ Leave Agora Channel
 | Param      | Type                |
 | ---------- | ------------------- |
 | **`room`** | <code>string</code> |
+
+--------------------
+
+
+### setMediaSource(...)
+
+```typescript
+setMediaSource(kind: any, deviceId: string) => Promise<void>
+```
+
+set initial audio, mic, camera sources. In the waiting room, user may set the sources.
+
+| Param          | Type                |
+| -------------- | ------------------- |
+| **`kind`**     | <code>any</code>    |
+| **`deviceId`** | <code>string</code> |
 
 --------------------
 

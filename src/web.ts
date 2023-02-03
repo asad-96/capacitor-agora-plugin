@@ -7,6 +7,10 @@ export class CapacitorPluginAgoraWeb
   extends WebPlugin
   implements CapacitorPluginAgoraPlugin
 {
+  async setMediaSource(kind: MediaDeviceKind, deviceId: string): Promise<void> {
+    console.log(kind, deviceId)
+    this.unavailable()
+  }
   async updateParticipantLists(
     participants: IParticipant[]
   ): Promise<IParticipant[]> {
