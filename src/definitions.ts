@@ -95,7 +95,7 @@ export interface CapacitorPluginAgoraPlugin {
    * @event
    */
   addListener(
-    eventName: 'exception',
+    eventName: 'network-quality',
     listenerFunc: (stats: NetworkQuality) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 }
