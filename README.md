@@ -22,7 +22,7 @@ npx cap sync
 * [`addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)`](#addlisteneronmicrophonechanged--oncamerachanged--onplaybackdevicechanged)
 * [`addListener('onParticipantAction', ...)`](#addlisteneronparticipantaction)
 * [`addListener('exception', ...)`](#addlistenerexception)
-* [`addListener('exception', ...)`](#addlistenerexception)
+* [`addListener('network-quality', ...)`](#addlistenernetwork-quality)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -100,14 +100,14 @@ Set a participant to spotlight. Spotlighted participant frame should be highligh
 ### showRecordingStatus(...)
 
 ```typescript
-showRecordingStatus(isShow: boolean) => Promise<void>
+showRecordingStatus(isShown: boolean) => Promise<void>
 ```
 
 Show red icon for recording status. This recording is not meant to be performed on frontend.
 
-| Param        | Type                 |
-| ------------ | -------------------- |
-| **`isShow`** | <code>boolean</code> |
+| Param         | Type                 |
+| ------------- | -------------------- |
+| **`isShown`** | <code>boolean</code> |
 
 --------------------
 
@@ -181,17 +181,17 @@ Exceptions
 --------------------
 
 
-### addListener('exception', ...)
+### addListener('network-quality', ...)
 
 ```typescript
-addListener(eventName: 'exception', listenerFunc: (stats: NetworkQuality) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'network-quality', listenerFunc: (stats: NetworkQuality) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Network Quality
 
 | Param              | Type                                                                          |
 | ------------------ | ----------------------------------------------------------------------------- |
-| **`eventName`**    | <code>'exception'</code>                                                      |
+| **`eventName`**    | <code>'network-quality'</code>                                                |
 | **`listenerFunc`** | <code>(stats: <a href="#networkquality">NetworkQuality</a>) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
