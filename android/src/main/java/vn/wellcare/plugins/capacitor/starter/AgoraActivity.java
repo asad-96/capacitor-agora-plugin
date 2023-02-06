@@ -4,9 +4,14 @@ import static android.text.TextUtils.isEmpty;
 import static io.agora.rtc2.Constants.LOG_FILTER_OFF;
 
 import android.Manifest;
+import android.app.PictureInPictureParams;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Rational;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -69,7 +74,9 @@ public class AgoraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agora);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        checkFloatingWindowPermissions();
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+            checkFloatingWindowPermissions();
+        }
         // If all the permissions are granted, initialize the RtcEngine object and join a channel.
         if (!checkSelfPermission()) {
             ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, PERMISSION_REQ_ID);
@@ -303,6 +310,11 @@ public class AgoraActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        onUserLeaveHint();
+    }
+
     public void leaveChannel(View view) {
         if (!isJoined) {
             showMessage("Join a channel first");
@@ -319,10 +331,28 @@ public class AgoraActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        showFloatWindow();
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        if(isInPictureInPictureMode){
+            findViewById(R.id.LeaveButton).setVisibility(View.GONE);
+        }else{
+            findViewById(R.id.LeaveButton).setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isJoined && !isFloatWindowShowing()) {
-            showFloatWindow();
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+            if (isJoined && !isFloatWindowShowing()) {
+                showFloatWindow();
+            }
         }
     }
 
@@ -362,36 +392,52 @@ public class AgoraActivity extends AppCompatActivity {
 
     //shows the floating window
     private void showFloatWindow() {
-        if (FloatWindowHelper.checkPermission(this)) {
-            if (isFloatWindowShowing()) {
-                return;
-            }
-            floatWindowView = FloatWindowHelper.createFloatView(this, 50, 50);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Display d = getWindowManager()
+                    .getDefaultDisplay();
+            Point p = new Point();
+            d.getSize(p);
+            int width = p.x;
+            int height = p.y;
 
-            LayoutInflater inflater = LayoutInflater.from(this);
-            View floatView = inflater.inflate(R.layout.float_window_layout, null);
-            floatWindowView.addView(floatView);
-            floatView.findViewById(R.id.btn_close).setOnClickListener(v -> {
-                dismissFloatWindow();
-            });
-            FrameLayout fl_local_container = floatWindowView.findViewById(R.id.fl_local_container);
-            FrameLayout container = floatWindowView.findViewById(R.id.fl_container);
-            FrameLayout local_video_view_container = findViewById(R.id.local_video_view_container);
-            FrameLayout remote_video_view_container = findViewById(R.id.remote_video_view_container);
-            local_video_view_container.removeView(localSurfaceView);
-            remote_video_view_container.removeView(remoteSurfaceView);
-            fl_local_container.addView(localSurfaceView);
-            if (remoteSurfaceView == null) {
-                remoteSurfaceView = new SurfaceView(getBaseContext());
-                remoteSurfaceView.setZOrderMediaOverlay(true);
-                container.addView(remoteSurfaceView);
-                remoteSurfaceView.setVisibility(View.VISIBLE);
+            Rational ratio
+                    = new Rational(width, height);
+            PictureInPictureParams.Builder pip_Builder = null;
+            pip_Builder = new PictureInPictureParams.Builder();
+            pip_Builder.setAspectRatio(ratio).build();
+            enterPictureInPictureMode(pip_Builder.build());
+        }else {
+            if (FloatWindowHelper.checkPermission(this)) {
+                if (isFloatWindowShowing()) {
+                    return;
+                }
+                floatWindowView = FloatWindowHelper.createFloatView(this, 50, 50);
+
+                LayoutInflater inflater = LayoutInflater.from(this);
+                View floatView = inflater.inflate(R.layout.float_window_layout, null);
+                floatWindowView.addView(floatView);
+                floatView.findViewById(R.id.btn_close).setOnClickListener(v -> {
+                    dismissFloatWindow();
+                });
+                FrameLayout fl_local_container = floatWindowView.findViewById(R.id.fl_local_container);
+                FrameLayout container = floatWindowView.findViewById(R.id.fl_container);
+                FrameLayout local_video_view_container = findViewById(R.id.local_video_view_container);
+                FrameLayout remote_video_view_container = findViewById(R.id.remote_video_view_container);
+                local_video_view_container.removeView(localSurfaceView);
+                remote_video_view_container.removeView(remoteSurfaceView);
+                fl_local_container.addView(localSurfaceView);
+                if (remoteSurfaceView == null) {
+                    remoteSurfaceView = new SurfaceView(getBaseContext());
+                    remoteSurfaceView.setZOrderMediaOverlay(true);
+                    container.addView(remoteSurfaceView);
+                    remoteSurfaceView.setVisibility(View.VISIBLE);
+                } else {
+                    container.addView(remoteSurfaceView);
+                }
+                finish();
             } else {
-                container.addView(remoteSurfaceView);
+                FloatWindowHelper.applyPermission(this);
             }
-            finish();
-        } else {
-            FloatWindowHelper.applyPermission(this);
         }
     }
 

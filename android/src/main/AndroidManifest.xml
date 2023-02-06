@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="vn.wellcare.plugins.capacitor.agora">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -19,8 +20,9 @@
             android:theme="@style/AppTheme.NoActionBar"            
             android:exported="true" 
             android:supportsPictureInPicture="true"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"       
-        />
+            android:launchMode="singleTask"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            tools:targetApi="n" />
     </application>
 
 </manifest>
