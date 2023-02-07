@@ -14,7 +14,26 @@
       @click:device-microphone="onMicrophoneChangeManually"
       @click:device-speaker="onSpeakerChangeManually"
       @click:device-camera="onCameraChangeManually"
-    ></w-video-kit>
+    >
+      <template #chat-area>
+        <div class="chat-container">
+          <w-chat-window
+            :key="authUser._id"
+            :theme="'dark'"
+            :room="config.chatRoom || authUser._id"
+            :user="authUser._id"
+            :should-show-header="false"
+            :background="'transparent'"
+            :from="'cam'"
+            :media-feat="{
+              voice: false,
+              image: false,
+              video: false
+            }"
+          ></w-chat-window>
+        </div>
+      </template>
+    </w-video-kit>
     <v-snackbar v-model="snackbar.show">{{ snackbar.message }}</v-snackbar>
   </div>
 </template>
@@ -62,10 +81,6 @@ export default defineComponent({
       message: ''
     })
     const spotlightId = computed(() => participants.value[0]?._id)
-    const localUser = computed(() => ({
-      ...props.authUser,
-      ...agoraEngine.value
-    }))
     const playbackDevice = ref(props.config.speakerId)
     const devicesManager = computed(() => ({
       cameraId: (localVideoTrack as any).value?._config.cameraId,
@@ -100,14 +115,18 @@ export default defineComponent({
       })
       return result
     })
-
-    const remoteSignals = ref<IRemoteSignal>()
-    const localSignal = ref<Signal>(0)
     const showMessage = (message: string) => {
       snackbar.show = true
       snackbar.message = message
     }
     const router = useRouter()
+    const remoteSignals = ref<IRemoteSignal>()
+
+    const localUser = computed(() => ({
+      ...props.authUser,
+      ...agoraEngine.value
+    }))
+    const localSignal = ref<Signal>(0)
     const localAudioTrack = ref<ILocalAudioTrack>()
     const localVideoTrack = ref<ILocalVideoTrack>()
     const localVideoState = computed(
@@ -117,80 +136,110 @@ export default defineComponent({
       () => localAudioTrack.value?.enabled || false
     )
     const localPlayerContainer = document.createElement('div')
-    const agoraEngine = ref<IAgoraRTCClient>()
-    const startBasicCall = () => {
-      localPlayerContainer.id = props.config.uid.toString()
-      localPlayerContainer.style.width = '100%'
-      localPlayerContainer.style.height = '100%'
 
+    const agoraEngine = ref<IAgoraRTCClient>()
+
+    const initialArogaClient = () => {
       agoraEngine.value = AgoraRTC.createClient({
         mode: 'rtc',
         codec: 'vp8'
       })
+      agoraEngine.value.on('user-joined', onUserJoined)
+      agoraEngine.value.on('user-left', onUserleft)
+      agoraEngine.value.on('user-published', onUserPublished)
+      agoraEngine.value.on('user-unpublished', onUserUnpublished)
+    }
 
-      agoraEngine.value.on('user-joined', (user: IAgoraRTCRemoteUser) => {
-        showMessage(`${user.uid.toString()} has joined.`)
-      })
+    const onUserJoined = (user: IAgoraRTCRemoteUser) =>
+      showMessage(`${user.uid.toString()} has joined.`)
 
-      agoraEngine.value.on(
-        'user-left',
-        (user: IAgoraRTCRemoteUser, reason: string) => {
-          showMessage(`${user.uid.toString()} has left. Reason: ${reason}`)
+    const onUserleft = (user: IAgoraRTCRemoteUser, reason: string) =>
+      showMessage(`${user.uid.toString()} has left. Reason: ${reason}`)
+
+    const onUserPublished = async (
+      user: IAgoraRTCRemoteUser,
+      mediaType: 'audio' | 'video'
+    ) => {
+      await agoraEngine.value?.subscribe(user, mediaType)
+      const remotePlayerContainer = document.getElementById(user.uid.toString())
+      if (mediaType === 'video') {
+        const remoteVideoWrapper = document.getElementById(
+          `participant_${user.uid.toString()}`
+        )
+        const remoteImagePlaceholder =
+          remoteVideoWrapper?.querySelector('.image-placeholder')
+        remoteImagePlaceholder?.classList.add('hidden')
+
+        if (remotePlayerContainer) {
+          user.videoTrack?.play(remotePlayerContainer)
+        } else {
+          const newRemotePlayerContainer = document.createElement('div')
+          newRemotePlayerContainer.id = user.uid.toString()
+          newRemotePlayerContainer.style.width = '100%'
+          newRemotePlayerContainer.style.height = '100%'
+          remoteVideoWrapper?.appendChild(newRemotePlayerContainer)
+          user.videoTrack?.play(newRemotePlayerContainer)
         }
-      )
+      }
+      if (mediaType === 'audio') {
+        user.audioTrack?.play()
+        user.audioTrack?.setPlaybackDevice(devicesManager.value.speakerId)
+      }
+    }
 
-      agoraEngine.value.on(
-        'user-published',
-        async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
-          await agoraEngine.value?.subscribe(user, mediaType)
-          const remotePlayerContainer = document.getElementById(
-            user.uid.toString()
-          )
-          if (mediaType === 'video') {
-            document
-              .getElementById(`participant_${user.uid.toString()}`)
-              ?.querySelector('.image-placeholder')
-              ?.remove()
+    const onUserUnpublished = async (
+      user: IAgoraRTCRemoteUser,
+      mediaType: 'audio' | 'video'
+    ) => {
+      await agoraEngine.value?.unsubscribe(user, mediaType)
+      if (mediaType === 'video') {
+        const remoteVideoWrapper = document.getElementById(
+          `participant_${user.uid.toString()}`
+        )
+        user.videoTrack?.stop()
+        const remoteImagePlaceholder =
+          remoteVideoWrapper?.querySelector('.image-placeholder')
+        remoteImagePlaceholder?.classList.remove('hidden')
+      }
 
-            if (remotePlayerContainer) {
-              user.videoTrack?.play(remotePlayerContainer)
-            } else {
-              const newContainer = document.createElement('div')
-              newContainer.id = user.uid.toString()
-              newContainer.style.width = '100%'
-              newContainer.style.height = '100%'
-              document
-                .getElementById(`participant_${user.uid.toString()}`)
-                ?.appendChild(newContainer)
-              user.videoTrack?.play(newContainer)
-            }
-          }
-          if (mediaType === 'audio') {
-            user.audioTrack?.play()
-            user.audioTrack?.setPlaybackDevice(devicesManager.value.speakerId)
-          }
-        }
-      )
+      if (mediaType === 'audio') {
+        user.audioTrack?.stop()
+      }
     }
 
     const join = async () => {
+      localPlayerContainer.id = props.config.uid.toString()
+      localPlayerContainer.style.width = '100%'
+      localPlayerContainer.style.height = '100%'
       const { appId, room, token, uid, microphoneId, cameraId } = props.config
+      console.log({ appId, room, token, uid, microphoneId, cameraId })
       await agoraEngine.value?.join(appId, room, token, uid)
+      const defaultAgoraMicrophones = await AgoraRTC.getMicrophones()
+      const defaultAgoraCameras = await AgoraRTC.getCameras()
+
+      const getMicrophoneId = () => {
+        if (microphoneId) return microphoneId
+        return defaultAgoraMicrophones[0].deviceId
+      }
+
+      const getCameraId = () => {
+        if (cameraId) return cameraId
+        return defaultAgoraCameras[0].deviceId
+      }
+
       localAudioTrack.value = await AgoraRTC.createMicrophoneAudioTrack({
-        microphoneId
+        microphoneId: getMicrophoneId()
       })
       localVideoTrack.value = await AgoraRTC.createCameraVideoTrack({
-        cameraId
+        cameraId: getCameraId()
       })
 
-      document
-        .getElementById('participant_me')
-        ?.querySelector('.image-placeholder')
-        ?.remove()
+      const localVideoWrapper = document.getElementById('participant_me')
+      const localImagePlaceholder =
+        localVideoWrapper?.querySelector('.image-placeholder')
 
-      document
-        .getElementById('participant_me')
-        ?.appendChild(localPlayerContainer)
+      localImagePlaceholder?.classList.add('hidden')
+      localVideoWrapper?.appendChild(localPlayerContainer)
 
       await agoraEngine.value?.publish([
         localAudioTrack.value,
@@ -216,9 +265,16 @@ export default defineComponent({
     }
 
     const onCameraClick = () => {
+      const localVideoWrapper = document.getElementById('participant_me')
+      const localImagePlaceholder =
+        localVideoWrapper?.querySelector('.image-placeholder')
       if (localVideoState.value) {
         localVideoTrack.value?.setEnabled(false)
-      } else localVideoTrack.value?.setEnabled(true)
+        localImagePlaceholder?.classList.remove('hidden')
+      } else {
+        localImagePlaceholder?.classList.add('hidden')
+        localVideoTrack.value?.setEnabled(true)
+      }
     }
 
     const onMicrophoneClick = () => {
@@ -280,10 +336,8 @@ export default defineComponent({
       }
     }
 
-    /// INIT
-    startBasicCall()
+    initialArogaClient()
     join()
-
     return {
       join,
       onExitCall,
@@ -306,3 +360,9 @@ export default defineComponent({
   }
 })
 </script>
+<style scoped>
+.chat-container {
+  height: calc(100vh - 72px) !important;
+  width: 100%;
+}
+</style>

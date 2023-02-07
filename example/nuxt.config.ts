@@ -10,7 +10,8 @@ import {
   i18nConfig,
   socketIoConfig,
   toastConfig,
-  vuetifyConfig
+  vuetifyConfig,
+  firebaseConfig
 } from './src/configs/index'
 DotEnv.config({ path: './.env' })
 
@@ -18,13 +19,23 @@ export default {
   target: 'static',
   ssr: false,
   components: true,
+  env: {
+    FIRE_ENV: process.env.FIRE_ENV || 'sandbox'
+  },
   srcDir: process.cwd() + '/src/',
   publicRuntimeConfig: {
+    accountBaseUrl: process.env.ACCOUNT_BASE_URL,
+    endpoint: process.env.API_ENDPOINT,
     agora: {
       appId: process.env.AGORA_APPID || 'ba4643f2b3a145f29575b8783d3a5ec1',
       channel: process.env.AGORA_CHANNEL || 'test',
       token: process.env.AGORA_TOKEN || '',
       uid: process.env.AGORA_UID || 0
+    },
+    'nuxt-module-data-layer': {
+      baseURL: process.env.API_ENDPOINT,
+      accountBaseURL: process.env.ACCOUNT_BASE_URL,
+      xTenantId: 'wellcare'
     }
   },
   dir: {
@@ -38,6 +49,8 @@ export default {
   plugins: [],
   css: ['~/assets/styles/app'],
   modules: [
+    '@wellcare/nuxt-module-data-layer',
+    '@wellcare/vue-authen',
     '@nuxtjs/axios',
     'nuxt-user-agent',
     '@nuxtjs/dayjs',
@@ -53,7 +66,10 @@ export default {
     '@nuxt/typescript-build',
     '@nuxtjs/stylelint-module',
     'nuxt-typed-vuex',
-    ['@wellcare/vue-component', { prefix: 'w', level: 1 }]
+    ['@nuxtjs/firebase', firebaseConfig],
+    ['@wellcare/vue-component', { prefix: 'w', level: 1 }],
+    ['@wellcare/nuxt-module-chat', { prefix: 'w', level: 1 }],
+    ['@wellcare/nuxt-module-media', { prefix: 'w', level: 1 }]
   ],
   build: buildConfg,
   head: headConfig,

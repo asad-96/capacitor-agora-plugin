@@ -47,7 +47,9 @@ import {
   mdiCheck,
   mdiCard,
   mdiViewGridOutline,
-  mdiViewGalleryOutline
+  mdiViewGalleryOutline,
+  mdiSend,
+  mdiDotsVertical
 } from '@mdi/js'
 
 export default {
@@ -100,7 +102,9 @@ export default {
       check: mdiCheck,
       card: mdiCard,
       viewGridOutline: mdiViewGridOutline,
-      viewGalleryOutline: mdiViewGalleryOutline
+      viewGalleryOutline: mdiViewGalleryOutline,
+      send: mdiSend,
+      dotsVertical: mdiDotsVertical
     }
   } as IconsOptions,
   theme: {
