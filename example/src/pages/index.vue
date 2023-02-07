@@ -40,16 +40,15 @@ import {
 } from '@nuxtjs/composition-api'
 // import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 export default defineComponent({
-  middleware: 'authen',
   setup() {
     const { state }: any = useStore()
-    const userId = computed(() => state.authen.user._id)
+    // const userId = computed(() => state.authen.user._id)
     const router = useRouter()
     const options = reactive({
       appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
       room: 'test',
-      uid: userId.value,
-      chatRoom: userId.value,
+      uid: '0',
+      chatRoom: 'test',
       token:
         '007eJxTYHDts53NwlLw5/4OnRMztkxW2df5tv8xB/OO8o83A6vFdkkpMCQlmpiZGKcZJRknGpqYphlZmpqbJlmYWxinGCeapiYb+rffTm4IZGTYkePBwAiFID4LQ0lqcQkDAwBl6x/K',
       roomStatus: 'waiting',
