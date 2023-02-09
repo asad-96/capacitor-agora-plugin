@@ -23,8 +23,6 @@ import com.getcapacitor.JSObject
 import io.agora.rtc2.*
 import io.agora.rtc2.video.VideoCanvas
 import vn.wellcare.plugins.capacitor.agora.R
-import vn.wellcare.plugins.capacitor.starter.floatwindow.AVCallFloatView
-import vn.wellcare.plugins.capacitor.starter.floatwindow.FloatWindowHelper
 import vn.wellcare.plugins.capacitor.starter.util.Constant
 import java.util.*
 
@@ -58,9 +56,6 @@ class AgoraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_agora)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            checkFloatingWindowPermissions()
-        }
         // If all the permissions are granted, initialize the RtcEngine object and join a channel.
         if (!checkSelfPermission()) {
             ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, PERMISSION_REQ_ID)
@@ -328,7 +323,6 @@ class AgoraActivity : AppCompatActivity() {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        showFloatWindow()
     }
 
     override fun onPictureInPictureModeChanged(
@@ -345,11 +339,6 @@ class AgoraActivity : AppCompatActivity() {
 
     public override fun onDestroy() {
         super.onDestroy()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            if (isJoined && !isFloatWindowShowing) {
-                showFloatWindow()
-            }
-        }
     }
 
     private fun checkSelfPermission(): Boolean {
@@ -382,103 +371,7 @@ class AgoraActivity : AppCompatActivity() {
             }
         }
     }
-
-    private var floatWindowView: AVCallFloatView? = null
-
-    //shows the floating window
-    private fun showFloatWindow() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val d = windowManager
-                .defaultDisplay
-            val p = Point()
-            d.getSize(p)
-            val width = p.x
-            val height = p.y
-            val ratio = Rational(width, height)
-            var pip_Builder: PictureInPictureParams.Builder? = null
-            pip_Builder = PictureInPictureParams.Builder()
-            pip_Builder.setAspectRatio(ratio).build()
-            enterPictureInPictureMode(pip_Builder.build())
-        } else {
-            if (FloatWindowHelper.checkPermission(this)) {
-                if (isFloatWindowShowing) {
-                    return
-                }
-                floatWindowView = FloatWindowHelper.createFloatView(this, 50, 50)
-                val inflater = LayoutInflater.from(this)
-                val floatView = inflater.inflate(R.layout.float_window_layout, null)
-                floatWindowView.addView(floatView)
-                floatView.findViewById<View>(R.id.btn_close)
-                    .setOnClickListener { v: View? -> dismissFloatWindow() }
-                val fl_local_container =
-                    floatWindowView.findViewById<FrameLayout>(R.id.fl_local_container)
-                val container = floatWindowView.findViewById<FrameLayout>(R.id.fl_container)
-                val local_video_view_container =
-                    findViewById<FrameLayout>(R.id.local_video_view_container)
-                val remote_video_view_container =
-                    findViewById<FrameLayout>(R.id.remote_video_view_container)
-                local_video_view_container.removeView(localSurfaceView)
-                remote_video_view_container.removeView(remoteSurfaceView)
-                fl_local_container.addView(localSurfaceView)
-                if (remoteSurfaceView == null) {
-                    remoteSurfaceView = SurfaceView(baseContext)
-                    remoteSurfaceView!!.setZOrderMediaOverlay(true)
-                    container.addView(remoteSurfaceView)
-                    remoteSurfaceView!!.visibility = View.VISIBLE
-                } else {
-                    container.addView(remoteSurfaceView)
-                }
-                finish()
-            } else {
-                FloatWindowHelper.applyPermission(this)
-            }
-        }
-    }
-
-    //This will dismiss the floating window
-    private fun dismissFloatWindow() {
-        if (!isFloatWindowShowing) {
-            return
-        }
-        val container = floatWindowView!!.findViewById<FrameLayout>(R.id.fl_container)
-        val fl_local_container =
-            floatWindowView!!.findViewById<FrameLayout>(R.id.fl_local_container)
-        if (container.childCount > 0) {
-            container.removeView(remoteSurfaceView)
-            val remote_video_view_container =
-                findViewById<FrameLayout>(R.id.remote_video_view_container)
-            remote_video_view_container.addView(remoteSurfaceView)
-        }
-        if (fl_local_container.childCount > 0) {
-            fl_local_container.removeView(localSurfaceView)
-            val local_video_view_container =
-                findViewById<FrameLayout>(R.id.local_video_view_container)
-            local_video_view_container.addView(localSurfaceView)
-        }
-        FloatWindowHelper.destroyFloatView(floatWindowView!!)
-        floatWindowView = null
-        if (isDestroyed) {
-            agoraEngine!!.stopPreview()
-            agoraEngine!!.leaveChannel()
-
-            // Destroy the engine in a sub-thread to avoid congestion
-            Thread {
-                RtcEngine.destroy()
-                agoraEngine = null
-            }.start()
-        }
-    }
-
-    //UTILS
-    private fun checkFloatingWindowPermissions() {
-        if (!FloatWindowHelper.checkPermission(this)) {
-            FloatWindowHelper.applyPermission(this)
-        }
-    }
-
-    private val isFloatWindowShowing: Boolean
-        private get() = floatWindowView != null
-
+    
     companion object {
         var onAgoraEvent: OnAgoraEvent? = null
         @JvmStatic

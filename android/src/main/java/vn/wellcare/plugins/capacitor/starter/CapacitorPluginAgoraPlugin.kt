@@ -18,7 +18,6 @@ import vn.wellcare.plugins.capacitor.starter.util.Constant
 @CapacitorPlugin(name = "CapacitorPluginAgora")
 class CapacitorPluginAgoraPlugin : Plugin(), IrisEventHandler, OnAgoraEvent {
     var irisApiEngine: IrisApiEngine? = null
-    private val implementation = CapacitorPluginAgora()
     var TAG = "CapacitorPluginAgoraPlugin"
     fun sendEvent(data: JSObject?) {
         notifyListeners("onEventReceived", data)
@@ -41,7 +40,6 @@ class CapacitorPluginAgoraPlugin : Plugin(), IrisEventHandler, OnAgoraEvent {
     fun leaveChannel(call: PluginCall) {
         val value = call.getString("room")
         val ret = JSObject()
-        ret.put("value", implementation.echo(value!!))
         call.resolve(ret)
     }
 
