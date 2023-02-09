@@ -481,6 +481,7 @@ class AgoraActivity : AppCompatActivity() {
 
     companion object {
         var onAgoraEvent: OnAgoraEvent? = null
+        @JvmStatic
         fun setOnAgoraEvent(onAgoraEvent1: OnAgoraEvent?) {
             onAgoraEvent = onAgoraEvent1
         }
