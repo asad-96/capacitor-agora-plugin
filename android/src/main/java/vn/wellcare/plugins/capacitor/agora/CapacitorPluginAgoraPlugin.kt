@@ -1,4 +1,4 @@
-package vn.wellcare.plugins.capacitor.starter
+package vn.wellcare.plugins.capacitor.agora
 
 import android.content.Intent
 import android.util.Log
@@ -10,10 +10,10 @@ import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import io.agora.iris.IrisApiEngine
 import io.agora.iris.IrisEventHandler
-import vn.wellcare.plugins.capacitor.starter.AgoraActivity
-import vn.wellcare.plugins.capacitor.starter.AgoraActivity.Companion.setOnAgoraEvent
-import vn.wellcare.plugins.capacitor.starter.AgoraActivity.OnAgoraEvent
-import vn.wellcare.plugins.capacitor.starter.util.Constant
+import vn.wellcare.plugins.capacitor.agora.AgoraActivity
+import vn.wellcare.plugins.capacitor.agora.AgoraActivity.Companion.setOnAgoraEvent
+import vn.wellcare.plugins.capacitor.agora.AgoraActivity.OnAgoraEvent
+import vn.wellcare.plugins.capacitor.agora.util.Constant
 
 @CapacitorPlugin(name = "CapacitorPluginAgora")
 class CapacitorPluginAgoraPlugin : Plugin(), IrisEventHandler, OnAgoraEvent {

@@ -1,4 +1,4 @@
-package vn.wellcare.plugins.capacitor.starter
+package vn.wellcare.plugins.capacitor.agora
 
 import android.Manifest
 import android.app.PictureInPictureParams
@@ -23,7 +23,7 @@ import com.getcapacitor.JSObject
 import io.agora.rtc2.*
 import io.agora.rtc2.video.VideoCanvas
 import vn.wellcare.plugins.capacitor.agora.R
-import vn.wellcare.plugins.capacitor.starter.util.Constant
+import vn.wellcare.plugins.capacitor.agora.util.Constant
 import java.util.*
 
 class AgoraActivity : AppCompatActivity() {

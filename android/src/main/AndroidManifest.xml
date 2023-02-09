@@ -16,7 +16,7 @@
 
     <application>
         <activity
-            android:name="vn.wellcare.plugins.capacitor.starter.AgoraActivity" 
+            android:name="vn.wellcare.plugins.capacitor.agora.AgoraActivity" 
             android:theme="@style/AppTheme.NoActionBar"            
             android:exported="true" 
             android:supportsPictureInPicture="true"
