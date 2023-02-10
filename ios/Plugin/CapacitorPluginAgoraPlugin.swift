@@ -47,13 +47,18 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         let uid = call.getInt(Constant.UID) ?? 0
         let token = call.getString(Constant.TOKEN) ?? ""
         let appId = call.getString(Constant.APPID) ?? ""
+        let params = VideoCallParams(channelName: channelName, uid: uid, token: token, appID: appId)
+
+//        initializeAgoraEngine(appId: appId)
+        initViews(params)
+//        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
+//        call.resolve([
+//            "value": implementation.echo("Join channel value")
+//        ])
         
-        initializeAgoraEngine(appId: appId)
-        initViews()
-        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
-        call.resolve([
-            "value": implementation.echo("Join channel value")
-        ])
+      
+        
+        
     }
     
     @objc func leaveChannel(_ call: CAPPluginCall) {
@@ -63,22 +68,29 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     }
     
     //MARK: Sub Functions
-    func initViews() {
+    func initViews(_ params: VideoCallParams) {
         DispatchQueue.main.async {
-            self.remoteView.frame = UIScreen.main.bounds
-            self.localView.frame =  CGRect(x: UIScreen.main.bounds.width - 90, y: 0, width: 120, height: 160)
+//            self.remoteView.frame = UIScreen.main.bounds
+//            self.localView.frame =  CGRect(x: UIScreen.main.bounds.width - 90, y: 0, width: 120, height: 160)
             let currentWindow: UIWindow? = UIApplication.shared.windows.first
-            self.remoteView.backgroundColor = .white
-            self.localView.backgroundColor = .white
-            currentWindow?.addSubview(self.remoteView)
-            currentWindow?.addSubview(self.localView)
+//            self.remoteView.backgroundColor = .white
+//            self.localView.backgroundColor = .white
+//            currentWindow?.addSubview(self.remoteView)
+//            currentWindow?.addSubview(self.localView)
+//
+//            self.btnLeave.frame = CGRect(x: UIScreen.main.bounds.width - (UIScreen.main.bounds.width / 1.5), y: UIScreen.main.bounds.height - 120, width: 120, height: 60)
+//            self.btnLeave.setTitle("Leave", for: .normal)
+//            self.btnLeave.backgroundColor = UIColor.link
+//            self.btnLeave.layer.cornerRadius = self.btnLeave.frame.height / 2
+//            self.btnLeave.addTarget(self, action: #selector(self.leaveChannelUser), for: .touchUpInside)
+//            currentWindow?.addSubview(self.btnLeave)
             
-            self.btnLeave.frame = CGRect(x: UIScreen.main.bounds.width - (UIScreen.main.bounds.width / 1.5), y: UIScreen.main.bounds.height - 120, width: 120, height: 60)
-            self.btnLeave.setTitle("Leave", for: .normal)
-            self.btnLeave.backgroundColor = UIColor.link
-            self.btnLeave.layer.cornerRadius = self.btnLeave.frame.height / 2
-            self.btnLeave.addTarget(self, action: #selector(self.leaveChannelUser), for: .touchUpInside)
-            currentWindow?.addSubview(self.btnLeave)
+            let topMost = UIApplication.getTopViewController()
+            let vc = WellCareViewController(userPermissin: .doctor, param: params)
+            vc.modalPresentationStyle = .fullScreen
+//            currentWindow?.addSubview(vc.view)
+            
+            topMost?.present(vc, animated: true)
         }
     }
     
@@ -184,6 +196,9 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         localView.removeFromSuperview()
     }
     
+    func updateParticipantLists(participants: [IParticipant]) {
+        
+    }
 }
 
 
@@ -244,4 +259,22 @@ class Constant {
     static let TOKEN = "token"
     static let UID = "uid"
     static let CHANNELNAME = "room"
+}
+
+
+extension UIApplication {
+
+    class func getTopViewController(base: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+
+        if let nav = base as? UINavigationController {
+            return getTopViewController(base: nav.visibleViewController)
+
+        } else if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
+            return getTopViewController(base: selected)
+
+        } else if let presented = base?.presentedViewController {
+            return getTopViewController(base: presented)
+        }
+        return base
+    }
 }

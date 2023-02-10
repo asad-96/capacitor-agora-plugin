@@ -71,17 +71,17 @@ class ViewController: UIViewController {
 
     
     @objc func tappedJoinAsDoctorButton(_ sender: UIButton) {
-        let vc = WellCareViewController(userPermissin: .doctor)
-        vc.modalPresentationStyle = .fullScreen
+//        let vc = WellCareViewController(userPermissin: .doctor)
+//        vc.modalPresentationStyle = .fullScreen
         
-        present(vc, animated: true)
+//        present(vc, animated: true)
     }
     
     @objc func tappedJoinAsPatientButton(_ sender: UIButton) {
-        let vc = WellCareViewController(userPermissin: .patient)
-        vc.modalPresentationStyle = .fullScreen
+//        let vc = WellCareViewController(userPermissin: .patient)
+//        vc.modalPresentationStyle = .fullScreen
         
-        present(vc, animated: true)
+//        present(vc, animated: true)
     }
 }
 

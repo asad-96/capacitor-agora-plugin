@@ -8,6 +8,7 @@
 import UIKit
 import AgoraRtcKit
 import MediaPlayer
+import Capacitor
 
 class WellCareViewController: UIViewController {
     static let VideoCallInMins: Int = 5
@@ -16,7 +17,7 @@ class WellCareViewController: UIViewController {
     var userRole: AgoraClientRole = .broadcaster
     
     // Update with the App ID of your project generated on Agora Console.
-    let appID = "1a37e0ba7a96485bb1e538ab05439b96"
+    var appID = "1a37e0ba7a96485bb1e538ab05439b96"
     // Update with the temporary token generated in Agora Console.
     var token = "007eJxTYFhydcm5TJZl6qY67zfe7p+fYnq1aJM386oo6dA6Pp7tNfsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzN6vc+TG4IZGQoE8xhZmSAQBCfl6EktbgkPjkjMS85IzWHgQEAXB8iXQ=="
     // Update with the channel name you used to generate the token in Agora Console.
@@ -90,8 +91,14 @@ class WellCareViewController: UIViewController {
     private var callTimer: Timer?
     private var callTime: Int = 0
     private let userPermissin: UserPermission
-    init(userPermissin: UserPermission) {
+    init(userPermissin: UserPermission, param: VideoCallParams) {
         self.userPermissin = userPermissin
+        channelName = param.channelName
+        token = param.token
+        appID = param.appID
+        
+        
+        debugPrint("hai call \(channelName) -> \(token) -> \(appID)")
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -106,6 +113,8 @@ class WellCareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+      
+        
         view.backgroundColor = .black
         initializeAndJoinChannel()
         layoutCountdownView()
@@ -449,6 +458,11 @@ extension WellCareViewController: AgoraVideoViewerDelegate {
     }
 }
 
+extension WellCareViewController {
+//    func updateParticipantLists(participants: IParticipant[]) => Promise<IParticipant[]> {
+//        
+//    }
+}
 
 extension UIViewController {
     var hasTopNorth: Bool {
@@ -459,4 +473,22 @@ extension UIViewController {
 enum UserPermission: Int {
     case doctor = 0
     case patient
+}
+
+
+struct VideoCallParams {
+    let channelName: String
+    let uid: Int
+    let token: String
+    let appID: String
+}
+
+struct IParticipant {
+    
+}
+
+
+enum ClientRole: String {
+    case host = "host"
+    case audience = "audience"
 }
