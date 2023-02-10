@@ -25,7 +25,7 @@ npx cap sync
 * [`addListener('onParticipantAction', ...)`](#addlisteneronparticipantaction)
 * [`addListener('exception', ...)`](#addlistenerexception)
 * [`addListener('network-quality', ...)`](#addlistenernetwork-quality)
-* [`addListener('onLeaved', ...)`](#addlisteneronleaved)
+* [`addListener('onSelfAction', ...)`](#addlisteneronselfaction)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -229,18 +229,18 @@ Network Quality
 --------------------
 
 
-### addListener('onLeaved', ...)
+### addListener('onSelfAction', ...)
 
 ```typescript
-addListener(eventName: 'onLeaved', listenerFunc: (room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onSelfAction', listenerFunc: (event: 'chat' | 'leaved', room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
-User leave meeting room
+User action
 
-| Param              | Type                                    |
-| ------------------ | --------------------------------------- |
-| **`eventName`**    | <code>'onLeaved'</code>                 |
-| **`listenerFunc`** | <code>(room?: string) =&gt; void</code> |
+| Param              | Type                                                               |
+| ------------------ | ------------------------------------------------------------------ |
+| **`eventName`**    | <code>'onSelfAction'</code>                                        |
+| **`listenerFunc`** | <code>(event: 'chat' \| 'leaved', room?: string) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

@@ -115,11 +115,11 @@ export interface CapacitorPluginAgoraPlugin {
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 
   /**
-   * User leave meeting room
+   * User action
    * @event
    */
   addListener(
-    eventName: 'onLeaved',
-    listenerFunc: (room?: string) => void
+    eventName: 'onSelfAction',
+    listenerFunc: (event: 'chat' | 'leaved', room?: string) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 }
