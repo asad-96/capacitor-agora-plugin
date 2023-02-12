@@ -20,10 +20,12 @@ npx cap sync
 * [`setSpotlight(...)`](#setspotlight)
 * [`showRecordingStatus(...)`](#showrecordingstatus)
 * [`setCountdown(...)`](#setcountdown)
+* [`enterPictureInPictureMode()`](#enterpictureinpicturemode)
 * [`addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)`](#addlisteneronmicrophonechanged--oncamerachanged--onplaybackdevicechanged)
 * [`addListener('onParticipantAction', ...)`](#addlisteneronparticipantaction)
 * [`addListener('exception', ...)`](#addlistenerexception)
 * [`addListener('network-quality', ...)`](#addlistenernetwork-quality)
+* [`addListener('onSelfAction', ...)`](#addlisteneronselfaction)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -144,6 +146,17 @@ Show a countdown. A non-positive value will disable it.
 --------------------
 
 
+### enterPictureInPictureMode()
+
+```typescript
+enterPictureInPictureMode() => Promise<void>
+```
+
+Enter picture-in-picture mode
+
+--------------------
+
+
 ### addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)
 
 ```typescript
@@ -210,6 +223,24 @@ Network Quality
 | ------------------ | ----------------------------------------------------------------------------- |
 | **`eventName`**    | <code>'network-quality'</code>                                                |
 | **`listenerFunc`** | <code>(stats: <a href="#networkquality">NetworkQuality</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onSelfAction', ...)
+
+```typescript
+addListener(eventName: 'onSelfAction', listenerFunc: (event: 'chat' | 'leaved', room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+User action
+
+| Param              | Type                                                               |
+| ------------------ | ------------------------------------------------------------------ |
+| **`eventName`**    | <code>'onSelfAction'</code>                                        |
+| **`listenerFunc`** | <code>(event: 'chat' \| 'leaved', room?: string) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

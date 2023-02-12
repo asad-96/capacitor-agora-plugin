@@ -7,6 +7,9 @@ export class CapacitorPluginAgoraWeb
   extends WebPlugin
   implements CapacitorPluginAgoraPlugin
 {
+  async enterPictureInPictureMode(): Promise<void> {
+    this.unavailable()
+  }
   async setMediaSource(kind: MediaDeviceKind, deviceId: string): Promise<void> {
     console.log(kind, deviceId)
     this.unavailable()

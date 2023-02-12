@@ -59,6 +59,11 @@ export interface CapacitorPluginAgoraPlugin {
    */
   setCountdown(seconds: number): Promise<void>
 
+  /**
+   * Enter picture-in-picture mode
+  */
+  enterPictureInPictureMode(): Promise<void>
+
   // EVENTS
   /**
    * Local media action events.
@@ -107,5 +112,14 @@ export interface CapacitorPluginAgoraPlugin {
   addListener(
     eventName: 'network-quality',
     listenerFunc: (stats: NetworkQuality) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle
+
+  /**
+   * User action
+   * @event
+   */
+  addListener(
+    eventName: 'onSelfAction',
+    listenerFunc: (event: 'chat' | 'leaved', room?: string) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 }
