@@ -19,7 +19,7 @@ class WellCareViewController: UIViewController {
     // Update with the App ID of your project generated on Agora Console.
     var appID = "1a37e0ba7a96485bb1e538ab05439b96"
     // Update with the temporary token generated in Agora Console.
-    var token = "007eJxTYFhydcm5TJZl6qY67zfe7p+fYnq1aJM386oo6dA6Pp7tNfsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzN6vc+TG4IZGQoE8xhZmSAQBCfl6EktbgkPjkjMS85IzWHgQEAXB8iXQ=="
+    var token = "007eJxTYPBpjd2Sv9M10Epo492NX76pBX02d7p/TVHlj1XYNMlFX3gVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNPjs9S24IZGRYcHceKyMDBIL4vAwlqcUl8ckZiXnJGak5DAwAtykkSQ=="
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName = "test_chanchel"
     
@@ -91,11 +91,13 @@ class WellCareViewController: UIViewController {
     private var callTimer: Timer?
     private var callTime: Int = 0
     private let userPermissin: UserPermission
-    init(userPermissin: UserPermission, param: VideoCallParams) {
+    var delegate: AgoraVideoViewerDelegate?
+    init(userPermissin: UserPermission, param: VideoCallParams, delegate: AgoraVideoViewerDelegate? = nil) {
         self.userPermissin = userPermissin
-        channelName = param.channelName
-        token = param.token
-        appID = param.appID
+        self.delegate = delegate
+//        channelName = param.channelName
+//        token = param.token
+//        appID = param.appID
         
         
         debugPrint("hai call \(channelName) -> \(token) -> \(appID)")
@@ -130,7 +132,7 @@ class WellCareViewController: UIViewController {
             connectionData: AgoraConnectionData(
                 appId: appID,
                 rtcToken: token
-            )
+            ), delegate: delegate
         )
         agoraView.fills(view: self.view)
         
@@ -401,7 +403,7 @@ class WellCareViewController: UIViewController {
 }
 
 
-extension WellCareViewController: AgoraVideoViewerDelegate {
+extension WellCareViewController {
     @objc func tappedBluetoothButton(_ sender: UIButton) {
         if let routePickerButton = airplayVolume.subviews.first(where: { $0 is UIButton }) as? UIButton {
            
@@ -458,11 +460,19 @@ extension WellCareViewController: AgoraVideoViewerDelegate {
     }
 }
 
-extension WellCareViewController {
-//    func updateParticipantLists(participants: IParticipant[]) => Promise<IParticipant[]> {
-//        
+//extension WellCareViewController: AgoraVideoViewerDelegate{
+////    func updateParticipantLists(participants: IParticipant[]) => Promise<IParticipant[]> {
+////        
+////    }
+//    
+//    func leftChannel(_ channel: String) {
+//        debugPrint("hai leftChannel \(channel)")
 //    }
-}
+//    
+//    func joinedChannel(channel: String) {
+//        debugPrint("hai joinedChannel \(channel)")
+//    }
+//}
 
 extension UIViewController {
     var hasTopNorth: Bool {

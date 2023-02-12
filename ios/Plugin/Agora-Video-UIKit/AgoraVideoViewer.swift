@@ -72,8 +72,14 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
 }
 
 public extension AgoraVideoViewerDelegate {
-    func joinedChannel(channel: String) {}
-    func leftChannel(_ channel: String) {}
+    func joinedChannel(channel: String) {
+        
+        debugPrint("hai joinedChannel \(channel)")
+    }
+    func leftChannel(_ channel: String) {
+        debugPrint("hai leftChannel \(channel)")
+
+    }
     func tokenWillExpire(_ engine: AgoraRtcEngineKit, tokenPrivilegeWillExpire token: String) {}
     func tokenDidExpire(_ engine: AgoraRtcEngineKit) {}
     #if os(iOS)
