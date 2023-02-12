@@ -8,7 +8,6 @@
 import UIKit
 import AgoraRtcKit
 import MediaPlayer
-import Capacitor
 
 class WellCareViewController: UIViewController {
     static let VideoCallInMins: Int = 5
@@ -17,9 +16,9 @@ class WellCareViewController: UIViewController {
     var userRole: AgoraClientRole = .broadcaster
     
     // Update with the App ID of your project generated on Agora Console.
-    var appID = "1a37e0ba7a96485bb1e538ab05439b96"
+    let appID = "1a37e0ba7a96485bb1e538ab05439b96"
     // Update with the temporary token generated in Agora Console.
-    var token = "007eJxTYPBpjd2Sv9M10Epo492NX76pBX02d7p/TVHlj1XYNMlFX3gVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNPjs9S24IZGRYcHceKyMDBIL4vAwlqcUl8ckZiXnJGak5DAwAtykkSQ=="
+    var token = "007eJxTYFhydcm5TJZl6qY67zfe7p+fYnq1aJM386oo6dA6Pp7tNfsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzN6vc+TG4IZGQoE8xhZmSAQBCfl6EktbgkPjkjMS85IzWHgQEAXB8iXQ=="
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName = "test_chanchel"
     
@@ -51,7 +50,7 @@ class WellCareViewController: UIViewController {
         let button = UIButton()
         button.setImage(UIImage(named: "ic-bluetooth"), for: .normal)
         button.addTarget(self, action: #selector(tappedBluetoothButton(_:)), for: .touchUpInside)
-
+        
         return button
     }()
     
@@ -91,16 +90,25 @@ class WellCareViewController: UIViewController {
     private var callTimer: Timer?
     private var callTime: Int = 0
     private let userPermissin: UserPermission
-    var delegate: AgoraVideoViewerDelegate?
-    init(userPermissin: UserPermission, param: VideoCallParams, delegate: AgoraVideoViewerDelegate? = nil) {
+    private let delegate: AgoraVideoViewerDelegate?
+    var trayOriginalCenter: CGPoint = .zero
+    private lazy var pipControlView: PIPControlView = {
+        let view = PIPControlView()
+        view.delegate = self
+        return view
+    }()
+    
+    private lazy var pandGesture: UIPanGestureRecognizer = {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+
+        return panGesture
+    }()
+    
+    init(userPermissin: UserPermission,
+         params: VideoCallParams,
+         delegate:  AgoraVideoViewerDelegate? = nil) {
         self.userPermissin = userPermissin
         self.delegate = delegate
-//        channelName = param.channelName
-//        token = param.token
-//        appID = param.appID
-        
-        
-        debugPrint("hai call \(channelName) -> \(token) -> \(appID)")
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -115,8 +123,6 @@ class WellCareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-      
-        
         view.backgroundColor = .black
         initializeAndJoinChannel()
         layoutCountdownView()
@@ -179,8 +185,6 @@ class WellCareViewController: UIViewController {
             airplayVolume.widthAnchor.constraint(equalToConstant: 20),
             airplayVolume.heightAnchor.constraint(equalToConstant: 20)
         ])
-
-        
     }
     
     func layoutCountdownView() {
@@ -404,6 +408,7 @@ class WellCareViewController: UIViewController {
 
 
 extension WellCareViewController {
+    
     @objc func tappedBluetoothButton(_ sender: UIButton) {
         if let routePickerButton = airplayVolume.subviews.first(where: { $0 is UIButton }) as? UIButton {
            
@@ -458,21 +463,100 @@ extension WellCareViewController {
     @objc func endCallTime() {
         self.agoraView?.tappedEndCallButton()
     }
+    
+    func onLeaveChat() {
+        
+    }
+    
+    func onEnterChat() {
+        let minimizedWidth = 190.0 * UIScreen.main.bounds.width / 384.0
+        self.view.frame = CGRect(origin: CGPoint(x: 50, y: 50), size: CGSize(width: minimizedWidth, height: minimizedWidth))
+        self.view.layer.cornerRadius = 5
+        self.view.clipsToBounds = true
+
+        relayoutAgoraVideoView()
+        
+    }
+    
+    func relayoutAgoraVideoView() {
+        let pip = (self.agoraView?.pip ?? false)
+        topControlerView.isHidden = pip
+        countdownView.isHidden = pip
+        backButton.isHidden = pip
+        
+
+        view.addSubview(pipControlView)
+        pipControlView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pipControlView.topAnchor.constraint(equalTo: view.topAnchor),
+            pipControlView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            pipControlView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            pipControlView.rightAnchor.constraint(equalTo: view.rightAnchor),
+
+        ])
+        
+        view.addGestureRecognizer(pandGesture)
+    }
+    
+    func exitPIP() {
+        let pip = (self.agoraView?.pip ?? false)
+        topControlerView.isHidden = pip
+        countdownView.isHidden = pip
+        backButton.isHidden = pip
+        
+        self.view.frame = UIScreen.main.bounds
+        self.view.layer.cornerRadius = 0
+        pipControlView.removeFromSuperview()
+        view.removeGestureRecognizer(pandGesture)
+    }
+    
+    
+    @objc func handlePan(_ sender: UIPanGestureRecognizer) {
+        var translation = sender.translation(in: self.view)
+        var velocity = sender.velocity(in: self.view)
+        let minimizedWidth = 190.0 * UIScreen.main.bounds.width / 384.0
+
+        if sender.state == .began {
+            trayOriginalCenter = self.view.center
+            
+        } else if sender.state == .changed {
+            
+            var newOffsetY = trayOriginalCenter.y + translation.y
+            var newOffsetX = trayOriginalCenter.x + translation.x
+
+            newOffsetX = max(minimizedWidth/2, newOffsetX)
+            newOffsetX = min(UIScreen.main.bounds.width -  minimizedWidth/2, newOffsetX)
+
+            
+            newOffsetY = max(minimizedWidth/2, newOffsetY)
+            newOffsetY = min(UIScreen.main.bounds.height - minimizedWidth/2, newOffsetY)
+
+            self.view.center = CGPoint(x: newOffsetX, y: newOffsetY)
+            
+        } else if sender.state == .ended {
+            
+        }
+    }
 }
 
-//extension WellCareViewController: AgoraVideoViewerDelegate{
-////    func updateParticipantLists(participants: IParticipant[]) => Promise<IParticipant[]> {
-////        
-////    }
-//    
-//    func leftChannel(_ channel: String) {
-//        debugPrint("hai leftChannel \(channel)")
-//    }
-//    
-//    func joinedChannel(channel: String) {
-//        debugPrint("hai joinedChannel \(channel)")
-//    }
-//}
+extension WellCareViewController: PIPControlViewDelegate {
+    func didSelectButton(_ action: ButtonAction) {
+        switch action {
+        case .pip:
+            agoraView?.pip = false
+            exitPIP()
+            delegate?.onLeaveChat()
+        case .close:
+            agoraView?.tappedEndCallButton()
+        case .flip:
+            agoraView?.flipCamera()
+        case .camera:
+            agoraView?.toggleCam(nil)
+        case .mic:
+            agoraView?.toggleMic(nil)
+        }
+    }
+}
 
 extension UIViewController {
     var hasTopNorth: Bool {
@@ -483,22 +567,4 @@ extension UIViewController {
 enum UserPermission: Int {
     case doctor = 0
     case patient
-}
-
-
-struct VideoCallParams {
-    let channelName: String
-    let uid: Int
-    let token: String
-    let appID: String
-}
-
-struct IParticipant {
-    
-}
-
-
-enum ClientRole: String {
-    case host = "host"
-    case audience = "audience"
 }

@@ -70,8 +70,7 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     )
     #endif
     
-    func onEnterChat()
-    func onLeaveChat()
+    func endEnterPIP()
 }
 
 public extension AgoraVideoViewerDelegate {
@@ -330,7 +329,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         didSet {
             if oldValue != self.pip {
                 self.layoutForPIP()
-                self.delegate?.onEnterChat()
+                self.delegate?.endEnterPIP()
             }
         }
     }

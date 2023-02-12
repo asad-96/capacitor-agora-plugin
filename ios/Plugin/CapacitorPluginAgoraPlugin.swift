@@ -19,6 +19,8 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     private var ELAPSED = "elapsed";
     private var CHANNEL = "channel";
     private var REASON = "reason";
+    private let ROOM = "room"
+    
     var wellCareVC: WellCareViewController?
     
     //MARK: Methods
@@ -35,15 +37,15 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         let token = call.getString(Constant.TOKEN) ?? ""
         let appId = call.getString(Constant.APPID) ?? ""
         let params = VideoCallParams(channelName: channelName, uid: uid, token: token, appID: appId)
-
-//        initializeAgoraEngine(appId: appId)
-        initViews(params)
-//        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
-//        call.resolve([
-//            "value": implementation.echo("Join channel value")
-//        ])
         
-      
+        //        initializeAgoraEngine(appId: appId)
+        initViews(params)
+        //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
+        //        call.resolve([
+        //            "value": implementation.echo("Join channel value")
+        //        ])
+        
+        
         
         
     }
@@ -59,31 +61,31 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     //MARK: Sub Functions
     func initViews(_ params: VideoCallParams) {
         DispatchQueue.main.async {
-//            self.remoteView.frame = UIScreen.main.bounds
-//            self.localView.frame =  CGRect(x: UIScreen.main.bounds.width - 90, y: 0, width: 120, height: 160)
+            //            self.remoteView.frame = UIScreen.main.bounds
+            //            self.localView.frame =  CGRect(x: UIScreen.main.bounds.width - 90, y: 0, width: 120, height: 160)
             let currentWindow: UIWindow? = UIApplication.shared.windows.first
-//            self.remoteView.backgroundColor = .white
-//            self.localView.backgroundColor = .white
-//            currentWindow?.addSubview(self.remoteView)
-//            currentWindow?.addSubview(self.localView)
-//
-//            self.btnLeave.frame = CGRect(x: UIScreen.main.bounds.width - (UIScreen.main.bounds.width / 1.5), y: UIScreen.main.bounds.height - 120, width: 120, height: 60)
-//            self.btnLeave.setTitle("Leave", for: .normal)
-//            self.btnLeave.backgroundColor = UIColor.link
-//            self.btnLeave.layer.cornerRadius = self.btnLeave.frame.height / 2
-//            self.btnLeave.addTarget(self, action: #selector(self.leaveChannelUser), for: .touchUpInside)
-//            currentWindow?.addSubview(self.btnLeave)
+            //            self.remoteView.backgroundColor = .white
+            //            self.localView.backgroundColor = .white
+            //            currentWindow?.addSubview(self.remoteView)
+            //            currentWindow?.addSubview(self.localView)
+            //
+            //            self.btnLeave.frame = CGRect(x: UIScreen.main.bounds.width - (UIScreen.main.bounds.width / 1.5), y: UIScreen.main.bounds.height - 120, width: 120, height: 60)
+            //            self.btnLeave.setTitle("Leave", for: .normal)
+            //            self.btnLeave.backgroundColor = UIColor.link
+            //            self.btnLeave.layer.cornerRadius = self.btnLeave.frame.height / 2
+            //            self.btnLeave.addTarget(self, action: #selector(self.leaveChannelUser), for: .touchUpInside)
+            //            currentWindow?.addSubview(self.btnLeave)
             
             let topMost = UIApplication.getTopViewController()
-            let vc = WellCareViewController(userPermissin: .doctor, param: params, delegate: self)
+            let vc = WellCareViewController(userPermissin: .doctor, params: params, delegate: self)
             vc.modalPresentationStyle = .fullScreen
-//            currentWindow?.addSubview(vc.view)
+            //            currentWindow?.addSubview(vc.view)
             self.wellCareVC = vc
             topMost?.present(vc, animated: true)
         }
     }
     
-
+    
     
     func updateParticipantLists(participants: [IParticipant]) {
         
@@ -152,15 +154,15 @@ class Constant {
 
 
 extension UIApplication {
-
+    
     class func getTopViewController(base: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-
+        
         if let nav = base as? UINavigationController {
             return getTopViewController(base: nav.visibleViewController)
-
+            
         } else if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
             return getTopViewController(base: selected)
-
+            
         } else if let presented = base?.presentedViewController {
             return getTopViewController(base: presented)
         }
@@ -174,18 +176,48 @@ extension UIApplication {
 
 
 extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate{
+   
     public func leftChannel(_ channel: String) {
         let jsObject: [String: Any] = [
-            EVENT: "onSelfAction",
-            "room": channel
+            EVENT: "leaved"
         ]
         
-        wellCareVC = nil
-        print("leftChannel:- \(jsObject)")
-        notifyListeners("onEventReceived", data: jsObject)
+        wellCareVC?.dismiss(animated: true) { [weak self] in
+            self?.wellCareVC = nil
+        }
+        
+        print("hai leftChannel:- \(jsObject)")
+        notifyListeners("onLeaved", data: jsObject)
     }
     
     public func joinedChannel(channel: String) {
         debugPrint("hai joinedChannel \(channel)")
     }
+    
+    public func onEnterChat() {
+        wellCareVC?.onEnterChat()
+        
+        let jsObject: [String: Any] = [
+            EVENT: "chat"        ]
+        notifyListeners("onSelfAction", data: jsObject)
+    }
+    
+    public func onLeaveChat() {
+        let jsObject: [String: Any] = [
+            EVENT: "leave"
+        ]
+        notifyListeners("onSelfAction", data: jsObject)
+    }
+}
+
+
+struct VideoCallParams {
+    let channelName: String
+    let  uid: Int
+    let token: String
+    let appID: String
+}
+
+struct IParticipant {
+    
 }
