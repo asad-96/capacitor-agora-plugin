@@ -69,6 +69,10 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
         code: AgoraRtmJoinChannelErrorCode
     )
     #endif
+    
+    func onEnterPIP()
+    func onLeavePIP()
+    func onSendAction(action: IParticipantAction, to participant: IParticipant)
 }
 
 public extension AgoraVideoViewerDelegate {
@@ -323,6 +327,18 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         }
     }
     
+    var pip: Bool = false {
+        didSet {
+            if oldValue != self.pip {
+                self.style = .pinned
+                self.layoutForPIP()
+                self.delegate?.onEnterPIP()
+                
+            }
+        }
+    }
+    
+    
     /// Creates an AgoraVideoViewer object, to be placed anywhere in your application.
     /// - Parameters:
     ///   - connectionData: Storing struct for holding data about the connection to Agora service.
@@ -443,7 +459,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(WellCareUserTVC.self, forCellReuseIdentifier: "WellCareUserTVC")
+        tableView.register(IParticipantTVC.self, forCellReuseIdentifier: "IParticipantTVC")
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
         return tableView
@@ -458,4 +474,5 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     }()
 
     var remoteUserIDs: Set<UInt> = []
+    var participants: [IParticipant] = []
 }
