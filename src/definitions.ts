@@ -35,11 +35,6 @@ export interface CapacitorPluginAgoraPlugin {
   leaveChannel(room?: string): Promise<void>
 
   /**
-   * set initial audio, mic, camera sources. In the waiting room, user may set the sources.
-   */
-  setMediaSource(kind: MediaDeviceKind, deviceId: string): Promise<void>
-
-  /**
    * Update participant lists, including those who are not joined agora channel. Returned participants mapped with their hasJoined status.
    */
   updateParticipantLists(participants: IParticipant[]): Promise<IParticipant[]>
@@ -136,6 +131,6 @@ export interface CapacitorPluginAgoraPlugin {
    */
   addListener(
     eventName: 'onSelfAction',
-    listenerFunc: (event: 'chat' | 'leaved', room?: string) => void
+    listenerFunc: (event: 'chat' | 'leaved' | 'exitPipMode', room?: string) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 }
