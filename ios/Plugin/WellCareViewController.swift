@@ -18,7 +18,7 @@ class WellCareViewController: UIViewController {
     // Update with the App ID of your project generated on Agora Console.
     let appID = "1a37e0ba7a96485bb1e538ab05439b96"
     // Update with the temporary token generated in Agora Console.
-    var token = "007eJxTYFhydcm5TJZl6qY67zfe7p+fYnq1aJM386oo6dA6Pp7tNfsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzN6vc+TG4IZGQoE8xhZmSAQBCfl6EktbgkPjkjMS85IzWHgQEAXB8iXQ=="
+    var token = "007eJxTYODvbHQpEwv+bxupcGbDgzKbv75sZ1y2iFacThUOjZZau1KBwTDR2DzVICnRPNHSzMTCNCnJMNXU2CIxycDUxNgyydIs4OjL5IZARoapScdZGBkgEMTnZShJLS6JT85IzEvOSM1hYAAA/A0iAA=="
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName = "test_chanchel"
     
@@ -537,6 +537,10 @@ extension WellCareViewController {
             
         }
     }
+    
+    func updateParticipantLists(participants: [IParticipant]) {
+        agoraView?.updateParticipantLists(participants: participants)
+    }
 }
 
 extension WellCareViewController: PIPControlViewDelegate {
@@ -545,7 +549,7 @@ extension WellCareViewController: PIPControlViewDelegate {
         case .pip:
             agoraView?.pip = false
             exitPIP()
-            delegate?.onLeaveChat()
+            delegate?.onLeavePIP()
         case .close:
             agoraView?.tappedEndCallButton()
         case .flip:

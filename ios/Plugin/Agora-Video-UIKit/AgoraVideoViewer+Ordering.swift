@@ -33,7 +33,7 @@ extension AgoraVideoViewer {
         }
         
         //hai
-        if self.userVideoLookup.values.count > 2, self.style == .grid {
+        if self.userVideoLookup.values.count != 2, self.style == .grid {
             self.style = .pinned
         }
         return remoteVideoView
@@ -322,5 +322,6 @@ extension AgoraVideoViewer {
         }
         
         userListView.isHidden = pip
+        streamerCollectionView.isHidden = pip
     }
 }

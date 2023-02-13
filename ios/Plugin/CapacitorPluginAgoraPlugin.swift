@@ -47,7 +47,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         
         
         
-        
     }
     
     @objc func leaveChannel(_ call: CAPPluginCall) {
@@ -61,33 +60,24 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     //MARK: Sub Functions
     func initViews(_ params: VideoCallParams) {
         DispatchQueue.main.async {
-            //            self.remoteView.frame = UIScreen.main.bounds
-            //            self.localView.frame =  CGRect(x: UIScreen.main.bounds.width - 90, y: 0, width: 120, height: 160)
             let currentWindow: UIWindow? = UIApplication.shared.windows.first
-            //            self.remoteView.backgroundColor = .white
-            //            self.localView.backgroundColor = .white
-            //            currentWindow?.addSubview(self.remoteView)
-            //            currentWindow?.addSubview(self.localView)
-            //
-            //            self.btnLeave.frame = CGRect(x: UIScreen.main.bounds.width - (UIScreen.main.bounds.width / 1.5), y: UIScreen.main.bounds.height - 120, width: 120, height: 60)
-            //            self.btnLeave.setTitle("Leave", for: .normal)
-            //            self.btnLeave.backgroundColor = UIColor.link
-            //            self.btnLeave.layer.cornerRadius = self.btnLeave.frame.height / 2
-            //            self.btnLeave.addTarget(self, action: #selector(self.leaveChannelUser), for: .touchUpInside)
-            //            currentWindow?.addSubview(self.btnLeave)
-            
-            let topMost = UIApplication.getTopViewController()
+
+//            let topMost = UIApplication.getTopViewController()
             let vc = WellCareViewController(userPermissin: .doctor, params: params, delegate: self)
-            vc.modalPresentationStyle = .fullScreen
-            //            currentWindow?.addSubview(vc.view)
+//            vc.modalPresentationStyle = .fullScreen
             self.wellCareVC = vc
-            topMost?.present(vc, animated: true)
+//            topMost?.present(vc, animated: true)
+            vc.view.frame = UIScreen.main.bounds
+            currentWindow?.addSubview(vc.view)
         }
     }
     
     
     
     func updateParticipantLists(participants: [IParticipant]) {
+        //nhận dữ liệu từ bên web gửi qua
+        
+        wellCareVC?.updateParticipantLists(participants: participants)
         
     }
 }
@@ -178,38 +168,60 @@ extension UIApplication {
 extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate{
    
     public func leftChannel(_ channel: String) {
-        let jsObject: [String: Any] = [
-            EVENT: "leaved"
-        ]
-        
+       
         wellCareVC?.dismiss(animated: true) { [weak self] in
             self?.wellCareVC = nil
         }
         
+        let jsObject: [String: Any] = [
+            EVENT: "leaved"
+        ]
+        
         print("hai leftChannel:- \(jsObject)")
-        notifyListeners("onLeaved", data: jsObject)
+        notifyListeners("onSelfAction", data: jsObject)
     }
     
     public func joinedChannel(channel: String) {
         debugPrint("hai joinedChannel \(channel)")
     }
     
-    public func onEnterChat() {
+    public func onEnterPIP() {
         wellCareVC?.onEnterChat()
         
         let jsObject: [String: Any] = [
-            EVENT: "chat"        ]
-        notifyListeners("onSelfAction", data: jsObject)
-    }
-    
-    public func onLeaveChat() {
-        let jsObject: [String: Any] = [
-            EVENT: "leave"
+            EVENT: "chat"
         ]
         notifyListeners("onSelfAction", data: jsObject)
     }
+    
+    public func onLeavePIP() {
+        let jsObject: [String: Any] = [
+            EVENT: "exit_pip"
+        ]
+        notifyListeners("onSelfAction", data: jsObject)
+    }
+    
+    public func onSendAction(action: IParticipantAction, to participant: IParticipant) {
+        
+        debugPrint("onSendAction \(action.rawValue) to particiant \(participant.name)")
+        
+        
+        let jsObject: [String: Any] = [
+            EVENT: action.event
+        ]
+        notifyListeners("onParticipantAction", data: jsObject)
+    }
+    
+    func remoteStreamChanged() {
+        let jsObject: [String: Any] = [
+            EVENT: "join|leave",
+            UID: "uid"
+            
+        ]
+        print("hai leftChannel:- \(jsObject)")
+        notifyListeners("onRemoteStreamChanged", data: jsObject)
+    }
 }
-
 
 struct VideoCallParams {
     let channelName: String
@@ -218,6 +230,42 @@ struct VideoCallParams {
     let appID: String
 }
 
-struct IParticipant {
+public enum IParticipantAction: Int, Codable {
+    case call = 0, nudge, mute, unmute, enableCamera, disableCamera
     
+    var event: String {
+        switch self {
+        case .call:
+            return "call"
+        case .nudge:
+            return "nudge"
+        case .mute:
+            return "mute"
+        case .unmute:
+            return "unmute"
+        case .enableCamera:
+            return "enableCamera"
+        case .disableCamera:
+            return "disableCamera"
+        }
+    }
+}
+
+public struct IParticipant: Codable {
+    let _id: String?
+    let name: String
+    let avatar: IAvatar
+    let role: ClientRole
+    let subtitle: String
+    let hasJoined: Bool
+    let uid: String
+}
+
+enum ClientRole: String, Codable {
+    case audience = "audience"
+    case host = "host"
+}
+
+struct IAvatar: Codable {
+    let url: String
 }

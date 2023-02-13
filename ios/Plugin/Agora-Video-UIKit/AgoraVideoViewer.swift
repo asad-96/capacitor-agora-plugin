@@ -70,8 +70,9 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     )
     #endif
     
-    func onEnterChat()
-    func onLeaveChat()
+    func onEnterPIP()
+    func onLeavePIP()
+    func onSendAction(action: IParticipantAction, to participant: IParticipant)
 }
 
 public extension AgoraVideoViewerDelegate {
@@ -329,8 +330,10 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     var pip: Bool = false {
         didSet {
             if oldValue != self.pip {
+                self.style = .pinned
                 self.layoutForPIP()
-                self.delegate?.onEnterChat()
+                self.delegate?.onEnterPIP()
+                
             }
         }
     }
@@ -456,7 +459,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(WellCareUserTVC.self, forCellReuseIdentifier: "WellCareUserTVC")
+        tableView.register(IParticipantTVC.self, forCellReuseIdentifier: "IParticipantTVC")
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
         return tableView
@@ -471,4 +474,5 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     }()
 
     var remoteUserIDs: Set<UInt> = []
+    var participants: [IParticipant] = []
 }
