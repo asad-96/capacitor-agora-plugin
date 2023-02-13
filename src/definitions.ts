@@ -96,6 +96,22 @@ export interface CapacitorPluginAgoraPlugin {
     ) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 
+
+  /**
+   * Remote stream events
+   * @event
+   */
+    addListener(
+      eventName: 'onRemoteStreamChanged',
+      listenerFunc: (
+        participantId: string,
+        event:
+          | 'join'
+          | 'leave',
+        data?: any
+      ) => void
+    ): Promise<PluginListenerHandle> & PluginListenerHandle
+
   /**
    * Exceptions
    * @event
