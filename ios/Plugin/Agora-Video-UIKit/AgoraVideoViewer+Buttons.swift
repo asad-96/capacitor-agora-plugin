@@ -191,9 +191,11 @@ extension AgoraVideoViewer {
         
 #if os(iOS)
         let container = UIView()
-        let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPanTray(_:)))
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPandButtonControlView(_:)))
         container.addGestureRecognizer(gesture)
         
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        container.addGestureRecognizer(tapGesture)
         container.backgroundColor = UIColor.black.withAlphaComponent(0.64)
         container.isHidden = true
         container.layer.cornerRadius = 24
@@ -258,10 +260,7 @@ extension AgoraVideoViewer {
             unselected: "ic-mic", selected: MPButton.muteMicSelectedSymbol
         )
         button.setImage(UIImage(named: "ic-mic"), for: .normal)
-        if let muteMicSelectedSymbol = MPButton.muteMicSelectedSymbol {
-            button.setImage(UIImage(systemName: muteMicSelectedSymbol), for: .selected)
-        }
-        
+        button.setImage(UIImage(named: "ic-mic-off"), for: .selected)
         button.tintColor = UIColor.white
 #if os(iOS)
         button.addTarget(self, action: #selector(toggleMic), for: .touchUpInside)
@@ -367,114 +366,57 @@ extension AgoraVideoViewer {
         return button
     }
     
-    
-    @objc open func getLayoutButton() -> MPButton? {
-        if let layoutButton = self.layoutButton {
-            return layoutButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: MPButton.layoutSymbol)
-        button.addTarget(self, action: #selector(tappedLayoutButton), for: .touchUpInside)
-        self.layoutButton = button
-        return button
-    }
-    
-    @objc open func getInputAudioButton() -> MPButton? {
-        if let audioInputButton = self.audioInputButton {
-            return audioInputButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: MPButton.bluetoothSymbol)
-        button.addTarget(self, action: #selector(tappedAudioInoutButton), for: .touchUpInside)
-        
-        self.audioInputButton = button
-        return button
-    }
-    
-    @objc open func getFlashButton() -> MPButton? {
-        if let flashButton = self.flashButton {
-            return flashButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: MPButton.flashSymbol)
-        button.addTarget(self, action: #selector(tappedFlashButton), for: .touchUpInside)
-        
-        self.flashButton = button
-        return button
-    }
-    
-    @objc open func getBackButton() -> MPButton? {
-        if let backButton = self.backButton {
-            return backButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: "ic-back")
-        button.addTarget(self, action: #selector(tappedBackButton), for: .touchUpInside)
-        
-        self.backButton = button
-        return button
-    }
-    
-    func layoutTopButtons() {
-        
-        guard let container = self.topButtonContainer else {
-            return
-        }
-        
-        
-        NSLayoutConstraint.activate([
-            topButtonStackView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            topButtonStackView.centerYAnchor.constraint(equalTo: container.centerYAnchor
-                                                       ),
-            topButtonStackView.widthAnchor.constraint(equalTo: container.widthAnchor),
-            topButtonStackView.heightAnchor.constraint(equalTo: container.heightAnchor),
-            
-        ])
-        
-        for button in topButtonStackView.arrangedSubviews {
-            button.frame.size = CGSize(width: 41, height: 41)
-            //            button.removeAllConstraints()
-            //            button.translatesAutoresizingMaskIntoConstraints = false
-            //            NSLayoutConstraint.activate([
-            //                button.widthAnchor.constraint(equalToConstant: 41),
-            //                button.heightAnchor.constraint(equalToConstant: 41)
-            //            ])
-            button.backgroundColor = [UIColor.red, UIColor.green, UIColor.yellow, UIColor.purple].randomElement()
-        }
-        
-    }
-    
-    @IBAction func didPanTray(_ sender: UIPanGestureRecognizer) {
+    @IBAction func didPandButtonControlView(_ sender: UIPanGestureRecognizer) {
         guard let controlContainer = controlContainer else { return }
         var translation = sender.translation(in: self)
         var velocity = sender.velocity(in: self)
         
         print("hai translation \(translation)")
         
-        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - ((self.style == .expand ? bottomTableHeight : 0))
+        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - bottomTableHeight
+        
         let minOffsetY =  UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
         if sender.state == .began {
-            trayOriginalCenter = controlContainer.center
-            
+            bottomContainerCenter = controlContainer.center
+            print("hai translation begin  \(bottomContainerCenter.x) -> \(bottomContainerCenter.y)")
+
         } else if sender.state == .changed {
             
-            var newOffsetY = trayOriginalCenter.y + translation.y
-            newOffsetY = max(minOffsetY, newOffsetY)
-            newOffsetY = min(maxOffsetY, newOffsetY)
+            var newOffsetY = bottomContainerCenter.y + translation.y
+            newOffsetY = min(minOffsetY, newOffsetY)
+            newOffsetY = max(maxOffsetY, newOffsetY)
             
-            print("hai translation \(newOffsetY) ->\(maxOffsetY). ->\(minOffsetY)  ->\(translation.y)")
+            debugPrint("hai velocity \(velocity.y)")
+            print("hai translation change \(newOffsetY) ->\(maxOffsetY). ->\(minOffsetY)  ->\(translation.y)")
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: newOffsetY)
             
         } else if sender.state == .ended {
+
+
             if velocity.y > 0 {
-                UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                    controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
-                })
+                
+                print("hai translation end dow: \(controlContainer.center.y) -> \(bottomContainerCenter.y)")
+         
+                minimizeControlContainer()
             } else {
-                UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                    controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
-                })
+                print("hai translation end up: \(controlContainer.center.y) -> \(bottomContainerCenter.y)")
+                if controlContainer.center.y < UIScreen.main.bounds.height - controlContainer.frame.height/2 - 100 {
+                    
+                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
+                        if self.style != .grid {
+                            self.streamerCollectionView.isHidden = true
+                        }
+                    })
+                    
+                } else {
+                    maximizeControlContainer()
+                }
             }
         }
+    }
+    
+    @objc func handleTapGesture(_ sender: UITapGestureRecognizer) {
+        maximizeControlContainer()
     }
 }

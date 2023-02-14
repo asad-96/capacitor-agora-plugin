@@ -10,7 +10,7 @@ import AgoraRtcKit
 import MediaPlayer
 
 class WellCareViewController: UIViewController {
-    static let VideoCallInMins: Int = 5
+    static let VideoCallInMins: Int = 2
     var agoraEngine: AgoraRtcEngineKit!
     // By default, set the current user role to broadcaster to both send and receive streams.
     var userRole: AgoraClientRole = .broadcaster
@@ -57,6 +57,7 @@ class WellCareViewController: UIViewController {
     private lazy var flashButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "ic-camera-flash"), for: .normal)
+        button.alpha = 0.5
         button.addTarget(self, action: #selector(tappedFlashButton(_:)), for: .touchUpInside)
         return button
     }()
@@ -76,8 +77,8 @@ class WellCareViewController: UIViewController {
         return view
     }()
     
-    private lazy var reminderView: UIView = {
-        let view = UIView()
+    private lazy var reminderView: VideoCallReminderView = {
+        let view = VideoCallReminderView()
         view.backgroundColor = UIColor(named: "color745A00")?.withAlphaComponent(0.6)
         view.layer.cornerRadius = 9
         view.clipsToBounds = true
@@ -259,50 +260,6 @@ class WellCareViewController: UIViewController {
             reminderView.heightAnchor.constraint(equalToConstant: 43),
             reminderView.bottomAnchor.constraint(equalTo: agoraView.streamerCollectionView.topAnchor, constant: -20)
         ])
-        
-        let reminderImageView = UIImageView(image: UIImage(named: "ic-alarm-big"))
-        reminderImageView.contentMode = .scaleAspectFit
-        reminderView.addSubview(reminderImageView)
-        reminderImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            reminderImageView.centerYAnchor.constraint(equalTo: reminderView.centerYAnchor),
-            reminderImageView.leftAnchor.constraint(equalTo: reminderView.leftAnchor, constant: 11),
-            reminderImageView.widthAnchor.constraint(equalToConstant: 23),
-            reminderImageView.heightAnchor.constraint(equalToConstant: 23),
-        ])
-        
-        let reminderLabel = UILabel()
-        reminderLabel.text = "1 minutes remain. Please wrap up your calls."
-        reminderLabel.textColor = .white
-        reminderLabel.font = .systemFont(ofSize: 9, weight: .medium)
-        reminderView.addSubview(reminderLabel)
-        reminderLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            reminderLabel.centerYAnchor.constraint(equalTo: reminderView.centerYAnchor),
-            reminderLabel.leftAnchor.constraint(equalTo: reminderImageView.rightAnchor, constant: 10),
-        ])
-        
-        let okButton = UIButton()
-        okButton.setTitle("OK", for: .normal)
-        okButton.setTitleColor(.white, for: .normal)
-        okButton.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
-        okButton.addTarget(self, action: #selector(tappedCloseReminderButton(_:)), for: .touchUpInside)
-        okButton.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-        
-        okButton.layer.cornerRadius = 8
-        okButton.clipsToBounds = true
-        reminderView.addSubview(okButton)
-        okButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            okButton.centerYAnchor.constraint(equalTo: reminderView.centerYAnchor),
-            okButton.rightAnchor.constraint(equalTo: reminderView.rightAnchor, constant: -11),
-            okButton.widthAnchor.constraint(equalToConstant: 35),
-            okButton.heightAnchor.constraint(equalToConstant: 24),
-
-        ])
     }
     
     @objc func tappedLayoutButton(_ sender: UIButton) {
@@ -311,8 +268,7 @@ class WellCareViewController: UIViewController {
         let segmentedStyle = [
             AgoraVideoViewer.Style.floating,
             AgoraVideoViewer.Style.grid,
-            AgoraVideoViewer.Style.strip,
-            AgoraVideoViewer.Style.expand
+            AgoraVideoViewer.Style.strip
         ]
         let videoCount = self.agoraView?.userVideoLookup.count ?? 0
         let style = self.agoraView?.style ?? .floating
@@ -388,21 +344,35 @@ class WellCareViewController: UIViewController {
     }
     
     func hideReminderView() {
-        UIView.animate(withDuration: 3) {
-            self.reminderView.alpha = 0
-        }
+        reminderView.hide()
     }
     
     func showReminderView() {
-        reminderView.alpha = 0
-        reminderView.isHidden = false
-        UIView.animate(withDuration: 0.3) {
-            self.reminderView.alpha = 1
-        }
+        reminderView.show()
     }
     
     func hideCountDownView() {
         countdownView.isHidden = true
+    }
+    
+    func showAlertView(title: String?, message: String?, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            alert.dismiss(animated: true, completion: completion)
+        }
+        
+        let cancelAction = UIAlertAction(title: "CANCEL", style: .default)
+
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+
+        present(alert, animated: true)
+    }
+    
+    func showFlashAlert() {
+        showAlertView(title: nil, message: "Switch to rear camera\nto use camera torch light?") { [weak self] in
+            self?.agoraView?.flipCamera()
+        }
     }
 }
 
@@ -417,7 +387,12 @@ extension WellCareViewController {
     }
     
     @objc func tappedFlashButton(_ sender: UIButton) {
-        self.agoraView.tappedFlashButton()
+        let isTorchSupported = agoraView?.isTorchSupported ?? false
+        if isTorchSupported {
+            self.agoraView.tappedFlashButton()
+        } else {
+            self.showFlashAlert()
+        }
     }
     
     @objc func tappedBackButton(_ sender: UIButton) {
@@ -540,6 +515,17 @@ extension WellCareViewController {
     
     func updateParticipantLists(participants: [IParticipant]) {
         agoraView?.updateParticipantLists(participants: participants)
+    }
+    
+    func onTappedbutton(button: AgoraControlButton) {
+        switch button {
+        case .flip:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                let isTorchSupported = self?.agoraView?.isTorchSupported ?? false
+                self?.flashButton.alpha = isTorchSupported ? 1 : 0.5
+            }
+        default: break
+        }
     }
 }
 

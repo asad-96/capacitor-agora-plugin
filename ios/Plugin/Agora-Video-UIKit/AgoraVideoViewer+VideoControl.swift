@@ -214,7 +214,10 @@ extension AgoraVideoViewer {
 
     #if os(iOS)
     /// Swap between front and back facing camera.
-    @objc open func flipCamera() { self.agkit.switchCamera() }
+    @objc open func flipCamera() {
+        self.agkit.switchCamera()
+        self.delegate?.onTappedbutton(button: .flip)
+    }
     #endif
 
     /// Toggle between being a host or a member of the audience.
@@ -247,14 +250,6 @@ extension AgoraVideoViewer {
         AgoraRtcEngineKit.destroy()
     }
     
-    
-    @objc func tappedLayoutButton() {
-        
-//        let styleValue = (self.style.rawValue + 1) % AgoraVideoViewer.Style.count
-//
-//        self.style = AgoraVideoViewer.Style(rawValue: styleValue) ?? self.style
-    }
-    
     @objc func tappedFlashButton() {
         guard self.agkit.isCameraTorchSupported() else {
             return
@@ -263,14 +258,10 @@ extension AgoraVideoViewer {
         self.torchOn = !self.torchOn
     }
     
-    @objc func tappedAudioInoutButton() {
-        if let routePickerButton = airplayVolume.subviews.first(where: { $0 is UIButton }) as? UIButton {
-           
-            routePickerButton.sendActions(for: .touchUpInside)
-        }
-    }
-    
-    @objc func tappedBackButton() {
-      
-    }
+//    @objc func tappedAudioInoutButton() {
+//        if let routePickerButton = airplayVolume.subviews.first(where: { $0 is UIButton }) as? UIButton {
+//           
+//            routePickerButton.sendActions(for: .touchUpInside)
+//        }
+//    }
 }

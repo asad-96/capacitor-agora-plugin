@@ -74,11 +74,11 @@ extension AgoraVideoViewer {
             return
         }
         self.refreshCollectionData()
-        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty
+        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty || pip
         self.organiseGrid()
 
         switch self.style {
-        case .grid, .pinned, .collection, .strip, .expand:
+        case .grid, .pinned, .collection, .strip:
             // these two cases are taken care of from streamerCollectionView and organiseGrid above
             break
         case .custom(let orgCustom):
@@ -266,7 +266,7 @@ extension AgoraVideoViewer {
         //layout for expand
         
 
-        let bottomMargin: CGFloat = controlContainer.frame.height + (self.style == .expand ? bottomTableHeight : 0)
+        let bottomMargin: CGFloat = controlContainer.frame.height
         controlContainer.frame.origin = CGPoint(x: 5, y: UIScreen.main.bounds.height - bottomMargin)
         
         DispatchQueue.main.async { [weak self] in
@@ -280,14 +280,20 @@ extension AgoraVideoViewer {
         let minOffsetY =  UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
         UIView.animate(withDuration: 0.3, animations: { () -> Void in
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
+            if self.style != .grid {
+                self.streamerCollectionView.isHidden = true
+            }
         })
     }
     
     func maximizeControlContainer() {
         guard let controlContainer = controlContainer else { return }
-        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - (self.style == .expand ? bottomTableHeight : 0)
+        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2
         UIView.animate(withDuration: 0.3, animations: { () -> Void in
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
+            if self.style != .grid {
+                self.streamerCollectionView.isHidden = false
+            }
         })
     }
     

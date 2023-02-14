@@ -52,6 +52,7 @@ extension AgoraVideoViewer: AgoraRtcEngineDelegate {
     ) {
         // Keeping track of all people in the session
         self.remoteUserIDs.insert(uid)
+        self.delegate?.remoteStreamJoined(uid: uid)
         self.agoraSettings.rtcDelegate?.rtcEngine?(engine, didJoinedOfUid: uid, elapsed: elapsed)
     }
 
@@ -107,6 +108,7 @@ extension AgoraVideoViewer: AgoraRtcEngineDelegate {
         // which means it's still relevant.
         if reason == .quit || reason == .dropped {
             self.remoteUserIDs.remove(uid)
+            self.delegate?.remoteStreamLeaved(uid: uid)
         }
         if self.userVideoLookup[uid] != nil {
             // User is no longer hosting, need to change the lookups

@@ -36,7 +36,7 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     /// The token used to connect to the current active channel has expired.
     /// - Parameter engine: Agora RTC Engine
     func tokenDidExpire(_ engine: AgoraRtcEngineKit)
-    #if os(iOS)
+#if os(iOS)
     /// presentAlert is a way to show any alerts that the AgoraVideoViewer wants to display.
     /// These could be relating to video or audio permissions.
     /// - Parameters:
@@ -45,20 +45,20 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     func presentAlert(alert: UIAlertController, animated: Bool, viewer: UIView?)
     /// An array of any additional buttons to be displayed alongside camera, and microphone buttons
     func extraButtons() -> [UIButton]
-    #elseif os(macOS)
+#elseif os(macOS)
     /// An array of any additional buttons to be displayed alongside camera, and microphone buttons
     func extraButtons() -> [NSButton]
-    #endif
+#endif
     /// A pong request has just come back to the local user, indicating that someone is still present in RTM
     /// - Parameter peerId: RTM ID of the remote user that sent the pong request.
     func incomingPongRequest(from peerId: String)
-    #if canImport(AgoraRtmControl)
+#if canImport(AgoraRtmControl)
     /// State of RTM has changed
     /// - Parameters:
     ///   - oldState: Previous state of RTM
     ///   - newState: New state of RTM
     func rtmStateChanged(from oldState: AgoraRtmController.RTMStatus, to newState: AgoraRtmController.RTMStatus)
-
+    
     /// Called after AgoraRtmController joins a channel
     /// - Parameters:
     ///   - name: name of the channel joined
@@ -68,12 +68,16 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
         name: String, channel: AgoraRtmChannel,
         code: AgoraRtmJoinChannelErrorCode
     )
-    #endif
+#endif
     
     func onEnterPIP()
     func onLeavePIP()
     func onSendAction(action: IParticipantAction, to participant: IParticipant)
+    func onTappedbutton(button: AgoraControlButton)
+    func remoteStreamJoined(uid: UInt)
+    func remoteStreamLeaved(uid: UInt)
 }
+
 
 public extension AgoraVideoViewerDelegate {
     func joinedChannel(channel: String) {}
@@ -141,13 +145,12 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         /// collection only shows the collectionview, no other UI is visible, except video controls
         case collection
         case strip
-        case expand
         /// Method for constructing a custom layout.
         case custom(customFunction: (AgoraVideoViewer, EnumeratedSequence<[UInt: AgoraSingleVideoView]>, Int) -> Void)
         
         public static func == (lhs: AgoraVideoViewer.Style, rhs: AgoraVideoViewer.Style) -> Bool {
             switch (lhs, rhs) {
-            case (.grid, .grid), (.pinned, .pinned), (.strip, .strip), (.expand, .expand): return true
+            case (.grid, .grid), (.pinned, .pinned), (.strip, .strip): return true
             default: return false
             }
         }
@@ -327,6 +330,10 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         }
     }
     
+    var isTorchSupported: Bool {
+        return self.agkit.isCameraTorchSupported()
+    }
+    
     var pip: Bool = false {
         didSet {
             if oldValue != self.pip {
@@ -337,6 +344,8 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
             }
         }
     }
+    
+    var cameraPosition:  AVCaptureDevice.Position = .front
     
     
     /// Creates an AgoraVideoViewer object, to be placed anywhere in your application.
@@ -375,8 +384,6 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
                 self.style = .grid
             case "strip":
                 self.style = .strip
-            case "expand":
-                self.style = .expand
             case "collection":
                 self.style = .collection
             default:
@@ -405,7 +412,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     }
     
     internal var userVideosForGrid: [UInt: AgoraSingleVideoView] {
-        if self.style == .pinned || self.style == .strip || self.style == .expand {
+        if self.style == .pinned || self.style == .strip {
             if self.overrideActiveSpeaker == nil, self.activeSpeaker == nil, !self.agoraSettings.showSelf {
                 return [:]
             }
@@ -420,7 +427,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     /// Video views to be displayed in the pinned collection view.
     var collectionViewVideos: [AgoraSingleVideoView] = []
     
-    var trayOriginalCenter: CGPoint!
+    var bottomContainerCenter: CGPoint!
     
     /// Container for the buttons (such as mute, flip camera etc.)
     public var controlContainer: UIView?
@@ -431,23 +438,6 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     var screenShareButton: MPButton?
     var chatButton: MPButton?
     var endCallButton: MPButton?
-    
-    public var topButtonContainer: UIView?
-    lazy var topButtonStackView: UIStackView = {
-        return UIStackView()
-    }()
-    
-    lazy var countdownView:  UIView = {
-        return UIView()
-    }()
-    var countdownLabel: UILabel?
-    
-    var layoutButton: MPButton?
-    var audioInputButton: MPButton?
-    var flashButton: MPButton?
-    var backButton: MPButton?
-    
-    let airplayVolume = MPVolumeView()
     
     lazy var userListView: UIView = {
         let view = UIView()
@@ -473,6 +463,6 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         return bOpt
     }()
 
-    var remoteUserIDs: Set<UInt> = []
+    var remoteUserIDs: Set<UInt> = [] 
     var participants: [IParticipant] = []
 }

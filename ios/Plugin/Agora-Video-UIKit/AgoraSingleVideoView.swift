@@ -127,40 +127,19 @@ public class AgoraSingleVideoView: MPView {
     #endif
 
     /// Icon to show if this user is muting their microphone
-    lazy var mutedFlag: MPView = {
-        #if os(iOS)
-        let muteFlag = UIImageView(image: UIImage(named: "ic-mic-mute"))
-//        muteFlag.tintColor = self.micFlagColor
-        muteFlag.contentMode = .scaleAspectFit
-        #elseif os(macOS)
-        let muteFlag = MPButton()
-        muteFlag.font = .systemFont(ofSize: NSFont.systemFontSize * 1.5)
-        muteFlag.attributedTitle = NSAttributedString(
-            string: MPButton.micSlashSymbol,
-            attributes: [ NSAttributedString.Key.foregroundColor: self.micFlagColor ]
-        )
-        #endif
+    lazy var mutedFlag: UIButton = {
+        let muteFlag = UIButton()
+        muteFlag.isUserInteractionEnabled = false
+        muteFlag.setImage(UIImage(named: "ic-mic-mute"), for: .normal)
+        muteFlag.imageView?.contentMode = .scaleAspectFit
+        muteFlag.imageEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
+        
+        muteFlag.backgroundColor = UIColor(named: "colorF8000F")?.withAlphaComponent(0.5)
+        muteFlag.layer.cornerRadius = 15.0 / 2.0
+        muteFlag.clipsToBounds = true
         self.addSubview(muteFlag)
         muteFlag.translatesAutoresizingMaskIntoConstraints = false
-//        #if os(iOS)
-////        muteFlag.frame = CGRect(
-////            origin: CGPoint(x: self.frame.width - 20 - 15, y: self.frame.height - 5),
-////            size: CGSize(width: 15, height: 15)
-////        )
-////        muteFlag.autoresizingMask = [.flexibleBottomMargin, .flexibleLeftMargin]
-//
-//        nslayou
-//        #elseif os(macOS)
-//        muteFlag.isBordered = false
-//        muteFlag.wantsLayer = true
-//        muteFlag.layer?.backgroundColor = .clear
-//        muteFlag.frame = CGRect(
-//            origin: CGPoint(x: self.frame.width - 30, y: self.frame.height - 30),
-//            size: CGSize(width: 25, height: 25)
-//        )
-//        muteFlag.autoresizingMask = [.minYMargin, .minXMargin]
-//        #endif
-        
+
         NSLayoutConstraint.activate([
             muteFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -35),
             muteFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
@@ -271,12 +250,20 @@ public class AgoraSingleVideoView: MPView {
         }
         
         
+        let ratio = style == .pinned ? 19.0/78.0 : 37.0 / 150.0
+        let buttonWidth = min(self.frame.width * ratio, 37)
+        
         NSLayoutConstraint.activate([
             mutedFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: style == .pinned ? -5 : -10),
             mutedFlag.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: style == .pinned ? -5 : -10),
-            mutedFlag.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: style == .pinned ? 19.0/78.0 : 37.0 / 150.0),
-            mutedFlag.heightAnchor.constraint(equalTo: mutedFlag.widthAnchor, multiplier: 1)
+            mutedFlag.widthAnchor.constraint(equalToConstant: buttonWidth),
+            mutedFlag.heightAnchor.constraint(equalToConstant: buttonWidth)
         ])
+        
+        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+
+        mutedFlag.layer.cornerRadius = buttonWidth / 2
+        mutedFlag.clipsToBounds = true
     }
     
     func placeMuteAtTop() {
@@ -294,5 +281,8 @@ public class AgoraSingleVideoView: MPView {
             mutedFlag.widthAnchor.constraint(equalToConstant: 15),
             mutedFlag.heightAnchor.constraint(equalToConstant: 15)
         ])
+        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
+        mutedFlag.layer.cornerRadius = 15.0 / 2.0
+        mutedFlag.clipsToBounds = true
     }
 }
