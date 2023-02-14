@@ -167,6 +167,7 @@ extension AgoraVideoViewer {
     @objc open func leaveChannel(
         stopPreview: Bool = true, _ leaveChannelBlock: ((AgoraChannelStats) -> Void)? = nil
     ) -> Int32 {
+        debugPrint("hai leaveChannel")
         guard let chName = self.connectionData.channel else {
             AgoraVideoViewer.agoraPrint(.error, message: "Not in a channel, could not leave")
             // Returning 0 to just say we are not in a channel

@@ -33,7 +33,7 @@ extension AgoraVideoViewer {
         }
         
         //hai
-        if self.userVideoLookup.values.count > 2, self.style == .grid {
+        if self.userVideoLookup.values.count != 2, self.style == .grid {
             self.style = .pinned
         }
         return remoteVideoView
@@ -305,5 +305,23 @@ extension AgoraVideoViewer {
     
     var hasTopNorth: Bool {
         return UIScreen.main.bounds.height >= 812
+    }
+}
+
+extension AgoraVideoViewer {
+    func layoutForPIP() {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.layoutForPIP()
+            }
+            return
+        }
+        
+        if let controlContainer = controlContainer {
+            controlContainer.isHidden = self.pip
+        }
+        
+        userListView.isHidden = pip
+        streamerCollectionView.isHidden = pip
     }
 }

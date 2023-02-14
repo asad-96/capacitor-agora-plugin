@@ -238,7 +238,7 @@ extension AgoraVideoViewer {
     }
     
     @objc func tappedChatButton() {
-        
+        pip = true
     }
 
     
@@ -251,7 +251,7 @@ extension AgoraVideoViewer {
     @objc func tappedLayoutButton() {
         
 //        let styleValue = (self.style.rawValue + 1) % AgoraVideoViewer.Style.count
-//        
+//
 //        self.style = AgoraVideoViewer.Style(rawValue: styleValue) ?? self.style
     }
     

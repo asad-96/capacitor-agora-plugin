@@ -15,15 +15,17 @@ npx cap sync
 
 * [`joinChannel(...)`](#joinchannel)
 * [`leaveChannel(...)`](#leavechannel)
-* [`setMediaSource(...)`](#setmediasource)
 * [`updateParticipantLists(...)`](#updateparticipantlists)
 * [`setSpotlight(...)`](#setspotlight)
 * [`showRecordingStatus(...)`](#showrecordingstatus)
 * [`setCountdown(...)`](#setcountdown)
+* [`enterPictureInPictureMode()`](#enterpictureinpicturemode)
 * [`addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)`](#addlisteneronmicrophonechanged--oncamerachanged--onplaybackdevicechanged)
 * [`addListener('onParticipantAction', ...)`](#addlisteneronparticipantaction)
+* [`addListener('onRemoteStreamChanged', ...)`](#addlisteneronremotestreamchanged)
 * [`addListener('exception', ...)`](#addlistenerexception)
 * [`addListener('network-quality', ...)`](#addlistenernetwork-quality)
+* [`addListener('onSelfAction', ...)`](#addlisteneronselfaction)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -60,22 +62,6 @@ Leave Agora Channel
 | Param      | Type                |
 | ---------- | ------------------- |
 | **`room`** | <code>string</code> |
-
---------------------
-
-
-### setMediaSource(...)
-
-```typescript
-setMediaSource(kind: any, deviceId: string) => Promise<void>
-```
-
-set initial audio, mic, camera sources. In the waiting room, user may set the sources.
-
-| Param          | Type                |
-| -------------- | ------------------- |
-| **`kind`**     | <code>any</code>    |
-| **`deviceId`** | <code>string</code> |
 
 --------------------
 
@@ -144,6 +130,17 @@ Show a countdown. A non-positive value will disable it.
 --------------------
 
 
+### enterPictureInPictureMode()
+
+```typescript
+enterPictureInPictureMode() => Promise<void>
+```
+
+Enter picture-in-picture mode
+
+--------------------
+
+
 ### addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)
 
 ```typescript
@@ -180,6 +177,24 @@ Participant events
 --------------------
 
 
+### addListener('onRemoteStreamChanged', ...)
+
+```typescript
+addListener(eventName: 'onRemoteStreamChanged', listenerFunc: (participantId: string, event: 'join' | 'leave', data?: any) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+Remote stream events
+
+| Param              | Type                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onRemoteStreamChanged'</code>                                                  |
+| **`listenerFunc`** | <code>(participantId: string, event: 'join' \| 'leave', data?: any) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
 ### addListener('exception', ...)
 
 ```typescript
@@ -210,6 +225,24 @@ Network Quality
 | ------------------ | ----------------------------------------------------------------------------- |
 | **`eventName`**    | <code>'network-quality'</code>                                                |
 | **`listenerFunc`** | <code>(stats: <a href="#networkquality">NetworkQuality</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener('onSelfAction', ...)
+
+```typescript
+addListener(eventName: 'onSelfAction', listenerFunc: (event: 'chat' | 'leaved' | 'exitPipMode', room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+User action
+
+| Param              | Type                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onSelfAction'</code>                                                         |
+| **`listenerFunc`** | <code>(event: 'chat' \| 'leaved' \| 'exitPipMode', room?: string) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
