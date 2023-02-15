@@ -70,6 +70,7 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     )
 #endif
     
+    func didChangedActiveSpeaker()
     func onEnterPIP()
     func onLeavePIP()
     func onSendAction(action: IParticipantAction, to participant: IParticipant)
@@ -157,15 +158,29 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     }
     
     /// The most recently active speaker in the session. This will only ever be set to remote users, not the local user.
-    public internal(set) var activeSpeaker: UInt? { didSet { self.reorganiseVideos() } }
+    public internal(set) var activeSpeaker: UInt? {
+        didSet {
+            debugPrint("hai speaker 1 \(activeSpeaker)")
+            self.reorganiseVideos()
+        }
+    }
     
     /// This user will be the main focus when using `.pinned` style.
     /// Assigned by clicking a user in the collection view.
     /// Can be set to local user.
     public var overrideActiveSpeaker: UInt? {
         didSet {
-            if oldValue != overrideActiveSpeaker { self.reorganiseVideos() }
+            debugPrint("hai speaker 2 \(overrideActiveSpeaker)")
+
+            if oldValue != overrideActiveSpeaker {
+                self.delegate?.didChangedActiveSpeaker()
+                self.reorganiseVideos()
+            }
         }
+    }
+    
+    public var isYourSelfSpeaking: Bool {
+        return overrideActiveSpeaker == userID
     }
     
     /// Setting to zero will tell Agora to assign one for you once connected.
@@ -463,6 +478,16 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         return bOpt
     }()
 
-    var remoteUserIDs: Set<UInt> = []
+    var remoteUserIDs: Set<UInt> = [] {
+        didSet {
+            debugPrint("hai remoteUserIDs \(remoteUserIDs) \(userID)")
+            
+            let remoteParticipant = remoteUserIDs.compactMap({IParticipant(_id: nil, name: "", avatar: IAvatar(url: ""), role: .audience, subtitle: "", hasJoined: true, uid: "\($0)")})
+            let selfParticipant = [userID].compactMap({IParticipant(_id: nil, name: "", avatar: IAvatar(url: ""), role: .audience, subtitle: "", hasJoined: true, uid: "\($0)")})
+            
+            let allParticipant = remoteParticipant + selfParticipant
+            self.updateParticipantLists(participants: allParticipant)
+        }
+    }
     var participants: [IParticipant] = []
 }

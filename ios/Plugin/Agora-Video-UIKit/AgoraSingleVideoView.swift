@@ -127,34 +127,24 @@ public class AgoraSingleVideoView: MPView {
     #endif
 
     /// Icon to show if this user is muting their microphone
-    lazy var mutedFlag: MPView = {
+    lazy var mutedFlag: MPButton = {
         
-        let muteFlag = UIView()
-        let iconImageView = UIImageView(image: UIImage(named: "ic-mic-mute"))
-//        muteFlag.tintColor = self.micFlagColor
-        muteFlag.contentMode = .scaleAspectFit
-       
+        let muteFlag = UIButton()
+        muteFlag.setImage(UIImage(named: "ic-mic-mute"), for: .normal)
+        muteFlag.imageView?.contentMode = .scaleAspectFit
         self.addSubview(muteFlag)
-        muteFlag.addSubview(iconImageView)
         
-        iconImageView.translatesAutoresizingMaskIntoConstraints = false
         muteFlag.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             muteFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -35),
             muteFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
             muteFlag.widthAnchor.constraint(equalToConstant: 15),
-            muteFlag.heightAnchor.constraint(equalToConstant: 15),
-            
-            iconImageView.centerYAnchor.constraint(equalTo: muteFlag.centerYAnchor),
-            iconImageView.centerXAnchor.constraint(equalTo: muteFlag.centerXAnchor),
-            iconImageView.widthAnchor.constraint(equalTo: muteFlag.widthAnchor, multiplier: 2.0/3),
-            iconImageView.heightAnchor.constraint(equalTo: muteFlag.heightAnchor, multiplier: 2.0/3),
-
+            muteFlag.heightAnchor.constraint(equalToConstant: 15)
         ])
         
-        muteFlag.layer.cornerRadius = 15.0/2.0
         muteFlag.backgroundColor = UIColor(named: "colorF8000F")?.withAlphaComponent(0.5)
+        muteFlag.layer.cornerRadius = 15.0/2.0
         muteFlag.clipsToBounds = true
         return muteFlag
     }()
@@ -275,6 +265,7 @@ public class AgoraSingleVideoView: MPView {
             mutedFlag.heightAnchor.constraint(equalToConstant: muteWidth)
         ])
         
+        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         mutedFlag.layer.cornerRadius = muteWidth/2.0
         mutedFlag.clipsToBounds = true
     }

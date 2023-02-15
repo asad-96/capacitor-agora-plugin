@@ -31,6 +31,22 @@ extension AgoraVideoViewer {
             userListTableView.rightAnchor.constraint(equalTo: userListView.rightAnchor),
         ])
     }
+    
+    func updateParticipantLists(participants: [IParticipant]) {
+        
+        for participant in participants {
+            if let index = self.participants.firstIndex(where: {$0.uid == participant.uid}){
+                self.participants[index].name = participant.name
+                self.participants[index].avatar = participant.avatar
+            } else {
+                self.participants.append(participant)
+            }
+        }
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.userListTableView.reloadData()
+        }
+    }
 }
 
 
@@ -46,7 +62,7 @@ extension AgoraVideoViewer: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let videoCount = videoLookup.values.count
+        let videoCount = participants.count
         debugPrint("hai video count \(videoCount)")
         return videoCount
     }
@@ -57,6 +73,12 @@ extension AgoraVideoViewer: UITableViewDataSource {
             return UITableViewCell()
         }
         
+        let participant = participants[indexPath.row]
+        cell.updateContent(with: participant)
+
+        cell.actionHandler = {[weak self] action in
+            self?.delegate?.onSendAction(action: action, to: participant)
+        }
         return cell
     }
 }
@@ -67,6 +89,7 @@ class IParticipantTVC: UITableViewCell {
         let imageView = UIImageView(image: UIImage(named: "ic-avatar-default"))
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
+        imageView.layer.borderWidth = 4
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -92,6 +115,7 @@ class IParticipantTVC: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(named: "ic-call-green"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(tappedCallButton(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -99,6 +123,7 @@ class IParticipantTVC: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(named: "ic-nudge-green"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(tappedNudgeButton(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -107,6 +132,8 @@ class IParticipantTVC: UITableViewCell {
         setupUIs()
         selectionStyle = .none
     }
+    
+    var actionHandler: ((IParticipantAction) ->())?
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -152,5 +179,20 @@ class IParticipantTVC: UITableViewCell {
             callButton.heightAnchor.constraint(equalToConstant: 24),
             callButton.widthAnchor.constraint(equalToConstant: 30),
         ])
+    }
+    
+    func updateContent(with participant: IParticipant) {
+        callButton.isHidden = participant.hasJoined
+        nudgeButton.isHidden = participant.hasJoined
+        nameLabel.text = participant.name
+        thumbImageView.layer.borderColor = participant.role == .host ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
+    }
+    
+    @objc func tappedCallButton(_ sender: UIButton) {
+        actionHandler?(.call)
+    }
+    
+    @objc func tappedNudgeButton(_ sender: UIButton) {
+        actionHandler?(.nudge)
     }
 }

@@ -11,6 +11,7 @@ import UIKit
 enum ButtonAction: Int, CaseIterable {
     case pip = 0, close, flip, camera, mic
 }
+
 protocol PIPControlViewDelegate: AnyObject {
     func didSelectButton(_ action: ButtonAction)
 }
@@ -120,9 +121,11 @@ class PIPControlView: UIView {
             
             micButton.heightAnchor.constraint(equalToConstant: 18),
             micButton.widthAnchor.constraint(equalToConstant: 18),
-            
         ])
-        
+    }
+    
+    func toggleControlView(isHidden: Bool) {
+        stackView.isHidden = isHidden
     }
     
     @objc func tapppedExitPip(_ sender: UIButton) {

@@ -74,7 +74,7 @@ extension AgoraVideoViewer {
             return
         }
         self.refreshCollectionData()
-        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty
+        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty || pip
         self.organiseGrid()
 
         switch self.style {
@@ -331,5 +331,6 @@ extension AgoraVideoViewer {
         }
         
         userListView.isHidden = pip
+        streamerCollectionView.isHidden = true
     }
 }

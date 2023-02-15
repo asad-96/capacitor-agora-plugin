@@ -239,6 +239,9 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
         wellCareVC?.onTappedbutton(button: button)
     }
 
+    public func didChangedActiveSpeaker() {
+        wellCareVC?.didChangedActiveSpeaker()
+    }
 //    func remoteStreamJoined() {
 //        let jsObject: [String: Any] = [
 //            EVENT: "join|leave",
@@ -287,11 +290,11 @@ public enum IParticipantAction: Int, Codable {
 
 public struct IParticipant: Codable {
     let _id: String?
-    let name: String
-    let avatar: IAvatar
+    var name: String
+    var avatar: IAvatar
     let role: ClientRole
     let subtitle: String
-    let hasJoined: Bool
+    var hasJoined: Bool
     let uid: String
 }
 

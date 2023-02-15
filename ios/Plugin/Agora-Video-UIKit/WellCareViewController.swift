@@ -320,7 +320,7 @@ class WellCareViewController: UIViewController {
                 contraint.isActive = false
             }
             NSLayoutConstraint.activate([
-                topControlerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: hasTopNorth ? 0 : 40),
+                topControlerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: hasTopNorth ? 0 : 15),
                 topControlerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
                 topControlerView.heightAnchor.constraint(equalToConstant: 41),
                 topControlerView.widthAnchor.constraint(equalToConstant: 157)
@@ -514,7 +514,12 @@ extension WellCareViewController {
     }
     
     func updateParticipantLists(participants: [IParticipant]) {
-//        agoraView?.updateParticipantLists(participants: participants)
+        agoraView?.updateParticipantLists(participants: participants)
+    }
+    
+    func didChangedActiveSpeaker() {
+        let isYourSelfSpeaking = agoraView?.isYourSelfSpeaking ?? false
+        pipControlView.toggleControlView(isHidden: !isYourSelfSpeaking)
     }
     
     func onTappedbutton(button: AgoraControlButton) {
