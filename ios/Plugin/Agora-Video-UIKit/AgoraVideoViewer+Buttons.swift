@@ -191,11 +191,12 @@ extension AgoraVideoViewer {
         
 #if os(iOS)
         let container = UIView()
-        let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPandButtonControlView(_:)))
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(handleControlGesture(_:)))
         container.addGestureRecognizer(gesture)
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedBottomConstrol(_:)))
         container.addGestureRecognizer(tapGesture)
+        
         container.backgroundColor = UIColor.black.withAlphaComponent(0.64)
         container.isHidden = true
         container.layer.cornerRadius = 24
@@ -261,6 +262,8 @@ extension AgoraVideoViewer {
         )
         button.setImage(UIImage(named: "ic-mic"), for: .normal)
         button.setImage(UIImage(named: "ic-mic-off"), for: .selected)
+
+        
         button.tintColor = UIColor.white
 #if os(iOS)
         button.addTarget(self, action: #selector(toggleMic), for: .touchUpInside)
@@ -366,57 +369,53 @@ extension AgoraVideoViewer {
         return button
     }
     
-    @IBAction func didPandButtonControlView(_ sender: UIPanGestureRecognizer) {
+    
+    @objc func handleControlGesture(_ sender: UIPanGestureRecognizer) {
         guard let controlContainer = controlContainer else { return }
+        
+        guard style == .pinned else { return  }
+        
         var translation = sender.translation(in: self)
         var velocity = sender.velocity(in: self)
         
         print("hai translation \(translation)")
         
-        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - bottomTableHeight
-        
-        let minOffsetY =  UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
+        let minOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - bottomTableHeight
+        let maxOffsetY = UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
         if sender.state == .began {
             bottomContainerCenter = controlContainer.center
-            print("hai translation begin  \(bottomContainerCenter.x) -> \(bottomContainerCenter.y)")
-
+            
         } else if sender.state == .changed {
             
             var newOffsetY = bottomContainerCenter.y + translation.y
-            newOffsetY = min(minOffsetY, newOffsetY)
-            newOffsetY = max(maxOffsetY, newOffsetY)
+            newOffsetY = max(minOffsetY, newOffsetY)
+            newOffsetY = min(maxOffsetY, newOffsetY)
             
-            debugPrint("hai velocity \(velocity.y)")
-            print("hai translation change \(newOffsetY) ->\(maxOffsetY). ->\(minOffsetY)  ->\(translation.y)")
+            print("hai translation \(newOffsetY) ->\(maxOffsetY). ->\(minOffsetY)  ->\(translation.y)")
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: newOffsetY)
             
         } else if sender.state == .ended {
-
-
-            if velocity.y > 0 {
+            if velocity.y < 0 {
                 
-                print("hai translation end dow: \(controlContainer.center.y) -> \(bottomContainerCenter.y)")
-         
-                minimizeControlContainer()
-            } else {
-                print("hai translation end up: \(controlContainer.center.y) -> \(bottomContainerCenter.y)")
-                if controlContainer.center.y < UIScreen.main.bounds.height - controlContainer.frame.height/2 - 100 {
-                    
+                let originalY = UIScreen.main.bounds.height - controlContainer.frame.height/2
+                if controlContainer.center.y < originalY - 70 {
                     UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
-                        if self.style != .grid {
-                            self.streamerCollectionView.isHidden = true
-                        }
+                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
                     })
-                    
                 } else {
-                    maximizeControlContainer()
+                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: originalY)
+                    })
                 }
+            } else {
+                UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                    controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
+                })
             }
         }
     }
     
-    @objc func handleTapGesture(_ sender: UITapGestureRecognizer) {
-        maximizeControlContainer()
+    @objc func tappedBottomConstrol(_ gesture: UITapGestureRecognizer) {
+        resetControlContainer()
     }
 }

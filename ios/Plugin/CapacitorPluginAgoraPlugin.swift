@@ -167,7 +167,8 @@ extension UIApplication {
 //}
 
 
-extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate{
+extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
+    
     public func remoteStreamJoined(uid: UInt) {
         let jsObject: [String: Any] = [
             EVENT: "join",

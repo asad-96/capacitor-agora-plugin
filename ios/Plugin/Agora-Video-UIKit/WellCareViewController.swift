@@ -18,7 +18,7 @@ class WellCareViewController: UIViewController {
     // Update with the App ID of your project generated on Agora Console.
     let appID = "1a37e0ba7a96485bb1e538ab05439b96"
     // Update with the temporary token generated in Agora Console.
-    var token = "007eJxTYODvbHQpEwv+bxupcGbDgzKbv75sZ1y2iFacThUOjZZau1KBwTDR2DzVICnRPNHSzMTCNCnJMNXU2CIxycDUxNgyydIs4OjL5IZARoapScdZGBkgEMTnZShJLS6JT85IzEvOSM1hYAAA/A0iAA=="
+    var token = "007eJxTYJCImiB9JF5m7XMJj1O/Jbx8FFf7r9WaOFdQkOHXZImFEQcUGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNIve8SW4IZGQoSWFlYWSAQBCfl6EktbgkPjkjMS85IzWHgQEApt4ggg=="
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName = "test_chanchel"
     
@@ -514,7 +514,7 @@ extension WellCareViewController {
     }
     
     func updateParticipantLists(participants: [IParticipant]) {
-        agoraView?.updateParticipantLists(participants: participants)
+//        agoraView?.updateParticipantLists(participants: participants)
     }
     
     func onTappedbutton(button: AgoraControlButton) {

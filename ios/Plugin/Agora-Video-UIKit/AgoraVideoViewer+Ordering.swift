@@ -33,7 +33,7 @@ extension AgoraVideoViewer {
         }
         
         //hai
-        if self.userVideoLookup.values.count != 2, self.style == .grid {
+        if self.userVideoLookup.values.count > 2, self.style == .grid {
             self.style = .pinned
         }
         return remoteVideoView
@@ -74,7 +74,7 @@ extension AgoraVideoViewer {
             return
         }
         self.refreshCollectionData()
-        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty || pip
+        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty
         self.organiseGrid()
 
         switch self.style {
@@ -280,9 +280,6 @@ extension AgoraVideoViewer {
         let minOffsetY =  UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
         UIView.animate(withDuration: 0.3, animations: { () -> Void in
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
-            if self.style != .grid {
-                self.streamerCollectionView.isHidden = true
-            }
         })
     }
     
@@ -291,9 +288,15 @@ extension AgoraVideoViewer {
         let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2
         UIView.animate(withDuration: 0.3, animations: { () -> Void in
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
-            if self.style != .grid {
-                self.streamerCollectionView.isHidden = false
-            }
+        })
+    }
+    
+    
+    func resetControlContainer() {
+        guard let controlContainer = controlContainer else { return }
+        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2
+        UIView.animate(withDuration: 0.3, animations: { () -> Void in
+            controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
         })
     }
     
@@ -328,6 +331,5 @@ extension AgoraVideoViewer {
         }
         
         userListView.isHidden = pip
-        streamerCollectionView.isHidden = pip
     }
 }

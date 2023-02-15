@@ -47,7 +47,6 @@ extension AgoraVideoViewer {
     }
     open func rtcEngine(_ engine: AgoraRtcEngineKit, didLeaveChannelWith stats: AgoraChannelStats) {
         self.agoraSettings.rtcDelegate?.rtcEngine?(engine, didLeaveChannelWith: stats)
-        debugPrint("hai didLeaveChannelWith")
     }
     open func rtcEngine(_ engine: AgoraRtcEngineKit, networkTypeChanged type: AgoraNetworkType) {
         self.agoraSettings.rtcDelegate?.rtcEngine?(engine, networkTypeChanged: type)

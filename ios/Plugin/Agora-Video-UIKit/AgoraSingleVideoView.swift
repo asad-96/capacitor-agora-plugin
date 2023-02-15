@@ -127,26 +127,35 @@ public class AgoraSingleVideoView: MPView {
     #endif
 
     /// Icon to show if this user is muting their microphone
-    lazy var mutedFlag: UIButton = {
-        let muteFlag = UIButton()
-        muteFlag.isUserInteractionEnabled = false
-        muteFlag.setImage(UIImage(named: "ic-mic-mute"), for: .normal)
-        muteFlag.imageView?.contentMode = .scaleAspectFit
-        muteFlag.imageEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
+    lazy var mutedFlag: MPView = {
         
-        muteFlag.backgroundColor = UIColor(named: "colorF8000F")?.withAlphaComponent(0.5)
-        muteFlag.layer.cornerRadius = 15.0 / 2.0
-        muteFlag.clipsToBounds = true
+        let muteFlag = UIView()
+        let iconImageView = UIImageView(image: UIImage(named: "ic-mic-mute"))
+//        muteFlag.tintColor = self.micFlagColor
+        muteFlag.contentMode = .scaleAspectFit
+       
         self.addSubview(muteFlag)
+        muteFlag.addSubview(iconImageView)
+        
+        iconImageView.translatesAutoresizingMaskIntoConstraints = false
         muteFlag.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             muteFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -35),
             muteFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
             muteFlag.widthAnchor.constraint(equalToConstant: 15),
-            muteFlag.heightAnchor.constraint(equalToConstant: 15)
+            muteFlag.heightAnchor.constraint(equalToConstant: 15),
+            
+            iconImageView.centerYAnchor.constraint(equalTo: muteFlag.centerYAnchor),
+            iconImageView.centerXAnchor.constraint(equalTo: muteFlag.centerXAnchor),
+            iconImageView.widthAnchor.constraint(equalTo: muteFlag.widthAnchor, multiplier: 2.0/3),
+            iconImageView.heightAnchor.constraint(equalTo: muteFlag.heightAnchor, multiplier: 2.0/3),
+
         ])
         
+        muteFlag.layer.cornerRadius = 15.0/2.0
+        muteFlag.backgroundColor = UIColor(named: "colorF8000F")?.withAlphaComponent(0.5)
+        muteFlag.clipsToBounds = true
         return muteFlag
     }()
 
@@ -235,6 +244,13 @@ public class AgoraSingleVideoView: MPView {
         #endif
     }
 
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        return stackView
+    }()
+    
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -249,27 +265,21 @@ public class AgoraSingleVideoView: MPView {
             ct.isActive = false
         }
         
-        
         let ratio = style == .pinned ? 19.0/78.0 : 37.0 / 150.0
-        let buttonWidth = min(self.frame.width * ratio, 37)
+        let muteWidth = min(37, self.frame.width * ratio)
         
         NSLayoutConstraint.activate([
             mutedFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: style == .pinned ? -5 : -10),
             mutedFlag.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: style == .pinned ? -5 : -10),
-            mutedFlag.widthAnchor.constraint(equalToConstant: buttonWidth),
-            mutedFlag.heightAnchor.constraint(equalToConstant: buttonWidth)
+            mutedFlag.widthAnchor.constraint(equalToConstant: muteWidth),
+            mutedFlag.heightAnchor.constraint(equalToConstant: muteWidth)
         ])
         
-        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-
-        mutedFlag.layer.cornerRadius = buttonWidth / 2
+        mutedFlag.layer.cornerRadius = muteWidth/2.0
         mutedFlag.clipsToBounds = true
     }
     
     func placeMuteAtTop() {
-//        let size = CGSize(width: 15, height: 15)
-//        let offset = CGPoint(x: self.frame.width - 25 - signalView.frame.width, y: 5)
-//        mutedFlag.frame  = CGRect(origin: offset, size: size)
         mutedFlag.removeFromSuperview()
         addSubview(mutedFlag)
         for ct in mutedFlag.constraints {
@@ -281,8 +291,8 @@ public class AgoraSingleVideoView: MPView {
             mutedFlag.widthAnchor.constraint(equalToConstant: 15),
             mutedFlag.heightAnchor.constraint(equalToConstant: 15)
         ])
-        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
-        mutedFlag.layer.cornerRadius = 15.0 / 2.0
+        
+        mutedFlag.layer.cornerRadius = 15.0/2.0
         mutedFlag.clipsToBounds = true
     }
 }

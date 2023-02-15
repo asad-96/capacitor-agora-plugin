@@ -463,6 +463,6 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         return bOpt
     }()
 
-    var remoteUserIDs: Set<UInt> = [] 
+    var remoteUserIDs: Set<UInt> = []
     var participants: [IParticipant] = []
 }
