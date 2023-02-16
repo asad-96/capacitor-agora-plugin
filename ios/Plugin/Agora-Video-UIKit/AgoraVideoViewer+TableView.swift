@@ -41,11 +41,17 @@ extension AgoraVideoViewer {
             } else {
                 self.participants.append(participant)
             }
+            
+            if let uid = UInt(participant.uid), let videoFeed = self.videoLookup[uid] {
+                videoFeed.updateVideoView(with: participant)
+            }
         }
         
         DispatchQueue.main.async { [weak self] in
             self?.userListTableView.reloadData()
         }
+        
+       
     }
 }
 

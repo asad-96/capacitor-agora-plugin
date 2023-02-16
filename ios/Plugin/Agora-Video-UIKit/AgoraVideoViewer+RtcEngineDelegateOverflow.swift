@@ -249,6 +249,7 @@ extension AgoraVideoViewer {
         if let videoFeed = self.videoLookup[uid] {
             let good = stats == .good || stats == .excellent
             videoFeed.signalView.image = good ? UIImage(named: "ic-signal-good") : UIImage(named: "ic-signal-bad")
+            
         }
       }
 }

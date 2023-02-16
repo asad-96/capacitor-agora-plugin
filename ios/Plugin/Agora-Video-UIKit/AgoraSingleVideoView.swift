@@ -139,12 +139,12 @@ public class AgoraSingleVideoView: MPView {
         NSLayoutConstraint.activate([
             muteFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -35),
             muteFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
-            muteFlag.widthAnchor.constraint(equalToConstant: 15),
-            muteFlag.heightAnchor.constraint(equalToConstant: 15)
+            muteFlag.widthAnchor.constraint(equalToConstant: 20),
+            muteFlag.heightAnchor.constraint(equalToConstant: 20)
         ])
         
         muteFlag.backgroundColor = UIColor(named: "colorF8000F")?.withAlphaComponent(0.5)
-        muteFlag.layer.cornerRadius = 15.0/2.0
+        muteFlag.layer.cornerRadius = 20.0/2.0
         muteFlag.clipsToBounds = true
         return muteFlag
     }()
@@ -165,6 +165,9 @@ public class AgoraSingleVideoView: MPView {
         return muteFlag
     }()
     
+    var avatarWConstraint: NSLayoutConstraint?
+    var avatarHConstraint: NSLayoutConstraint?
+
     /// Create a new AgoraSingleVideoView to be displayed in your app
     /// - Parameters:
     ///   - uid: User ID of the `AgoraRtcVideoCanvas` inside this view
@@ -203,40 +206,70 @@ public class AgoraSingleVideoView: MPView {
 
     internal func setBackground() {
         let backgroundView = MPView()
-        #if os(iOS)
         backgroundView.backgroundColor = .secondarySystemBackground
-        let bgButton = MPButton(type: .custom)
-        bgButton.setImage(
-            UIImage(
-                systemName: MPButton.personSymbol,
-                withConfiguration: UIImage.SymbolConfiguration(scale: .large)),
-            for: .normal
-        )
-        #elseif os(macOS)
-        backgroundView.wantsLayer = true
-        backgroundView.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
-        let bgButton = MPButton()
-        bgButton.title = MPButton.personSymbol
-        bgButton.isBordered = false
-        bgButton.isEnabled = false
-        #endif
-        backgroundView.addSubview(bgButton)
-
-        bgButton.frame = backgroundView.bounds
         self.addSubview(backgroundView)
         backgroundView.frame = self.bounds
-        #if os(iOS)
-        bgButton.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        #elseif os(macOS)
-        bgButton.autoresizingMask = [.width, .height]
-        backgroundView.autoresizingMask = [.width, .height]
-        #endif
+        
+        backgroundView.addSubview(stackView)
+        stackView.addArrangedSubview(avatarImageView)
+        stackView.addArrangedSubview(nameLabel)
+        avatarImageView.addSubview(shortNameLabel)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        shortNameLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            stackView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor, constant: 0),
+            stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
+            shortNameLabel.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
+            shortNameLabel.centerXAnchor.constraint(equalTo: avatarImageView.centerXAnchor),
+
+        ])
+        
+        
+        avatarWConstraint =  avatarImageView.widthAnchor.constraint(equalToConstant: 50)
+        avatarHConstraint = avatarImageView.heightAnchor.constraint(equalToConstant: 50)
+
+        avatarWConstraint?.isActive = true
+        avatarHConstraint?.isActive = true
     }
 
+    private lazy var nameLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.textAlignment = .center
+        label.text = "Hai Captain"
+        return label
+    }()
+    
+    private lazy var avatarImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.backgroundColor = UIColor(named: "color009D23")
+        imageView.layer.cornerRadius = 25
+        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    private lazy var shortNameLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 26, weight: .bold)
+        label.textAlignment = .center
+        label.text = "H"
+        return label
+    }()
+    
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
-        
+        stackView.axis = .vertical
+        stackView.spacing = 5
+        stackView.alignment = .center
         return stackView
     }()
     
@@ -265,25 +298,50 @@ public class AgoraSingleVideoView: MPView {
             mutedFlag.heightAnchor.constraint(equalToConstant: muteWidth)
         ])
         
-        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        let imagePadding = muteWidth / 5
+        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: imagePadding, left: imagePadding, bottom: imagePadding, right: imagePadding)
         mutedFlag.layer.cornerRadius = muteWidth/2.0
         mutedFlag.clipsToBounds = true
+        
+        let avatarSize: CGFloat = style == .pinned ? 30 : 50
+        avatarHConstraint?.constant = avatarSize
+        avatarWConstraint?.constant = avatarSize
+        avatarImageView.layer.cornerRadius = avatarSize / 2
+
     }
     
-    func placeMuteAtTop() {
+    func placeMuteAtTop(style: AgoraVideoViewer.Style) {
         mutedFlag.removeFromSuperview()
         addSubview(mutedFlag)
         for ct in mutedFlag.constraints {
             ct.isActive = false
         }
+        
+        let muteFlagSize: CGFloat = 16.0
         NSLayoutConstraint.activate([
             mutedFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -35),
             mutedFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
-            mutedFlag.widthAnchor.constraint(equalToConstant: 15),
-            mutedFlag.heightAnchor.constraint(equalToConstant: 15)
+            mutedFlag.widthAnchor.constraint(equalToConstant: muteFlagSize),
+            mutedFlag.heightAnchor.constraint(equalToConstant: muteFlagSize)
         ])
         
-        mutedFlag.layer.cornerRadius = 15.0/2.0
+        mutedFlag.imageEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
+        mutedFlag.layer.cornerRadius = muteFlagSize/2.0
         mutedFlag.clipsToBounds = true
+        
+        let avatarSize: CGFloat = style == .pinned ? 30 : 50
+        avatarHConstraint?.constant = avatarSize
+        avatarWConstraint?.constant = avatarSize
+        avatarImageView.layer.cornerRadius = avatarSize / 2
+    }
+    
+    func updateVideoView(with paticipant: IParticipant) {
+        nameLabel.text = paticipant.name
+        avatarImageView.downloaded(from: paticipant.avatar.url)
+        
+        if paticipant.name.count > 1 {
+            let str = Array(paticipant.name)[0]
+            shortNameLabel.text = "\(str)"
+        }
     }
 }

@@ -10,17 +10,26 @@ import AgoraRtcKit
 import MediaPlayer
 
 class WellCareViewController: UIViewController {
-    static let VideoCallInMins: Int = 2
+    static let VideoCallInMins: Int = 5
     var agoraEngine: AgoraRtcEngineKit!
     // By default, set the current user role to broadcaster to both send and receive streams.
     var userRole: AgoraClientRole = .broadcaster
     
     // Update with the App ID of your project generated on Agora Console.
-    let appID = "1a37e0ba7a96485bb1e538ab05439b96"
+    var appID: String{
+        return params.appID
+//        return "1a37e0ba7a96485bb1e538ab05439b96"
+    }
     // Update with the temporary token generated in Agora Console.
-    var token = "007eJxTYJCImiB9JF5m7XMJj1O/Jbx8FFf7r9WaOFdQkOHXZImFEQcUGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNIve8SW4IZGQoSWFlYWSAQBCfl6EktbgkPjkjMS85IzWHgQEApt4ggg=="
+    var token: String {
+        return params.token
+//        return "007eJxTYHjb0DFN33H/t11xc0/9sHlw9+Z5roIOw8OaG81/yU+P3darwGCYaGyeapCUaJ5oaWZiYZqUZJhqamyRmGRgamJsmWRp9njS2+SGQEaGOTMcmRgZIBDE52EoSS0uiU/OSMzLS81hYAAAZVIl1w=="
+    }
     // Update with the channel name you used to generate the token in Agora Console.
-    var channelName = "test_chanchel"
+    var channelName: String {
+        return params.channelName
+//        return "test_channel"
+    }
     
     // Create the view object.
     var agoraView: AgoraVideoViewer!
@@ -90,7 +99,8 @@ class WellCareViewController: UIViewController {
     let airplayVolume = MPVolumeView()
     private var callTimer: Timer?
     private var callTime: Int = 0
-    private let userPermissin: UserPermission
+    private let role: ClientRole
+    private let params: VideoCallParams
     private let delegate: AgoraVideoViewerDelegate?
     var trayOriginalCenter: CGPoint = .zero
     private lazy var pipControlView: PIPControlView = {
@@ -105,10 +115,11 @@ class WellCareViewController: UIViewController {
         return panGesture
     }()
     
-    init(userPermissin: UserPermission,
+    init(role: ClientRole,
          params: VideoCallParams,
          delegate:  AgoraVideoViewerDelegate? = nil) {
-        self.userPermissin = userPermissin
+        self.role = role
+        self.params = params
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -404,7 +415,7 @@ extension WellCareViewController {
     }
     
     @objc func startCallTimer() {
-        guard userPermissin == .doctor else { return }
+        guard role == .host else { return }
         countdownView.isHidden = false
         callTimer?.invalidate()
         callTimer = nil
@@ -450,11 +461,11 @@ extension WellCareViewController {
         self.view.clipsToBounds = true
 
         relayoutAgoraVideoView()
-        
+        didChangedActiveSpeaker()
     }
     
     func relayoutAgoraVideoView() {
-        let pip = (self.agoraView?.pip ?? false)
+        let pip = (self.agoraView?.isPipOn ?? false)
         topControlerView.isHidden = pip
         countdownView.isHidden = pip
         backButton.isHidden = pip
@@ -467,14 +478,17 @@ extension WellCareViewController {
             pipControlView.leftAnchor.constraint(equalTo: view.leftAnchor),
             pipControlView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             pipControlView.rightAnchor.constraint(equalTo: view.rightAnchor),
-
         ])
         
         view.addGestureRecognizer(pandGesture)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.agoraView?.layoutForPIP()
+        }
     }
     
     func exitPIP() {
-        let pip = (self.agoraView?.pip ?? false)
+        let pip = (self.agoraView?.isPipOn ?? false)
         topControlerView.isHidden = pip
         countdownView.isHidden = pip
         backButton.isHidden = pip
@@ -483,6 +497,10 @@ extension WellCareViewController {
         self.view.layer.cornerRadius = 0
         pipControlView.removeFromSuperview()
         view.removeGestureRecognizer(pandGesture)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.agoraView?.layoutForPIP()
+        }
     }
     
     
@@ -538,7 +556,7 @@ extension WellCareViewController: PIPControlViewDelegate {
     func didSelectButton(_ action: ButtonAction) {
         switch action {
         case .pip:
-            agoraView?.pip = false
+            agoraView?.isPipOn = false
             exitPIP()
             delegate?.onLeavePIP()
         case .close:

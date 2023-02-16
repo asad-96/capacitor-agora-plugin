@@ -38,10 +38,10 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         let appId = call.getString(Constant.APPID) ?? ""
         let params = VideoCallParams(channelName: channelName, uid: uid, token: token, appID: appId)
         
-        let role = call.getString("role")
-        
+        let roleStr = call.getString("role") ?? ""
+        let role: ClientRole = ClientRole(rawValue: roleStr) ?? .host
         //        initializeAgoraEngine(appId: appId)
-        initViews(params)
+        initViews(params, role: role)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
         //        call.resolve([
         //            "value": implementation.echo("Join channel value")
@@ -60,12 +60,12 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     }
     
     //MARK: Sub Functions
-    func initViews(_ params: VideoCallParams) {
+    func initViews(_ params: VideoCallParams, role: ClientRole) {
         DispatchQueue.main.async {
 //            let currentWindow: UIWindow? = UIApplication.shared.windows.first
 
             let topMost = UIApplication.getTopViewController()
-            let vc = WellCareViewController(userPermissin: .doctor, params: params, delegate: self)
+            let vc = WellCareViewController(role: role, params: params, delegate: self)
             vc.modalPresentationStyle = .fullScreen
             self.wellCareVC = vc
             topMost?.present(vc, animated: true)
@@ -259,7 +259,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
 
 struct VideoCallParams {
     let channelName: String
-    let  uid: Int
+    let uid: Int
     let token: String
     let appID: String
 }

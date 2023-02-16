@@ -74,7 +74,11 @@ extension AgoraVideoViewer {
             return
         }
         self.refreshCollectionData()
-        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty || pip
+        if isPipOn {
+            self.streamerCollectionView.isHidden = true
+        } else {
+            self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty
+        }
         self.organiseGrid()
 
         switch self.style {
@@ -109,7 +113,7 @@ extension AgoraVideoViewer {
             ]
             #endif
             
-            videoSessionView.placeMuteAtTop()
+            videoSessionView.placeMuteAtTop(style: self.style)
             if self.agoraSettings.usingDualStream && self.userID != keyVals.key {
                 self.agkit.setRemoteVideoStream(
                     keyVals.key,
@@ -244,6 +248,7 @@ extension AgoraVideoViewer {
     }
     
     func updateCollectionLayout() {
+        guard !isPipOn else { return }
 //        let bottomViewH: CGFloat = 40 + 20 + self.agoraSettings.buttonSize
         let collectionViewH: CGFloat = self.style == .strip ? 150 : 100
         let bottomOffset: CGFloat = self.style == .strip ? 10 : 0
@@ -327,10 +332,10 @@ extension AgoraVideoViewer {
         }
         
         if let controlContainer = controlContainer {
-            controlContainer.isHidden = self.pip
+            controlContainer.isHidden = self.isPipOn
         }
         
-        userListView.isHidden = pip
-        streamerCollectionView.isHidden = true
+        userListView.isHidden = isPipOn
+        self.streamerCollectionView.isHidden = self.isPipOn
     }
 }

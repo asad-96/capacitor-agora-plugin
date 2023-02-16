@@ -349,19 +349,19 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         return self.agkit.isCameraTorchSupported()
     }
     
-    var pip: Bool = false {
+    var isPipOn: Bool = false {
         didSet {
-            if oldValue != self.pip {
-                self.style = .pinned
+            if oldValue != self.isPipOn {
+                if self.isPipOn {
+                    self.style = .pinned
+                    self.delegate?.onEnterPIP()
+                }
                 self.layoutForPIP()
-                self.delegate?.onEnterPIP()
-                
             }
         }
     }
     
     var cameraPosition:  AVCaptureDevice.Position = .front
-    
     
     /// Creates an AgoraVideoViewer object, to be placed anywhere in your application.
     /// - Parameters:
