@@ -5,6 +5,7 @@
     :auth-user="authUser"
   />
 </template>
+
 <script lang="ts">
 import { defineComponent, computed, useRoute } from '@nuxtjs/composition-api'
 import { Capacitor } from '@capacitor/core'
