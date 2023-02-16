@@ -33,7 +33,7 @@ extension AgoraVideoViewer {
         }
         
         //hai
-        if self.userVideoLookup.values.count != 2, self.style == .grid {
+        if self.userVideoLookup.values.count > 2, self.style == .grid {
             self.style = .pinned
         }
         return remoteVideoView
@@ -74,11 +74,15 @@ extension AgoraVideoViewer {
             return
         }
         self.refreshCollectionData()
-        self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty
+        if isPipOn {
+            self.streamerCollectionView.isHidden = true
+        } else {
+            self.streamerCollectionView.isHidden = self.collectionViewVideos.isEmpty
+        }
         self.organiseGrid()
 
         switch self.style {
-        case .grid, .pinned, .collection, .strip, .expand:
+        case .grid, .pinned, .collection, .strip:
             // these two cases are taken care of from streamerCollectionView and organiseGrid above
             break
         case .custom(let orgCustom):
@@ -109,7 +113,7 @@ extension AgoraVideoViewer {
             ]
             #endif
             
-            videoSessionView.placeMuteAtTop()
+            videoSessionView.placeMuteAtTop(style: self.style)
             if self.agoraSettings.usingDualStream && self.userID != keyVals.key {
                 self.agkit.setRemoteVideoStream(
                     keyVals.key,
@@ -244,6 +248,7 @@ extension AgoraVideoViewer {
     }
     
     func updateCollectionLayout() {
+        guard !isPipOn else { return }
 //        let bottomViewH: CGFloat = 40 + 20 + self.agoraSettings.buttonSize
         let collectionViewH: CGFloat = self.style == .strip ? 150 : 100
         let bottomOffset: CGFloat = self.style == .strip ? 10 : 0
@@ -266,7 +271,7 @@ extension AgoraVideoViewer {
         //layout for expand
         
 
-        let bottomMargin: CGFloat = controlContainer.frame.height + (self.style == .expand ? bottomTableHeight : 0)
+        let bottomMargin: CGFloat = controlContainer.frame.height
         controlContainer.frame.origin = CGPoint(x: 5, y: UIScreen.main.bounds.height - bottomMargin)
         
         DispatchQueue.main.async { [weak self] in
@@ -285,7 +290,16 @@ extension AgoraVideoViewer {
     
     func maximizeControlContainer() {
         guard let controlContainer = controlContainer else { return }
-        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - (self.style == .expand ? bottomTableHeight : 0)
+        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2
+        UIView.animate(withDuration: 0.3, animations: { () -> Void in
+            controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
+        })
+    }
+    
+    
+    func resetControlContainer() {
+        guard let controlContainer = controlContainer else { return }
+        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2
         UIView.animate(withDuration: 0.3, animations: { () -> Void in
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
         })
@@ -318,10 +332,10 @@ extension AgoraVideoViewer {
         }
         
         if let controlContainer = controlContainer {
-            controlContainer.isHidden = self.pip
+            controlContainer.isHidden = self.isPipOn
         }
         
-        userListView.isHidden = pip
-        streamerCollectionView.isHidden = pip
+        userListView.isHidden = isPipOn
+        self.streamerCollectionView.isHidden = self.isPipOn
     }
 }

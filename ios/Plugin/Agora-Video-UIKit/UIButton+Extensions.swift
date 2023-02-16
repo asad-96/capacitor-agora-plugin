@@ -54,7 +54,7 @@ extension MPButton {
     /// SF Symbol name for camera icon for builtin button
     public static var videoSymbol = "ic-camera"
     /// SF Symbol name for camera alt icon for builtin button
-    public static var muteVideoSelectedSymbol: String?
+    public static var muteVideoSelectedSymbol: String? = "ic-camera-disable"
     /// SF Symbol name for microphone icon for builtin button
     public static var micSymbol = "mic"
     /// SF Symbol name for microphone alt icon for builtin button

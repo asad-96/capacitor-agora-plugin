@@ -38,8 +38,10 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         let appId = call.getString(Constant.APPID) ?? ""
         let params = VideoCallParams(channelName: channelName, uid: uid, token: token, appID: appId)
         
+        let roleStr = call.getString("role") ?? ""
+        let role: ClientRole = ClientRole(rawValue: roleStr) ?? .host
         //        initializeAgoraEngine(appId: appId)
-        initViews(params)
+        initViews(params, role: role)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
         //        call.resolve([
         //            "value": implementation.echo("Join channel value")
@@ -58,17 +60,17 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     }
     
     //MARK: Sub Functions
-    func initViews(_ params: VideoCallParams) {
+    func initViews(_ params: VideoCallParams, role: ClientRole) {
         DispatchQueue.main.async {
-            let currentWindow: UIWindow? = UIApplication.shared.windows.first
+//            let currentWindow: UIWindow? = UIApplication.shared.windows.first
 
-//            let topMost = UIApplication.getTopViewController()
-            let vc = WellCareViewController(userPermissin: .doctor, params: params, delegate: self)
-//            vc.modalPresentationStyle = .fullScreen
+            let topMost = UIApplication.getTopViewController()
+            let vc = WellCareViewController(role: role, params: params, delegate: self)
+            vc.modalPresentationStyle = .fullScreen
             self.wellCareVC = vc
-//            topMost?.present(vc, animated: true)
-            vc.view.frame = UIScreen.main.bounds
-            currentWindow?.addSubview(vc.view)
+            topMost?.present(vc, animated: true)
+//            vc.view.frame = UIScreen.main.bounds
+//            currentWindow?.addSubview(vc.view)
         }
     }
     
@@ -165,7 +167,28 @@ extension UIApplication {
 //}
 
 
-extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate{
+extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
+    
+    public func remoteStreamJoined(uid: UInt) {
+        let jsObject: [String: Any] = [
+            EVENT: "join",
+            UID: uid
+            
+        ]
+        print("hai leftChannel:- \(jsObject)")
+        notifyListeners("onRemoteStreamChanged", data: jsObject)
+    }
+    
+    public func remoteStreamLeaved(uid: UInt) {
+        let jsObject: [String: Any] = [
+            EVENT: "leave",
+            UID: uid
+            
+        ]
+        print("hai leftChannel:- \(jsObject)")
+        notifyListeners("onRemoteStreamChanged", data: jsObject)
+    }
+    
    
     public func leftChannel(_ channel: String) {
        
@@ -212,22 +235,36 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate{
         notifyListeners("onParticipantAction", data: jsObject)
     }
     
-    func remoteStreamChanged() {
-        let jsObject: [String: Any] = [
-            EVENT: "join|leave",
-            UID: "uid"
-            
-        ]
-        print("hai leftChannel:- \(jsObject)")
-        notifyListeners("onRemoteStreamChanged", data: jsObject)
+    public func onTappedbutton(button: AgoraControlButton) {
+        wellCareVC?.onTappedbutton(button: button)
     }
+
+    public func didChangedActiveSpeaker() {
+        wellCareVC?.didChangedActiveSpeaker()
+    }
+//    func remoteStreamJoined() {
+//        let jsObject: [String: Any] = [
+//            EVENT: "join|leave",
+//            UID: "uid"
+//
+//        ]
+//        print("hai leftChannel:- \(jsObject)")
+//        notifyListeners("onRemoteStreamChanged", data: jsObject)
+//    }
+//
+//    func remoteStreamLeaved() {
+//
+//    }
 }
 
 struct VideoCallParams {
     let channelName: String
-    let  uid: Int
+    let uid: Int
     let token: String
     let appID: String
+}
+public enum AgoraControlButton: Int, Codable {
+    case flip = 0, camera, call, mic, chat
 }
 
 public enum IParticipantAction: Int, Codable {
@@ -253,11 +290,11 @@ public enum IParticipantAction: Int, Codable {
 
 public struct IParticipant: Codable {
     let _id: String?
-    let name: String
-    let avatar: IAvatar
+    var name: String
+    var avatar: IAvatar
     let role: ClientRole
     let subtitle: String
-    let hasJoined: Bool
+    var hasJoined: Bool
     let uid: String
 }
 

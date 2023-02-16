@@ -77,7 +77,6 @@ extension AgoraVideoViewer {
     /// Property used to access all the RTC connections to other broadcasters in an RTC channel.
     public var videoLookup: [UInt: AgoraSingleVideoView] { self.userVideoLookup }
 
-
 }
 #if canImport(AgoraRtmControl)
 import AgoraRtmKit

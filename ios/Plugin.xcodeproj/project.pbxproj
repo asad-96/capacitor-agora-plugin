@@ -9,6 +9,51 @@
 /* Begin PBXBuildFile section */
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
+		2170A036299CF6FF00692596 /* PIPControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21709FFB299CF6FF00692596 /* PIPControlView.swift */; };
+		2170A037299CF6FF00692596 /* AgoraVideoViewer+AgoraExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21709FFC299CF6FF00692596 /* AgoraVideoViewer+AgoraExtensions.swift */; };
+		2170A038299CF6FF00692596 /* AgoraViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21709FFD299CF6FF00692596 /* AgoraViewer.swift */; };
+		2170A039299CF6FF00692596 /* WellCareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21709FFE299CF6FF00692596 /* WellCareViewController.swift */; };
+		2170A03A299CF6FF00692596 /* AgoraSingleVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21709FFF299CF6FF00692596 /* AgoraSingleVideoView.swift */; };
+		2170A03B299CF6FF00692596 /* AgoraSingleVideoView+RtmOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A000299CF6FF00692596 /* AgoraSingleVideoView+RtmOptions.swift */; };
+		2170A03C299CF6FF00692596 /* UIButton+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A001299CF6FF00692596 /* UIButton+Extensions.swift */; };
+		2170A03D299CF6FF00692596 /* AgoraVideoViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A002299CF6FF00692596 /* AgoraVideoViewer.swift */; };
+		2170A03E299CF6FF00692596 /* AgoraVideoViewer+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A003299CF6FF00692596 /* AgoraVideoViewer+Permissions.swift */; };
+		2170A03F299CF6FF00692596 /* AgoraCameraSourcePush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A004299CF6FF00692596 /* AgoraCameraSourcePush.swift */; };
+		2170A040299CF6FF00692596 /* AgoraUIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A005299CF6FF00692596 /* AgoraUIKit.swift */; };
+		2170A041299CF6FF00692596 /* AgoraVideoViewer+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A006299CF6FF00692596 /* AgoraVideoViewer+TableView.swift */; };
+		2170A042299CF6FF00692596 /* AgoraVideoViewer+VideoControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A007299CF6FF00692596 /* AgoraVideoViewer+VideoControl.swift */; };
+		2170A043299CF6FF00692596 /* AgoraSingleVideoView+RtmDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A008299CF6FF00692596 /* AgoraSingleVideoView+RtmDelegate.swift */; };
+		2170A044299CF6FF00692596 /* AgoraConnectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A009299CF6FF00692596 /* AgoraConnectionData.swift */; };
+		2170A045299CF6FF00692596 /* AgoraUIKit.docc in Sources */ = {isa = PBXBuildFile; fileRef = 2170A00A299CF6FF00692596 /* AgoraUIKit.docc */; };
+		2170A046299CF6FF00692596 /* AgoraVideoViewer+Ordering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A00B299CF6FF00692596 /* AgoraVideoViewer+Ordering.swift */; };
+		2170A047299CF6FF00692596 /* AgoraVideoViewer+JoinChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A00C299CF6FF00692596 /* AgoraVideoViewer+JoinChannel.swift */; };
+		2170A048299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A00D299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+Extensions.swift */; };
+		2170A049299CF6FF00692596 /* AgoraVideoViewer+RtcEngineDelegateOverflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A00E299CF6FF00692596 /* AgoraVideoViewer+RtcEngineDelegateOverflow.swift */; };
+		2170A04A299CF6FF00692596 /* VideoCallReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A00F299CF6FF00692596 /* VideoCallReminderView.swift */; };
+		2170A04B299CF6FF00692596 /* iOS+macOS+typealiases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A010299CF6FF00692596 /* iOS+macOS+typealiases.swift */; };
+		2170A04C299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+SendHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A011299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+SendHelpers.swift */; };
+		2170A04D299CF6FF00692596 /* AgoraVideoViewer+LocalVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A012299CF6FF00692596 /* AgoraVideoViewer+LocalVideo.swift */; };
+		2170A04E299CF6FF00692596 /* AgoraVideoViewer+Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A013299CF6FF00692596 /* AgoraVideoViewer+Token.swift */; };
+		2170A04F299CF6FF00692596 /* AgoraUIKit+MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A014299CF6FF00692596 /* AgoraUIKit+MD5.swift */; };
+		2170A050299CF6FF00692596 /* AgoraCollectionViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A015299CF6FF00692596 /* AgoraCollectionViewer.swift */; };
+		2170A051299CF6FF00692596 /* AgoraVideoViewer+Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A016299CF6FF00692596 /* AgoraVideoViewer+Buttons.swift */; };
+		2170A052299CF6FF00692596 /* AgoraVideoViewer+AgoraRtcEngineDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A017299CF6FF00692596 /* AgoraVideoViewer+AgoraRtcEngineDelegate.swift */; };
+		2170A053299CF6FF00692596 /* AgoraVideoViewer+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A018299CF6FF00692596 /* AgoraVideoViewer+Utilities.swift */; };
+		2170A054299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+MuteRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A019299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+MuteRequests.swift */; };
+		2170A055299CF6FF00692596 /* AgoraSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A01A299CF6FF00692596 /* AgoraSettings.swift */; };
+		2170A057299CF6FF00692596 /* AgoraAppGroupDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A01D299CF6FF00692596 /* AgoraAppGroupDataHelper.swift */; };
+		2170A05A299CF6FF00692596 /* AgoraSharingEngineHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A021299CF6FF00692596 /* AgoraSharingEngineHelper.swift */; };
+		2170A05B299CF6FF00692596 /* AgoraBroadcastExtensionHelper.docc in Sources */ = {isa = PBXBuildFile; fileRef = 2170A022299CF6FF00692596 /* AgoraBroadcastExtensionHelper.docc */; };
+		2170A05C299CF6FF00692596 /* AgoraBroadcastError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A023299CF6FF00692596 /* AgoraBroadcastError.swift */; };
+		2170A05D299CF6FF00692596 /* AgoraBroadcastSampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A024299CF6FF00692596 /* AgoraBroadcastSampleHandler.swift */; };
+		2170A063299CF6FF00692596 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A02D299CF6FF00692596 /* AppDelegate.swift */; };
+		2170A064299CF6FF00692596 /* AgoraRtmController+MuteRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A02F299CF6FF00692596 /* AgoraRtmController+MuteRequests.swift */; };
+		2170A065299CF6FF00692596 /* AgoraRtmController+RtmDelegateOverflows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A030299CF6FF00692596 /* AgoraRtmController+RtmDelegateOverflows.swift */; };
+		2170A066299CF6FF00692596 /* AgoraRtmController+AgoraRtmDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A031299CF6FF00692596 /* AgoraRtmController+AgoraRtmDelegate.swift */; };
+		2170A067299CF6FF00692596 /* Documentation.docc in Sources */ = {isa = PBXBuildFile; fileRef = 2170A032299CF6FF00692596 /* Documentation.docc */; };
+		2170A068299CF6FF00692596 /* AgoraRtmController+SendHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A033299CF6FF00692596 /* AgoraRtmController+SendHelpers.swift */; };
+		2170A069299CF6FF00692596 /* AgoraRtmController+Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A034299CF6FF00692596 /* AgoraRtmController+Tokens.swift */; };
+		2170A06A299CF6FF00692596 /* AgoraRtmController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170A035299CF6FF00692596 /* AgoraRtmController.swift */; };
 		2F98D68224C9AAE500613A4C /* CapacitorPluginAgora.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F98D68124C9AAE400613A4C /* CapacitorPluginAgora.swift */; };
 		50ADFF92201F53D600D50D53 /* Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50ADFF88201F53D600D50D53 /* Plugin.framework */; };
 		50ADFF97201F53D600D50D53 /* CapacitorPluginAgoraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFF96201F53D600D50D53 /* CapacitorPluginAgoraTests.swift */; };
@@ -29,6 +74,51 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		21709FFB299CF6FF00692596 /* PIPControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PIPControlView.swift; sourceTree = "<group>"; };
+		21709FFC299CF6FF00692596 /* AgoraVideoViewer+AgoraExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+AgoraExtensions.swift"; sourceTree = "<group>"; };
+		21709FFD299CF6FF00692596 /* AgoraViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraViewer.swift; sourceTree = "<group>"; };
+		21709FFE299CF6FF00692596 /* WellCareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WellCareViewController.swift; sourceTree = "<group>"; };
+		21709FFF299CF6FF00692596 /* AgoraSingleVideoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraSingleVideoView.swift; sourceTree = "<group>"; };
+		2170A000299CF6FF00692596 /* AgoraSingleVideoView+RtmOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraSingleVideoView+RtmOptions.swift"; sourceTree = "<group>"; };
+		2170A001299CF6FF00692596 /* UIButton+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Extensions.swift"; sourceTree = "<group>"; };
+		2170A002299CF6FF00692596 /* AgoraVideoViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraVideoViewer.swift; sourceTree = "<group>"; };
+		2170A003299CF6FF00692596 /* AgoraVideoViewer+Permissions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+Permissions.swift"; sourceTree = "<group>"; };
+		2170A004299CF6FF00692596 /* AgoraCameraSourcePush.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraCameraSourcePush.swift; sourceTree = "<group>"; };
+		2170A005299CF6FF00692596 /* AgoraUIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraUIKit.swift; sourceTree = "<group>"; };
+		2170A006299CF6FF00692596 /* AgoraVideoViewer+TableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+TableView.swift"; sourceTree = "<group>"; };
+		2170A007299CF6FF00692596 /* AgoraVideoViewer+VideoControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+VideoControl.swift"; sourceTree = "<group>"; };
+		2170A008299CF6FF00692596 /* AgoraSingleVideoView+RtmDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraSingleVideoView+RtmDelegate.swift"; sourceTree = "<group>"; };
+		2170A009299CF6FF00692596 /* AgoraConnectionData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraConnectionData.swift; sourceTree = "<group>"; };
+		2170A00A299CF6FF00692596 /* AgoraUIKit.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = AgoraUIKit.docc; sourceTree = "<group>"; };
+		2170A00B299CF6FF00692596 /* AgoraVideoViewer+Ordering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+Ordering.swift"; sourceTree = "<group>"; };
+		2170A00C299CF6FF00692596 /* AgoraVideoViewer+JoinChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+JoinChannel.swift"; sourceTree = "<group>"; };
+		2170A00D299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraUIKit+AgoraRtmController+Extensions.swift"; sourceTree = "<group>"; };
+		2170A00E299CF6FF00692596 /* AgoraVideoViewer+RtcEngineDelegateOverflow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+RtcEngineDelegateOverflow.swift"; sourceTree = "<group>"; };
+		2170A00F299CF6FF00692596 /* VideoCallReminderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCallReminderView.swift; sourceTree = "<group>"; };
+		2170A010299CF6FF00692596 /* iOS+macOS+typealiases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "iOS+macOS+typealiases.swift"; sourceTree = "<group>"; };
+		2170A011299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+SendHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraUIKit+AgoraRtmController+SendHelpers.swift"; sourceTree = "<group>"; };
+		2170A012299CF6FF00692596 /* AgoraVideoViewer+LocalVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+LocalVideo.swift"; sourceTree = "<group>"; };
+		2170A013299CF6FF00692596 /* AgoraVideoViewer+Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+Token.swift"; sourceTree = "<group>"; };
+		2170A014299CF6FF00692596 /* AgoraUIKit+MD5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraUIKit+MD5.swift"; sourceTree = "<group>"; };
+		2170A015299CF6FF00692596 /* AgoraCollectionViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraCollectionViewer.swift; sourceTree = "<group>"; };
+		2170A016299CF6FF00692596 /* AgoraVideoViewer+Buttons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+Buttons.swift"; sourceTree = "<group>"; };
+		2170A017299CF6FF00692596 /* AgoraVideoViewer+AgoraRtcEngineDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+AgoraRtcEngineDelegate.swift"; sourceTree = "<group>"; };
+		2170A018299CF6FF00692596 /* AgoraVideoViewer+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraVideoViewer+Utilities.swift"; sourceTree = "<group>"; };
+		2170A019299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+MuteRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraUIKit+AgoraRtmController+MuteRequests.swift"; sourceTree = "<group>"; };
+		2170A01A299CF6FF00692596 /* AgoraSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraSettings.swift; sourceTree = "<group>"; };
+		2170A01D299CF6FF00692596 /* AgoraAppGroupDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraAppGroupDataHelper.swift; sourceTree = "<group>"; };
+		2170A021299CF6FF00692596 /* AgoraSharingEngineHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraSharingEngineHelper.swift; sourceTree = "<group>"; };
+		2170A022299CF6FF00692596 /* AgoraBroadcastExtensionHelper.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = AgoraBroadcastExtensionHelper.docc; sourceTree = "<group>"; };
+		2170A023299CF6FF00692596 /* AgoraBroadcastError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraBroadcastError.swift; sourceTree = "<group>"; };
+		2170A024299CF6FF00692596 /* AgoraBroadcastSampleHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraBroadcastSampleHandler.swift; sourceTree = "<group>"; };
+		2170A02D299CF6FF00692596 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2170A02F299CF6FF00692596 /* AgoraRtmController+MuteRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraRtmController+MuteRequests.swift"; sourceTree = "<group>"; };
+		2170A030299CF6FF00692596 /* AgoraRtmController+RtmDelegateOverflows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraRtmController+RtmDelegateOverflows.swift"; sourceTree = "<group>"; };
+		2170A031299CF6FF00692596 /* AgoraRtmController+AgoraRtmDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraRtmController+AgoraRtmDelegate.swift"; sourceTree = "<group>"; };
+		2170A032299CF6FF00692596 /* Documentation.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Documentation.docc; sourceTree = "<group>"; };
+		2170A033299CF6FF00692596 /* AgoraRtmController+SendHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraRtmController+SendHelpers.swift"; sourceTree = "<group>"; };
+		2170A034299CF6FF00692596 /* AgoraRtmController+Tokens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AgoraRtmController+Tokens.swift"; sourceTree = "<group>"; };
+		2170A035299CF6FF00692596 /* AgoraRtmController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraRtmController.swift; sourceTree = "<group>"; };
 		2F98D68124C9AAE400613A4C /* CapacitorPluginAgora.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CapacitorPluginAgora.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,6 +159,78 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		21709FFA299CF6FF00692596 /* Agora-Video-UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				21709FFB299CF6FF00692596 /* PIPControlView.swift */,
+				21709FFC299CF6FF00692596 /* AgoraVideoViewer+AgoraExtensions.swift */,
+				21709FFD299CF6FF00692596 /* AgoraViewer.swift */,
+				21709FFE299CF6FF00692596 /* WellCareViewController.swift */,
+				21709FFF299CF6FF00692596 /* AgoraSingleVideoView.swift */,
+				2170A000299CF6FF00692596 /* AgoraSingleVideoView+RtmOptions.swift */,
+				2170A001299CF6FF00692596 /* UIButton+Extensions.swift */,
+				2170A002299CF6FF00692596 /* AgoraVideoViewer.swift */,
+				2170A003299CF6FF00692596 /* AgoraVideoViewer+Permissions.swift */,
+				2170A004299CF6FF00692596 /* AgoraCameraSourcePush.swift */,
+				2170A005299CF6FF00692596 /* AgoraUIKit.swift */,
+				2170A006299CF6FF00692596 /* AgoraVideoViewer+TableView.swift */,
+				2170A007299CF6FF00692596 /* AgoraVideoViewer+VideoControl.swift */,
+				2170A008299CF6FF00692596 /* AgoraSingleVideoView+RtmDelegate.swift */,
+				2170A009299CF6FF00692596 /* AgoraConnectionData.swift */,
+				2170A00A299CF6FF00692596 /* AgoraUIKit.docc */,
+				2170A00B299CF6FF00692596 /* AgoraVideoViewer+Ordering.swift */,
+				2170A00C299CF6FF00692596 /* AgoraVideoViewer+JoinChannel.swift */,
+				2170A00D299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+Extensions.swift */,
+				2170A00E299CF6FF00692596 /* AgoraVideoViewer+RtcEngineDelegateOverflow.swift */,
+				2170A00F299CF6FF00692596 /* VideoCallReminderView.swift */,
+				2170A010299CF6FF00692596 /* iOS+macOS+typealiases.swift */,
+				2170A011299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+SendHelpers.swift */,
+				2170A012299CF6FF00692596 /* AgoraVideoViewer+LocalVideo.swift */,
+				2170A013299CF6FF00692596 /* AgoraVideoViewer+Token.swift */,
+				2170A014299CF6FF00692596 /* AgoraUIKit+MD5.swift */,
+				2170A015299CF6FF00692596 /* AgoraCollectionViewer.swift */,
+				2170A016299CF6FF00692596 /* AgoraVideoViewer+Buttons.swift */,
+				2170A017299CF6FF00692596 /* AgoraVideoViewer+AgoraRtcEngineDelegate.swift */,
+				2170A018299CF6FF00692596 /* AgoraVideoViewer+Utilities.swift */,
+				2170A019299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+MuteRequests.swift */,
+				2170A01A299CF6FF00692596 /* AgoraSettings.swift */,
+			);
+			path = "Agora-Video-UIKit";
+			sourceTree = "<group>";
+		};
+		2170A01C299CF6FF00692596 /* AgoraAppGroupDataHelper */ = {
+			isa = PBXGroup;
+			children = (
+				2170A01D299CF6FF00692596 /* AgoraAppGroupDataHelper.swift */,
+			);
+			path = AgoraAppGroupDataHelper;
+			sourceTree = "<group>";
+		};
+		2170A020299CF6FF00692596 /* AgoraBroadcastExtensionHelper */ = {
+			isa = PBXGroup;
+			children = (
+				2170A021299CF6FF00692596 /* AgoraSharingEngineHelper.swift */,
+				2170A022299CF6FF00692596 /* AgoraBroadcastExtensionHelper.docc */,
+				2170A023299CF6FF00692596 /* AgoraBroadcastError.swift */,
+				2170A024299CF6FF00692596 /* AgoraBroadcastSampleHandler.swift */,
+			);
+			path = AgoraBroadcastExtensionHelper;
+			sourceTree = "<group>";
+		};
+		2170A02E299CF6FF00692596 /* AgoraRtmControl */ = {
+			isa = PBXGroup;
+			children = (
+				2170A02F299CF6FF00692596 /* AgoraRtmController+MuteRequests.swift */,
+				2170A030299CF6FF00692596 /* AgoraRtmController+RtmDelegateOverflows.swift */,
+				2170A031299CF6FF00692596 /* AgoraRtmController+AgoraRtmDelegate.swift */,
+				2170A032299CF6FF00692596 /* Documentation.docc */,
+				2170A033299CF6FF00692596 /* AgoraRtmController+SendHelpers.swift */,
+				2170A034299CF6FF00692596 /* AgoraRtmController+Tokens.swift */,
+				2170A035299CF6FF00692596 /* AgoraRtmController.swift */,
+			);
+			path = AgoraRtmControl;
+			sourceTree = "<group>";
+		};
 		50ADFF7E201F53D600D50D53 = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +254,11 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				21709FFA299CF6FF00692596 /* Agora-Video-UIKit */,
+				2170A01C299CF6FF00692596 /* AgoraAppGroupDataHelper */,
+				2170A020299CF6FF00692596 /* AgoraBroadcastExtensionHelper */,
+				2170A02E299CF6FF00692596 /* AgoraRtmControl */,
+				2170A02D299CF6FF00692596 /* AppDelegate.swift */,
 				50E1A94720377CB70090CE1A /* CapacitorPluginAgoraPlugin.swift */,
 				2F98D68124C9AAE400613A4C /* CapacitorPluginAgora.swift */,
 				50ADFF8B201F53D600D50D53 /* CapacitorPluginAgoraPlugin.h */,
@@ -338,8 +505,53 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2170A069299CF6FF00692596 /* AgoraRtmController+Tokens.swift in Sources */,
+				2170A063299CF6FF00692596 /* AppDelegate.swift in Sources */,
+				2170A036299CF6FF00692596 /* PIPControlView.swift in Sources */,
+				2170A054299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+MuteRequests.swift in Sources */,
+				2170A037299CF6FF00692596 /* AgoraVideoViewer+AgoraExtensions.swift in Sources */,
+				2170A04E299CF6FF00692596 /* AgoraVideoViewer+Token.swift in Sources */,
+				2170A057299CF6FF00692596 /* AgoraAppGroupDataHelper.swift in Sources */,
+				2170A04A299CF6FF00692596 /* VideoCallReminderView.swift in Sources */,
+				2170A050299CF6FF00692596 /* AgoraCollectionViewer.swift in Sources */,
+				2170A06A299CF6FF00692596 /* AgoraRtmController.swift in Sources */,
+				2170A044299CF6FF00692596 /* AgoraConnectionData.swift in Sources */,
+				2170A047299CF6FF00692596 /* AgoraVideoViewer+JoinChannel.swift in Sources */,
+				2170A049299CF6FF00692596 /* AgoraVideoViewer+RtcEngineDelegateOverflow.swift in Sources */,
+				2170A05D299CF6FF00692596 /* AgoraBroadcastSampleHandler.swift in Sources */,
+				2170A038299CF6FF00692596 /* AgoraViewer.swift in Sources */,
+				2170A03C299CF6FF00692596 /* UIButton+Extensions.swift in Sources */,
+				2170A064299CF6FF00692596 /* AgoraRtmController+MuteRequests.swift in Sources */,
+				2170A052299CF6FF00692596 /* AgoraVideoViewer+AgoraRtcEngineDelegate.swift in Sources */,
+				2170A05B299CF6FF00692596 /* AgoraBroadcastExtensionHelper.docc in Sources */,
+				2170A067299CF6FF00692596 /* Documentation.docc in Sources */,
+				2170A04D299CF6FF00692596 /* AgoraVideoViewer+LocalVideo.swift in Sources */,
+				2170A042299CF6FF00692596 /* AgoraVideoViewer+VideoControl.swift in Sources */,
+				2170A03B299CF6FF00692596 /* AgoraSingleVideoView+RtmOptions.swift in Sources */,
+				2170A03F299CF6FF00692596 /* AgoraCameraSourcePush.swift in Sources */,
+				2170A03D299CF6FF00692596 /* AgoraVideoViewer.swift in Sources */,
+				2170A065299CF6FF00692596 /* AgoraRtmController+RtmDelegateOverflows.swift in Sources */,
+				2170A04C299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+SendHelpers.swift in Sources */,
+				2170A048299CF6FF00692596 /* AgoraUIKit+AgoraRtmController+Extensions.swift in Sources */,
+				2170A040299CF6FF00692596 /* AgoraUIKit.swift in Sources */,
+				2170A046299CF6FF00692596 /* AgoraVideoViewer+Ordering.swift in Sources */,
+				2170A055299CF6FF00692596 /* AgoraSettings.swift in Sources */,
+				2170A068299CF6FF00692596 /* AgoraRtmController+SendHelpers.swift in Sources */,
+				2170A03A299CF6FF00692596 /* AgoraSingleVideoView.swift in Sources */,
+				2170A066299CF6FF00692596 /* AgoraRtmController+AgoraRtmDelegate.swift in Sources */,
+				2170A03E299CF6FF00692596 /* AgoraVideoViewer+Permissions.swift in Sources */,
 				50E1A94820377CB70090CE1A /* CapacitorPluginAgoraPlugin.swift in Sources */,
+				2170A05A299CF6FF00692596 /* AgoraSharingEngineHelper.swift in Sources */,
+				2170A05C299CF6FF00692596 /* AgoraBroadcastError.swift in Sources */,
+				2170A039299CF6FF00692596 /* WellCareViewController.swift in Sources */,
+				2170A04F299CF6FF00692596 /* AgoraUIKit+MD5.swift in Sources */,
+				2170A041299CF6FF00692596 /* AgoraVideoViewer+TableView.swift in Sources */,
 				2F98D68224C9AAE500613A4C /* CapacitorPluginAgora.swift in Sources */,
+				2170A051299CF6FF00692596 /* AgoraVideoViewer+Buttons.swift in Sources */,
+				2170A045299CF6FF00692596 /* AgoraUIKit.docc in Sources */,
+				2170A04B299CF6FF00692596 /* iOS+macOS+typealiases.swift in Sources */,
+				2170A043299CF6FF00692596 /* AgoraSingleVideoView+RtmDelegate.swift in Sources */,
+				2170A053299CF6FF00692596 /* AgoraVideoViewer+Utilities.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* CapacitorPluginAgoraPlugin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

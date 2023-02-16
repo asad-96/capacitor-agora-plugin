@@ -191,8 +191,11 @@ extension AgoraVideoViewer {
         
 #if os(iOS)
         let container = UIView()
-        let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPanTray(_:)))
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(handleControlGesture(_:)))
         container.addGestureRecognizer(gesture)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedBottomConstrol(_:)))
+        container.addGestureRecognizer(tapGesture)
         
         container.backgroundColor = UIColor.black.withAlphaComponent(0.64)
         container.isHidden = true
@@ -258,9 +261,8 @@ extension AgoraVideoViewer {
             unselected: "ic-mic", selected: MPButton.muteMicSelectedSymbol
         )
         button.setImage(UIImage(named: "ic-mic"), for: .normal)
-        if let muteMicSelectedSymbol = MPButton.muteMicSelectedSymbol {
-            button.setImage(UIImage(systemName: muteMicSelectedSymbol), for: .selected)
-        }
+        button.setImage(UIImage(named: "ic-mic-off"), for: .selected)
+
         
         button.tintColor = UIColor.white
 #if os(iOS)
@@ -368,97 +370,24 @@ extension AgoraVideoViewer {
     }
     
     
-    @objc open func getLayoutButton() -> MPButton? {
-        if let layoutButton = self.layoutButton {
-            return layoutButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: MPButton.layoutSymbol)
-        button.addTarget(self, action: #selector(tappedLayoutButton), for: .touchUpInside)
-        self.layoutButton = button
-        return button
-    }
-    
-    @objc open func getInputAudioButton() -> MPButton? {
-        if let audioInputButton = self.audioInputButton {
-            return audioInputButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: MPButton.bluetoothSymbol)
-        button.addTarget(self, action: #selector(tappedAudioInoutButton), for: .touchUpInside)
-        
-        self.audioInputButton = button
-        return button
-    }
-    
-    @objc open func getFlashButton() -> MPButton? {
-        if let flashButton = self.flashButton {
-            return flashButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: MPButton.flashSymbol)
-        button.addTarget(self, action: #selector(tappedFlashButton), for: .touchUpInside)
-        
-        self.flashButton = button
-        return button
-    }
-    
-    @objc open func getBackButton() -> MPButton? {
-        if let backButton = self.backButton {
-            return backButton
-        }
-        
-        let button = MPButton.newToggleButton(unselected: "ic-back")
-        button.addTarget(self, action: #selector(tappedBackButton), for: .touchUpInside)
-        
-        self.backButton = button
-        return button
-    }
-    
-    func layoutTopButtons() {
-        
-        guard let container = self.topButtonContainer else {
-            return
-        }
-        
-        
-        NSLayoutConstraint.activate([
-            topButtonStackView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            topButtonStackView.centerYAnchor.constraint(equalTo: container.centerYAnchor
-                                                       ),
-            topButtonStackView.widthAnchor.constraint(equalTo: container.widthAnchor),
-            topButtonStackView.heightAnchor.constraint(equalTo: container.heightAnchor),
-            
-        ])
-        
-        for button in topButtonStackView.arrangedSubviews {
-            button.frame.size = CGSize(width: 41, height: 41)
-            //            button.removeAllConstraints()
-            //            button.translatesAutoresizingMaskIntoConstraints = false
-            //            NSLayoutConstraint.activate([
-            //                button.widthAnchor.constraint(equalToConstant: 41),
-            //                button.heightAnchor.constraint(equalToConstant: 41)
-            //            ])
-            button.backgroundColor = [UIColor.red, UIColor.green, UIColor.yellow, UIColor.purple].randomElement()
-        }
-        
-    }
-    
-    @IBAction func didPanTray(_ sender: UIPanGestureRecognizer) {
+    @objc func handleControlGesture(_ sender: UIPanGestureRecognizer) {
         guard let controlContainer = controlContainer else { return }
+        
+        guard style == .pinned else { return  }
+        
         var translation = sender.translation(in: self)
         var velocity = sender.velocity(in: self)
         
         print("hai translation \(translation)")
         
-        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - ((self.style == .expand ? bottomTableHeight : 0))
-        let minOffsetY =  UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
+        let minOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - bottomTableHeight
+        let maxOffsetY = UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
         if sender.state == .began {
-            trayOriginalCenter = controlContainer.center
+            bottomContainerCenter = controlContainer.center
             
         } else if sender.state == .changed {
             
-            var newOffsetY = trayOriginalCenter.y + translation.y
+            var newOffsetY = bottomContainerCenter.y + translation.y
             newOffsetY = max(minOffsetY, newOffsetY)
             newOffsetY = min(maxOffsetY, newOffsetY)
             
@@ -466,15 +395,27 @@ extension AgoraVideoViewer {
             controlContainer.center = CGPoint(x: controlContainer.center.x, y: newOffsetY)
             
         } else if sender.state == .ended {
-            if velocity.y > 0 {
-                UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                    controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
-                })
+            if velocity.y < 0 {
+                
+                let originalY = UIScreen.main.bounds.height - controlContainer.frame.height/2
+                if controlContainer.center.y < originalY - 70 {
+                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
+                    })
+                } else {
+                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: originalY)
+                    })
+                }
             } else {
                 UIView.animate(withDuration: 0.3, animations: { () -> Void in
                     controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
                 })
             }
         }
+    }
+    
+    @objc func tappedBottomConstrol(_ gesture: UITapGestureRecognizer) {
+        resetControlContainer()
     }
 }

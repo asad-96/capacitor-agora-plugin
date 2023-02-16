@@ -33,10 +33,25 @@ extension AgoraVideoViewer {
     }
     
     func updateParticipantLists(participants: [IParticipant]) {
-        self.participants = participants
-        DispatchQueue.main.async {[weak self] in
+        
+        for participant in participants {
+            if let index = self.participants.firstIndex(where: {$0.uid == participant.uid}){
+                self.participants[index].name = participant.name
+                self.participants[index].avatar = participant.avatar
+            } else {
+                self.participants.append(participant)
+            }
+            
+            if let uid = UInt(participant.uid), let videoFeed = self.videoLookup[uid] {
+                videoFeed.updateVideoView(with: participant)
+            }
+        }
+        
+        DispatchQueue.main.async { [weak self] in
             self?.userListTableView.reloadData()
         }
+        
+       
     }
 }
 
@@ -59,14 +74,15 @@ extension AgoraVideoViewer: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "IParticipantTVC", for: indexPath) as? IParticipantTVC
-        else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "IParticipantTVC", for: indexPath) as? IParticipantTVC else {
             
             return UITableViewCell()
         }
         
         let participant = participants[indexPath.row]
-        cell.handleParticipantAction = {[weak self] action in
+        cell.updateContent(with: participant)
+
+        cell.actionHandler = {[weak self] action in
             self?.delegate?.onSendAction(action: action, to: participant)
         }
         return cell
@@ -79,10 +95,8 @@ class IParticipantTVC: UITableViewCell {
         let imageView = UIImageView(image: UIImage(named: "ic-avatar-default"))
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
-        imageView.layer.borderWidth = 2
+        imageView.layer.borderWidth = 4
         imageView.clipsToBounds = true
-        imageView.layer.borderColor = UIColor(named: "color3BC638")?.cgColor
-
         return imageView
     }()
     
@@ -125,7 +139,7 @@ class IParticipantTVC: UITableViewCell {
         selectionStyle = .none
     }
     
-    var handleParticipantAction: ((IParticipantAction)->())?
+    var actionHandler: ((IParticipantAction) ->())?
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -177,18 +191,14 @@ class IParticipantTVC: UITableViewCell {
         callButton.isHidden = participant.hasJoined
         nudgeButton.isHidden = participant.hasJoined
         nameLabel.text = participant.name
-        roleLabel.text = participant.role.rawValue.capitalized
-       
-
-        thumbImageView.layer.borderColor = participant.hasJoined ? UIColor(named: "color3BC638")?.cgColor : UIColor(named: "colorFF5555")?.cgColor
-
+        thumbImageView.layer.borderColor = participant.role == .host ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
     }
     
     @objc func tappedCallButton(_ sender: UIButton) {
-        handleParticipantAction?(.call)
+        actionHandler?(.call)
     }
     
     @objc func tappedNudgeButton(_ sender: UIButton) {
-        handleParticipantAction?(.nudge)
+        actionHandler?(.nudge)
     }
 }

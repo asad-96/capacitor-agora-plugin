@@ -238,7 +238,7 @@ extension AgoraVideoViewer {
     }
     
     @objc func tappedChatButton() {
-        pip = true
+        isPipOn = true
     }
 
     
@@ -251,7 +251,7 @@ extension AgoraVideoViewer {
     @objc func tappedLayoutButton() {
         
 //        let styleValue = (self.style.rawValue + 1) % AgoraVideoViewer.Style.count
-//
+//        
 //        self.style = AgoraVideoViewer.Style(rawValue: styleValue) ?? self.style
     }
     
@@ -263,14 +263,4 @@ extension AgoraVideoViewer {
         self.torchOn = !self.torchOn
     }
     
-    @objc func tappedAudioInoutButton() {
-        if let routePickerButton = airplayVolume.subviews.first(where: { $0 is UIButton }) as? UIButton {
-           
-            routePickerButton.sendActions(for: .touchUpInside)
-        }
-    }
-    
-    @objc func tappedBackButton() {
-      
-    }
 }
