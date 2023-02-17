@@ -234,15 +234,15 @@ Network Quality
 ### addListener('onSelfAction', ...)
 
 ```typescript
-addListener(eventName: 'onSelfAction', listenerFunc: (event: 'chat' | 'leaved' | 'exitPipMode', room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onSelfAction', listenerFunc: (event: 'chat' | 'leaved' | 'back' | 'exitPipMode', room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 User action
 
-| Param              | Type                                                                                |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| **`eventName`**    | <code>'onSelfAction'</code>                                                         |
-| **`listenerFunc`** | <code>(event: 'chat' \| 'leaved' \| 'exitPipMode', room?: string) =&gt; void</code> |
+| Param              | Type                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onSelfAction'</code>                                                                   |
+| **`listenerFunc`** | <code>(event: 'chat' \| 'leaved' \| 'back' \| 'exitPipMode', room?: string) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

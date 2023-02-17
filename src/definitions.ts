@@ -131,6 +131,6 @@ export interface CapacitorPluginAgoraPlugin {
    */
   addListener(
     eventName: 'onSelfAction',
-    listenerFunc: (event: 'chat' | 'leaved' | 'exitPipMode', room?: string) => void
+    listenerFunc: (event: 'chat' | 'leaved' | 'back' | 'exitPipMode', room?: string) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 }
