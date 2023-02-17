@@ -7,13 +7,12 @@ declare interface IAvatar {
 }
 
 export interface IParticipant {
-  _id: string
+  uid: UID
   name: string
-  avatar: IAvatar
   role: ClientRole
-  subtitle: string
+  avatar?: IAvatar
+  subtitle?: string
   hasJoined?: boolean
-  uid?: UID
 }
 
 export interface CapacitorPluginAgoraPlugin {
@@ -25,6 +24,7 @@ export interface CapacitorPluginAgoraPlugin {
   joinChannel(options: {
     room: string
     uid: UID
+    user: IParticipant
     token: string
     appId: string
   }): Promise<UID>
