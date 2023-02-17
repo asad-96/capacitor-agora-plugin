@@ -18,18 +18,18 @@ class WellCareViewController: UIViewController {
     
     // Update with the App ID of your project generated on Agora Console.
     var appID: String{
-//        return params.appID
-        return "1a37e0ba7a96485bb1e538ab05439b96"
+        return params.appID
+//        return "1a37e0ba7a96485bb1e538ab05439b96"
     }
     // Update with the temporary token generated in Agora Console.
     var token: String {
-//        return params.token
-        return "007eJxTYJjmvu358milyX+9nXiv3JKO53do25m9hYtz8lHG5lsyzjsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNPJ++S24IZGRYs2kNKyMDBIL4PAwlqcUl8ckZiXl5qTkMDAAifiKI"
+        return params.token
+//        return "007eJxTYJjmvu358milyX+9nXiv3JKO53do25m9hYtz8lHG5lsyzjsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNPJ++S24IZGRYs2kNKyMDBIL4PAwlqcUl8ckZiXl5qTkMDAAifiKI"
     }
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName: String {
-//        return params.channelName
-        return "test_channel"
+        return params.channelName
+//        return "test_channel"
     }
     
     // Create the view object.
