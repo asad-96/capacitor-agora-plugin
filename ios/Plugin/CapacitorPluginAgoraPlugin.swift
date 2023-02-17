@@ -40,17 +40,19 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         
         let roleStr = call.getString("role") ?? ""
         let role: ClientRole = ClientRole(rawValue: roleStr) ?? .host
-        let participant: JSObject? = call.getObject("user")
+        if let jsUser: JSObject = call.getObject("user") {
+            let participant = IParticipant(object: jsUser)
+        }
         
         
         //        initializeAgoraEngine(appId: appId)
         initViews(params, role: role)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
-        //        call.resolve([
-        //            "value": implementation.echo("Join channel value")
-        //        ])
-        
-        
+//                call.resolve([
+//                    "value": implementation.echo("Join channel value")
+//                ])
+//
+//
         
     }
     

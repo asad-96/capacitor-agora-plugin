@@ -166,6 +166,11 @@ class WellCareViewController: UIViewController {
     }
 
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        agoraView?.reorganiseVideos()
+    }
+    
     func initializeAndJoinChannel(){
         
         agoraView = AgoraVideoViewer(
