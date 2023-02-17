@@ -193,7 +193,7 @@ extension AgoraVideoViewer: AgoraRtcEngineDelegate {
         self.delegate?.joinedChannel(channel: channel)
         self.agoraSettings.rtcDelegate?.rtcEngine?(engine, didJoinChannel: channel, withUid: uid, elapsed: elapsed)
         
-        debugPrint("hai joined -----------")
+        debugPrint("[capacitor-agora] hai joined -----------")
     }
 
     /**

@@ -71,7 +71,7 @@ extension AgoraVideoViewer: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let videoCount = participants.count
-        debugPrint("hai video count \(videoCount)")
+        debugPrint("[capacitor-agora] hai video count \(videoCount)")
         return videoCount
     }
     

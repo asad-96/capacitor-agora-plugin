@@ -56,21 +56,21 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     
     @objc func leaveChannel(_ call: CAPPluginCall) {
         
-        debugPrint("hai leaveChannel")
+        debugPrint("[capacitor-agora] leaveChannel")
         call.resolve([
             "value": implementation.echo("leaveChannel value")
         ])
     }
     
     @objc func setCountdown(_ call: CAPPluginCall) {
-        debugPrint("hai setCountdown")
+        debugPrint("[capacitor-agora] setCountdown")
 
         let seconds = call.getInt("seconds") ?? 0
         wellCareVC?.startCallTimer(seconds: seconds)
     }
     
     @objc func showRecordingStatus(_ call: CAPPluginCall) {
-        debugPrint("hai showRecordingStatus")
+        debugPrint("[capacitor-agora] showRecordingStatus")
         let isShown = call.getBool("isShown") ?? false
         wellCareVC?.showRecordingStatus(isShown: isShown)
     }
@@ -81,6 +81,10 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         }
         let participants = values.compactMap({IParticipant(object: $0)})
         wellCareVC?.updateParticipantLists(participants: participants)
+    }
+    
+    @objc func enterPictureInPictureMode() {
+        wellCareVC?.enterPictureInPictureMode()
     }
     
     //MARK: Sub Functions
@@ -220,12 +224,10 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     }
     
     public func joinedChannel(channel: String) {
-        debugPrint("hai joinedChannel \(channel)")
+        debugPrint("[capacitor-agora] joinedChannel \(channel)")
     }
     
     public func onEnterPIP() {
-        wellCareVC?.onEnterChat()
-        
         let jsObject: [String: Any] = [
             EVENT: "chat"
         ]
@@ -241,7 +243,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     
     public func onSendAction(action: IParticipantAction, to participant: IParticipant) {
         
-        debugPrint("onSendAction \(action.rawValue) to particiant \(participant.name)")
+        debugPrint("[capacitor-agora] onSendAction \(action.rawValue) to particiant \(participant.name)")
         
         
         let jsObject: [String: Any] = [

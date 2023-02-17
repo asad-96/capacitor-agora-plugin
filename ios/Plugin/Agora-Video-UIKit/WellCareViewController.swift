@@ -301,7 +301,7 @@ class WellCareViewController: UIViewController {
     
     @objc func tappedLayoutButton(_ sender: UIButton) {
         
-        debugPrint("hai tappedLayoutButton")
+        debugPrint("[capacitor-agora] hai tappedLayoutButton")
         let segmentedStyle = [
             AgoraVideoViewer.Style.floating,
             AgoraVideoViewer.Style.grid,
@@ -500,7 +500,7 @@ extension WellCareViewController {
         
     }
     
-    func onEnterChat() {
+    func enterPictureInPictureMode() {
         let minimizedWidth = 190.0 * UIScreen.main.bounds.width / 384.0
         self.view.frame = CGRect(origin: CGPoint(x: 50, y: 50), size: CGSize(width: minimizedWidth, height: minimizedWidth))
         self.view.layer.cornerRadius = 5
@@ -534,7 +534,7 @@ extension WellCareViewController {
         }
     }
     
-    func exitPIP() {
+    func exitPictureInPictureMode() {
         let pip = (self.agoraView?.isPipOn ?? false)
         topControlerView.isHidden = pip
         countdownView.isHidden = pip
@@ -616,7 +616,7 @@ extension WellCareViewController: PIPControlViewDelegate {
         switch action {
         case .pip:
             agoraView?.isPipOn = false
-            exitPIP()
+            exitPictureInPictureMode()
             delegate?.onLeavePIP()
         case .close:
             agoraView?.tappedEndCallButton()

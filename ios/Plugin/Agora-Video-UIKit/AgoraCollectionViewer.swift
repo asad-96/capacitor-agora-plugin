@@ -316,7 +316,7 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
 extension AgoraVideoViewer: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        debugPrint("collectionview flowdelegate")
+        debugPrint("[capacitor-agora] collectionview flowdelegate")
         return self.style == .pinned ? CGSize(width: 75, height: 75) : CGSize(width: 150, height: 150)
     }
 }

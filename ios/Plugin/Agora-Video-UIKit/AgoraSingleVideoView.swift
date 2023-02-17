@@ -52,7 +52,7 @@ public class AgoraSingleVideoView: MPView {
     /// Canvas used to render the Agora RTC Video.
     public var canvas: AgoraRtcVideoCanvas {
         didSet {
-            debugPrint("hai update canvas ")
+            debugPrint("[capacitor-agora] hai update canvas ")
         }
     }
     /// View that the AgoraRtcVideoCanvas is sending the video feed to

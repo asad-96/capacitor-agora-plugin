@@ -161,7 +161,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     /// The most recently active speaker in the session. This will only ever be set to remote users, not the local user.
     public internal(set) var activeSpeaker: UInt? {
         didSet {
-            debugPrint("hai speaker 1 \(activeSpeaker)")
+            debugPrint("[capacitor-agora] speaker 1 \(activeSpeaker)")
             self.reorganiseVideos()
         }
     }
@@ -171,7 +171,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     /// Can be set to local user.
     public var overrideActiveSpeaker: UInt? {
         didSet {
-            debugPrint("hai speaker 2 \(overrideActiveSpeaker)")
+            debugPrint("[capacitor-agora] hai speaker 2 \(overrideActiveSpeaker)")
 
             if oldValue != overrideActiveSpeaker {
                 self.delegate?.didChangedActiveSpeaker()
@@ -487,7 +487,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
 
     var remoteUserIDs: Set<UInt> = [] {
         didSet {
-            debugPrint("hai remoteUserIDs \(remoteUserIDs) \(userID)")
+            debugPrint("[capacitor-agora] hai remoteUserIDs \(remoteUserIDs) \(userID)")
             
             let remoteParticipant = remoteUserIDs.compactMap({IParticipant(_id: nil, name: "", avatar: IAvatar(url: ""), role: .audience, subtitle: "", hasJoined: true, uid: "\($0)")})
             let selfParticipant = [userID].compactMap({IParticipant(_id: nil, name: "", avatar: IAvatar(url: ""), role: .audience, subtitle: "", hasJoined: true, uid: "\($0)")})
