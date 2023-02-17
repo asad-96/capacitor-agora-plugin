@@ -32,31 +32,33 @@ export interface CapacitorPluginAgoraPlugin {
   /**
    * Leave Agora Channel
    */
-  leaveChannel(room?: string): Promise<void>
+  leaveChannel(options: { room?: string }): Promise<void>
 
   /**
    * Update participant lists, including those who are not joined agora channel. Returned participants mapped with their hasJoined status.
    */
-  updateParticipantLists(participants: IParticipant[]): Promise<IParticipant[]>
+  updateParticipantLists(options: {
+    participants: IParticipant[]
+  }): Promise<IParticipant[]>
 
   /**
    * Set a participant to spotlight. Spotlighted participant frame should be highlighted, and place reordered to 1st position in the participant list.
    */
-  setSpotlight(participantId: string): Promise<UID>
+  setSpotlight(options: { participantId: string }): Promise<UID>
 
   /**
    * Show red icon for recording status. This recording is not meant to be performed on frontend.
    */
-  showRecordingStatus(isShown: boolean): Promise<void>
+  showRecordingStatus(options: { isShown: boolean }): Promise<void>
 
   /**
    * Show a countdown. A non-positive value will disable it.
    */
-  setCountdown(seconds: number): Promise<void>
+  setCountdown(options: { seconds: number }): Promise<void>
 
   /**
    * Enter picture-in-picture mode
-  */
+   */
   enterPictureInPictureMode(): Promise<void>
 
   // EVENTS
@@ -91,21 +93,18 @@ export interface CapacitorPluginAgoraPlugin {
     ) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 
-
   /**
    * Remote stream events
    * @event
    */
-    addListener(
-      eventName: 'onRemoteStreamChanged',
-      listenerFunc: (
-        participantId: string,
-        event:
-          | 'join'
-          | 'leave',
-        data?: any
-      ) => void
-    ): Promise<PluginListenerHandle> & PluginListenerHandle
+  addListener(
+    eventName: 'onRemoteStreamChanged',
+    listenerFunc: (
+      participantId: string,
+      event: 'join' | 'leave',
+      data?: any
+    ) => void
+  ): Promise<PluginListenerHandle> & PluginListenerHandle
 
   /**
    * Exceptions
@@ -131,6 +130,9 @@ export interface CapacitorPluginAgoraPlugin {
    */
   addListener(
     eventName: 'onSelfAction',
-    listenerFunc: (event: 'chat' | 'leaved' | 'back' | 'exitPipMode', room?: string) => void
+    listenerFunc: (
+      event: 'chat' | 'leaved' | 'back' | 'exitPipMode',
+      room?: string
+    ) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
 }
