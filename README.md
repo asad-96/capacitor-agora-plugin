@@ -37,14 +37,14 @@ npx cap sync
 ### joinChannel(...)
 
 ```typescript
-joinChannel(options: { room: string; uid: UID; token: string; appId: string; }) => Promise<UID>
+joinChannel(options: { room: string; uid: UID; user: IParticipant; token: string; appId: string; }) => Promise<UID>
 ```
 
 Join Agora Channel
 
-| Param         | Type                                                                                      |
-| ------------- | ----------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ room: string; uid: <a href="#uid">UID</a>; token: string; appId: string; }</code> |
+| Param         | Type                                                                                                                                      |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ room: string; uid: <a href="#uid">UID</a>; user: <a href="#iparticipant">IParticipant</a>; token: string; appId: string; }</code> |
 
 **Returns:** <code>Promise&lt;<a href="#uid">UID</a>&gt;</code>
 
@@ -256,13 +256,12 @@ User action
 
 | Prop            | Type                                              |
 | --------------- | ------------------------------------------------- |
-| **`_id`**       | <code>string</code>                               |
+| **`uid`**       | <code><a href="#uid">UID</a></code>               |
 | **`name`**      | <code>string</code>                               |
-| **`avatar`**    | <code><a href="#iavatar">IAvatar</a></code>       |
 | **`role`**      | <code><a href="#clientrole">ClientRole</a></code> |
+| **`avatar`**    | <code><a href="#iavatar">IAvatar</a></code>       |
 | **`subtitle`**  | <code>string</code>                               |
 | **`hasJoined`** | <code>boolean</code>                              |
-| **`uid`**       | <code><a href="#uid">UID</a></code>               |
 
 
 #### IAvatar

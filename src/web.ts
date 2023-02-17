@@ -36,13 +36,13 @@ export class CapacitorPluginAgoraWeb
   }
   async joinChannel(options: {
     room: string
-    uid: string
+    uid: UID
     token: string
     appId: string
   }): Promise<string> {
     console.log('joinChannel', options)
     this.unavailable()
-    return options.uid
+    return options.uid.toString()
   }
 
   async leaveChannel() {
