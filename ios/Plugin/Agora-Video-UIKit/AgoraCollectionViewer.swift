@@ -278,7 +278,6 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
             cell.agoraVideoView = newVid
         }
         
-        newVid.placeMuteAtBottom(style: style)
         if self.userID == newVid.uid {
             self.agkit.setupLocalVideo(newVid.canvas)
         } else {
@@ -287,6 +286,8 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
                 self.agkit.setRemoteVideoStream(newVid.uid, type: .low)
             }
         }
+        newVid.placeMuteAtBottom(style: style)
+
     }
 
     /// Tells the delegate that the item at the specified index path was selected.

@@ -21,6 +21,7 @@ public class AgoraSingleVideoView: MPView {
             if oldValue != videoMuted {
                 self.canvas.view?.isHidden = videoMuted
                 self.customCameraView?.isHidden = videoMuted
+                self.backgroundView.isHidden = !videoMuted
             }
             self.updateUserOptions()
         }
@@ -49,7 +50,11 @@ public class AgoraSingleVideoView: MPView {
         set { self.canvas.uid = newValue }
     }
     /// Canvas used to render the Agora RTC Video.
-    public var canvas: AgoraRtcVideoCanvas
+    public var canvas: AgoraRtcVideoCanvas {
+        didSet {
+            debugPrint("hai update canvas ")
+        }
+    }
     /// View that the AgoraRtcVideoCanvas is sending the video feed to
     var hostingView: MPView? {
         self.canvas.view
@@ -150,19 +155,10 @@ public class AgoraSingleVideoView: MPView {
     }()
 
     lazy var signalView: MPImageView = {
-        let muteFlag = UIImageView(image: UIImage(named: "ic-signal-good"))
-        muteFlag.contentMode = .scaleAspectFit
-        self.addSubview(muteFlag)
-        muteFlag.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            muteFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5),
-            muteFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
-            muteFlag.widthAnchor.constraint(equalToConstant: 14),
-            muteFlag.heightAnchor.constraint(equalTo: muteFlag.widthAnchor, multiplier:1)
-        ])
-
-      
-        return muteFlag
+        let imgView = UIImageView(image: UIImage(named: "ic-signal-good"))
+        imgView.contentMode = .scaleAspectFit
+        
+        return imgView
     }()
     
     var avatarWConstraint: NSLayoutConstraint?
@@ -180,7 +176,7 @@ public class AgoraSingleVideoView: MPView {
         self.micFlagColor = micColor
         self.singleVideoViewDelegate = delegate
         super.init(frame: .zero)
-        self.setBackground()
+        self.backgroundView.isHidden = false
         self.canvas.uid = uid
         let hostingView = MPView()
         hostingView.frame = self.bounds
@@ -194,6 +190,7 @@ public class AgoraSingleVideoView: MPView {
         self.setupMutedFlag()
         self.setupOptions(visible: false)
         self.signalView.isHidden = false
+        self.layoutSignalView()
     }
 
     func setupOptions(visible showOptions: Bool) {
@@ -204,9 +201,9 @@ public class AgoraSingleVideoView: MPView {
         self.audioMuted = true
     }
 
-    internal func setBackground() {
+    private lazy var backgroundView: MPView = {
         let backgroundView = MPView()
-        backgroundView.backgroundColor = .secondarySystemBackground
+        backgroundView.backgroundColor = UIColor.black
         self.addSubview(backgroundView)
         backgroundView.frame = self.bounds
         backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -225,7 +222,8 @@ public class AgoraSingleVideoView: MPView {
             stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
             shortNameLabel.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
             shortNameLabel.centerXAnchor.constraint(equalTo: avatarImageView.centerXAnchor),
-
+            shortNameLabel.widthAnchor.constraint(equalTo: avatarImageView.widthAnchor, multiplier: 0.7),
+            shortNameLabel.heightAnchor.constraint(equalTo: avatarImageView.heightAnchor, multiplier: 0.7),
         ])
         
         
@@ -234,7 +232,9 @@ public class AgoraSingleVideoView: MPView {
 
         avatarWConstraint?.isActive = true
         avatarHConstraint?.isActive = true
-    }
+        
+        return backgroundView
+    }()
 
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
@@ -262,6 +262,8 @@ public class AgoraSingleVideoView: MPView {
         label.font = .systemFont(ofSize: 26, weight: .bold)
         label.textAlignment = .center
         label.text = "H"
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
         return label
     }()
     
@@ -279,9 +281,6 @@ public class AgoraSingleVideoView: MPView {
     }
     
     func placeMuteAtBottom(style: AgoraVideoViewer.Style = .pinned) {
-//        let size = CGSize(width: 15, height: 15)
-//        let offset = CGPoint(x: self.frame.width - 20, y: self.frame.height - 20)
-//        mutedFlag.frame  = CGRect(origin: offset, size: size)
         mutedFlag.removeFromSuperview()
         addSubview(mutedFlag)
         for ct in mutedFlag.constraints {
@@ -307,10 +306,10 @@ public class AgoraSingleVideoView: MPView {
         avatarHConstraint?.constant = avatarSize
         avatarWConstraint?.constant = avatarSize
         avatarImageView.layer.cornerRadius = avatarSize / 2
-
+        layoutSignalView()
     }
     
-    func placeMuteAtTop(style: AgoraVideoViewer.Style) {
+    func placeMuteAtTop(style: AgoraVideoViewer.Style, top: CGFloat = 5) {
         mutedFlag.removeFromSuperview()
         addSubview(mutedFlag)
         for ct in mutedFlag.constraints {
@@ -318,9 +317,10 @@ public class AgoraSingleVideoView: MPView {
         }
         
         let muteFlagSize: CGFloat = 16.0
+        let muteRightPadding: CGFloat = style == .pinned ? -35 : -25
         NSLayoutConstraint.activate([
-            mutedFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -35),
-            mutedFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+            mutedFlag.rightAnchor.constraint(equalTo: self.rightAnchor, constant: muteRightPadding),
+            mutedFlag.topAnchor.constraint(equalTo: self.topAnchor, constant: top),
             mutedFlag.widthAnchor.constraint(equalToConstant: muteFlagSize),
             mutedFlag.heightAnchor.constraint(equalToConstant: muteFlagSize)
         ])
@@ -333,15 +333,48 @@ public class AgoraSingleVideoView: MPView {
         avatarHConstraint?.constant = avatarSize
         avatarWConstraint?.constant = avatarSize
         avatarImageView.layer.cornerRadius = avatarSize / 2
+        layoutSignalView()
+
+    }
+    
+    func layoutOptionViewForFullVideo(style: AgoraVideoViewer.Style) {
+        let margin: CGFloat = style == .pinned ? 15 : 5
+        placeMuteAtTop(style: style, top: margin)
+        layoutSignalView(top: margin, right: margin)
+    }
+    
+    func layoutSignalView(top: CGFloat = 5,  right: CGFloat = 5) {
+        signalView.removeFromSuperview()
+        addSubview(signalView)
+        signalView.translatesAutoresizingMaskIntoConstraints = false
+        for ct in signalView.constraints {
+            ct.isActive = false
+        }
+        
+        NSLayoutConstraint.activate([
+            signalView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -right),
+            signalView.topAnchor.constraint(equalTo: self.topAnchor, constant: top),
+            signalView.widthAnchor.constraint(equalToConstant: 14),
+            signalView.heightAnchor.constraint(equalTo: signalView.widthAnchor, multiplier:1)
+        ])
+        signalView.backgroundColor = .clear
     }
     
     func updateVideoView(with paticipant: IParticipant) {
-        nameLabel.text = paticipant.name
+        if paticipant.name.isEmpty {
+            nameLabel.text = "N/a"
+        } else {
+            nameLabel.text = paticipant.name
+        }
         avatarImageView.downloaded(from: paticipant.avatar.url)
         
         if paticipant.name.count > 1 {
-            let str = Array(paticipant.name)[0]
-            shortNameLabel.text = "\(str)"
+            let str = "\(Array(paticipant.name)[0])"
+            if !str.isEmpty {
+                shortNameLabel.text = "\(str)"
+            } else {
+                shortNameLabel.text = "N/a"
+            }
         }
     }
 }

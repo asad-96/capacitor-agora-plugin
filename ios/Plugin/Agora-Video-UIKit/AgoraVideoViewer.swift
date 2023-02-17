@@ -70,6 +70,7 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     )
 #endif
     
+    func didChangeVideoConfig()
     func didChangedActiveSpeaker()
     func onEnterPIP()
     func onLeavePIP()
@@ -302,6 +303,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         // Had issues with `self.style == .collection`, so changed to switch case
         switch self.style {
         case .collection: rtnView.isHidden = true
+        case .grid: rtnView.isHidden = true
         default: rtnView.isHidden = false
         }
         return rtnView
@@ -335,6 +337,9 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
                 }
                 self.reorganiseVideos()
                 self.updateCollectionLayout()
+                if self.style != .pinned {
+                    self.resetControlContainer()
+                }
             }
         }
     }
@@ -454,11 +459,13 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     var chatButton: MPButton?
     var endCallButton: MPButton?
     
-    lazy var userListView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.64)
-        return view
-    }()
+    var partipantHConstraint: NSLayoutConstraint?
+    
+//    lazy var userListView: UIView = {
+//        let view = UIView()
+//        view.backgroundColor = UIColor.black.withAlphaComponent(0.64)
+//        return view
+//    }()
     
     lazy var userListTableView: UITableView = {
         let tableView = UITableView()

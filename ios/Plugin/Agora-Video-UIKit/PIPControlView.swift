@@ -55,6 +55,7 @@ class PIPControlView: UIView {
     private lazy var micButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "ic-mic"), for: .normal)
+        button.setImage(UIImage(named: "ic-mic-off"), for: .selected)
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(tapppedMicButton(_:)), for: .touchUpInside)
         return button
@@ -126,6 +127,9 @@ class PIPControlView: UIView {
     
     func toggleControlView(isHidden: Bool) {
         stackView.isHidden = isHidden
+    }
+    func toggleMicButton(isOn: Bool) {
+        micButton.isSelected = isOn
     }
     
     @objc func tapppedExitPip(_ sender: UIButton) {

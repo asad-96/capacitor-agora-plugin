@@ -28,7 +28,7 @@ extension AgoraVideoViewer: AgoraCameraSourcePushDelegate {
         if !self.agoraSettings.externalVideoSettings.enabled, self.agoraSettings.cameraEnabled {
             self.agkit.startPreview()
         } else if let device = self.agoraSettings.externalVideoSettings.captureDevice {
-            vidView.customCameraView = CustomVideoSourcePreview(frame: .zero)
+            vidView.customCameraView = CustomVideoSourcePreview(frame: UIScreen.main.bounds)
             vidView.customCameraView?.isHidden = true
             self.customCamera = AgoraCameraSourcePush(delegate: self, localVideoPreview: vidView.customCameraView)
 

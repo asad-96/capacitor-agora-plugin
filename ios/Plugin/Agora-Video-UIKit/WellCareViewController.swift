@@ -10,25 +10,26 @@ import AgoraRtcKit
 import MediaPlayer
 
 class WellCareViewController: UIViewController {
-    static let VideoCallInMins: Int = 5
+    static let VideoCallInMins: Float = 5
+    static let ReminderTimeToEndCall: Float = 60
     var agoraEngine: AgoraRtcEngineKit!
     // By default, set the current user role to broadcaster to both send and receive streams.
     var userRole: AgoraClientRole = .broadcaster
     
     // Update with the App ID of your project generated on Agora Console.
     var appID: String{
-        return params.appID
-//        return "1a37e0ba7a96485bb1e538ab05439b96"
+//        return params.appID
+        return "1a37e0ba7a96485bb1e538ab05439b96"
     }
     // Update with the temporary token generated in Agora Console.
     var token: String {
-        return params.token
-//        return "007eJxTYHjb0DFN33H/t11xc0/9sHlw9+Z5roIOw8OaG81/yU+P3darwGCYaGyeapCUaJ5oaWZiYZqUZJhqamyRmGRgamJsmWRp9njS2+SGQEaGOTMcmRgZIBDE52EoSS0uiU/OSMzLS81hYAAAZVIl1w=="
+//        return params.token
+        return "007eJxTYJjmvu358milyX+9nXiv3JKO53do25m9hYtz8lHG5lsyzjsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNPJ++S24IZGRYs2kNKyMDBIL4PAwlqcUl8ckZiXl5qTkMDAAifiKI"
     }
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName: String {
-        return params.channelName
-//        return "test_channel"
+//        return params.channelName
+        return "test_channel"
     }
     
     // Create the view object.
@@ -50,33 +51,50 @@ class WellCareViewController: UIViewController {
     
     private lazy var layoutButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "ic-layout"), for: .normal)
+        button.setImage(UIImage(named: "ic-layout-outline"), for: .normal)
         button.addTarget(self, action: #selector(tappedLayoutButton(_:)), for: .touchUpInside)
+        
+        button.layer.cornerRadius = 41.0/2.0
+        button.clipsToBounds = true
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        button.setBackgroundColor(color: UIColor.black.withAlphaComponent(0.3), forState: .highlighted)
+
         return button
     }()
     
     private lazy var bluetoothButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "ic-bluetooth"), for: .normal)
+        button.setImage(UIImage(named: "ic-bluetooth-outline"), for: .normal)
         button.addTarget(self, action: #selector(tappedBluetoothButton(_:)), for: .touchUpInside)
-        
+        button.layer.cornerRadius = 41.0/2.0
+        button.clipsToBounds = true
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        button.setBackgroundColor(color: UIColor.black.withAlphaComponent(0.3), forState: .highlighted)
+
         return button
     }()
     
     private lazy var flashButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "ic-camera-flash"), for: .normal)
-        button.alpha = 0.5
+        button.setImage(UIImage(named: "ic-camera-flash-outline"), for: .normal)
         button.addTarget(self, action: #selector(tappedFlashButton(_:)), for: .touchUpInside)
+        button.layer.cornerRadius = 41.0/2.0
+        button.clipsToBounds = true
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        button.setBackgroundColor(color: UIColor.black.withAlphaComponent(0.3), forState: .highlighted)
         return button
     }()
     
     
     private lazy var backButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "ic-back"), for: .normal)
+        button.setImage(UIImage(named: "ic-back-outline"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(tappedBackButton(_:)), for: .touchUpInside)
+        button.rounded(cornerRadius: 56.0/2.0)
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        button.setBackgroundColor(color: UIColor.black.withAlphaComponent(0.3), forState: .highlighted)
+
         return button
     }()
     
@@ -98,7 +116,7 @@ class WellCareViewController: UIViewController {
     private var countdownLabel: UILabel?
     let airplayVolume = MPVolumeView()
     private var callTimer: Timer?
-    private var callTime: Int = 0
+    private var callTime: Float = 0
     private let role: ClientRole
     private let params: VideoCallParams
     private let delegate: AgoraVideoViewerDelegate?
@@ -187,7 +205,13 @@ class WellCareViewController: UIViewController {
         buttonStackView.addArrangedSubview(layoutButton)
         buttonStackView.addArrangedSubview(bluetoothButton)
         buttonStackView.addArrangedSubview(flashButton)
-
+        buttonStackView.arrangedSubviews.forEach { button in
+            NSLayoutConstraint.activate([
+                button.widthAnchor.constraint(equalToConstant: 41),
+                button.heightAnchor.constraint(equalToConstant: 41),
+            ])
+        }
+        
         airplayVolume.showsVolumeSlider = true
         airplayVolume.isHidden = true
         
@@ -292,7 +316,11 @@ class WellCareViewController: UIViewController {
             index = (index + 1) % segmentedStyle.count
         }
         
-        self.agoraView?.style = segmentedStyle[index]
+        if videoCount == 1 {
+            self.agoraView?.style = .pinned
+        } else {
+            self.agoraView?.style = segmentedStyle[index]
+        }
         
         let currentStyle = self.agoraView?.style ?? .floating
         
@@ -316,10 +344,11 @@ class WellCareViewController: UIViewController {
             
             topControlerView.frame.size = CGSize(width: 41, height: 157)
             backButton.frame = CGRect(x: 12, y: hasTopNorth ? 56 : 46, width: 56, height: 56)
-            backButton.setImage(UIImage(named: "ic-back"), for: .normal)
-            layoutButton.setImage(UIImage(named: "ic-layout"), for: .normal)
-            bluetoothButton.setImage(UIImage(named: "ic-bluetooth"), for: .normal)
-            flashButton.setImage(UIImage(named: "ic-camera-flash"), for: .normal)
+            backButton.rounded(cornerRadius: 56.0 / 2.0)
+            buttonStackView.arrangedSubviews.forEach({$0.removeFromSuperview()})
+            buttonStackView.addArrangedSubview(layoutButton)
+            buttonStackView.addArrangedSubview(bluetoothButton)
+            buttonStackView.addArrangedSubview(flashButton)
 
         } else {
             buttonStackView.axis = .horizontal
@@ -338,10 +367,12 @@ class WellCareViewController: UIViewController {
             ])
             topControlerView.frame.size = CGSize(width: 157, height: 41)
             backButton.frame = CGRect(x: 12 , y: hasTopNorth ? 45 : 40, width: 40, height: 40)
-            backButton.setImage(UIImage(named: "ic-back-outline"), for: .normal)
-            layoutButton.setImage(UIImage(named: "ic-layout-outline"), for: .normal)
-            bluetoothButton.setImage(UIImage(named: "ic-bluetooth-outline"), for: .normal)
-            flashButton.setImage(UIImage(named: "ic-camera-flash-outline"), for: .normal)
+            backButton.rounded(cornerRadius: 40.0 / 2.0)
+
+            buttonStackView.arrangedSubviews.forEach({$0.removeFromSuperview()})
+            buttonStackView.addArrangedSubview(flashButton)
+            buttonStackView.addArrangedSubview(bluetoothButton)
+            buttonStackView.addArrangedSubview(layoutButton)
         }
         
         buttonStackView.removeFromSuperview()
@@ -352,6 +383,13 @@ class WellCareViewController: UIViewController {
             buttonStackView.bottomAnchor.constraint(equalTo: topControlerView.bottomAnchor, constant: 0),
             buttonStackView.rightAnchor.constraint(equalTo: topControlerView.rightAnchor, constant: 0)
         ])
+        
+        buttonStackView.arrangedSubviews.forEach { button in
+            NSLayoutConstraint.activate([
+                button.widthAnchor.constraint(equalToConstant: 41),
+                button.heightAnchor.constraint(equalToConstant: 41),
+            ])
+        }
     }
     
     func hideReminderView() {
@@ -371,8 +409,10 @@ class WellCareViewController: UIViewController {
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
             alert.dismiss(animated: true, completion: completion)
         }
-        
+        okAction.setValue(UIColor.black, forKey: "titleTextColor")
+
         let cancelAction = UIAlertAction(title: "CANCEL", style: .default)
+        cancelAction.setValue(UIColor.black, forKey: "titleTextColor")
 
         alert.addAction(cancelAction)
         alert.addAction(okAction)
@@ -383,6 +423,9 @@ class WellCareViewController: UIViewController {
     func showFlashAlert() {
         showAlertView(title: nil, message: "Switch to rear camera\nto use camera torch light?") { [weak self] in
             self?.agoraView?.flipCamera()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                self?.agoraView.tappedFlashButton()
+            }
         }
     }
 }
@@ -419,7 +462,7 @@ extension WellCareViewController {
         countdownView.isHidden = false
         callTimer?.invalidate()
         callTimer = nil
-        callTime = 60 * WellCareViewController.VideoCallInMins
+        callTime = Float(60 * WellCareViewController.VideoCallInMins)
         callTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(countDownCallTimer(_:)), userInfo: nil, repeats: true)
     }
     
@@ -432,11 +475,11 @@ extension WellCareViewController {
     @objc func countDownCallTimer(_ timer: Timer) {
         callTime -= 1
         
-        let mins = callTime / 60
-        let secs = callTime % 60
+        let mins: Float = callTime / 60
+        let secs: Float = callTime.truncatingRemainder(dividingBy: 60)
         
-        countdownLabel?.text = String(format: "%2.d:%2.d", mins, secs)
-        if callTime == 60 {
+        countdownLabel?.text = String(format: "%2.f:%2.f", mins, secs)
+        if callTime == WellCareViewController.ReminderTimeToEndCall {
             showReminderView()
         }
         
@@ -462,6 +505,7 @@ extension WellCareViewController {
 
         relayoutAgoraVideoView()
         didChangedActiveSpeaker()
+        didChangeVideoConfig()
     }
     
     func relayoutAgoraVideoView() {
@@ -500,6 +544,7 @@ extension WellCareViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.agoraView?.layoutForPIP()
+//            self?.agoraView?.resetControlContainer()
         }
     }
     
@@ -540,13 +585,19 @@ extension WellCareViewController {
         pipControlView.toggleControlView(isHidden: !isYourSelfSpeaking)
     }
     
+    func didChangeVideoConfig() {
+        let micEnabled = self.agoraView?.agoraSettings.micEnabled ?? false
+        pipControlView.toggleMicButton(isOn: !micEnabled)
+    }
+    
     func onTappedbutton(button: AgoraControlButton) {
         switch button {
         case .flip:
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                let isTorchSupported = self?.agoraView?.isTorchSupported ?? false
-                self?.flashButton.alpha = isTorchSupported ? 1 : 0.5
-            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+//                let isTorchSupported = self?.agoraView?.isTorchSupported ?? false
+//                self?.flashButton.alpha = isTorchSupported ? 1 : 0.5
+//            }
+            break
         default: break
         }
     }
@@ -580,4 +631,27 @@ extension UIViewController {
 enum UserPermission: Int {
     case doctor = 0
     case patient
+}
+
+
+extension UIView {
+    func rounded(cornerRadius: CGFloat = 6) {
+        self.layer.cornerRadius = cornerRadius
+        self.clipsToBounds = true
+    }
+}
+
+extension UIButton {
+
+    func setBackgroundColor(color: UIColor, forState: UIControl.State, size: CGSize = CGSize(width: 1, height: 1)) {
+
+        UIGraphicsBeginImageContext(size)
+        UIGraphicsGetCurrentContext()?.setFillColor(color.cgColor)
+        UIGraphicsGetCurrentContext()?.fill(CGRect(origin: .zero, size: size))
+        let colorImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        self.setBackgroundImage(colorImage, for: forState)
+    }
+
 }

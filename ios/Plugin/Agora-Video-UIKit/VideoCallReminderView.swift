@@ -21,7 +21,6 @@ class VideoCallReminderView: UIView {
         return label
     }()
     
-    
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.text = "1 minutes remain. Please wrap up your calls."

@@ -11,24 +11,16 @@ import UIKit
 
 extension AgoraVideoViewer {
     func setupBottomUserList() {
-        addSubview(userListView)
-        userListView.translatesAutoresizingMaskIntoConstraints = false
-        let controlView = getControlContainer()
-        NSLayoutConstraint.activate([
-            userListView.leftAnchor.constraint(equalTo: controlView.leftAnchor, constant: 0),
-            userListView.rightAnchor.constraint(equalTo: controlView.rightAnchor),
-            userListView.topAnchor.constraint(equalTo: controlView.bottomAnchor),
-            userListView.heightAnchor.constraint(equalToConstant: bottomTableHeight)
-        ])
-        
-        userListView.addSubview(userListTableView)
+        guard let controlContainer = controlContainer else { return }
+        let containerH = self.agoraSettings.buttonSize + 40 + 20
+        controlContainer.addSubview(userListTableView)
         userListTableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            userListTableView.topAnchor.constraint(equalTo: userListView.topAnchor, constant: 0),
-            userListTableView.leftAnchor.constraint(equalTo: userListView.leftAnchor),
-            userListTableView.bottomAnchor.constraint(equalTo: userListView.bottomAnchor, constant: (hasTopNorth ? -20 : -5)),
-            userListTableView.rightAnchor.constraint(equalTo: userListView.rightAnchor),
+            userListTableView.topAnchor.constraint(equalTo: controlContainer.topAnchor, constant: containerH),
+            userListTableView.leftAnchor.constraint(equalTo: controlContainer.leftAnchor),
+            userListTableView.bottomAnchor.constraint(equalTo: controlContainer.bottomAnchor, constant: (hasTopNorth ? -20 : -5)),
+            userListTableView.rightAnchor.constraint(equalTo: controlContainer.rightAnchor),
         ])
     }
     
@@ -49,9 +41,19 @@ extension AgoraVideoViewer {
         
         DispatchQueue.main.async { [weak self] in
             self?.userListTableView.reloadData()
+            self?.updateControlContainerLayout()
         }
-        
-       
+    }
+    
+    func updateControlContainerLayout() {
+        let bottomTableHeight = bottomTableHeight
+
+        let containerH = agoraSettings.buttonSize + 40 + 20
+
+        guard let controlContainer = controlContainer else { return }
+
+        controlContainer.frame.size = CGSize(width: controlContainer.frame.width, height: containerH + bottomTableHeight)
+
     }
 }
 
@@ -190,8 +192,16 @@ class IParticipantTVC: UITableViewCell {
     func updateContent(with participant: IParticipant) {
         callButton.isHidden = participant.hasJoined
         nudgeButton.isHidden = participant.hasJoined
-        nameLabel.text = participant.name
+        if !participant.name.isEmpty {
+            nameLabel.text = participant.name
+        } else {
+            nameLabel.text = "N/A"
+        }
+        
+        roleLabel.text = participant.role.rawValue
+        
         thumbImageView.layer.borderColor = participant.role == .host ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
+        
     }
     
     @objc func tappedCallButton(_ sender: UIButton) {

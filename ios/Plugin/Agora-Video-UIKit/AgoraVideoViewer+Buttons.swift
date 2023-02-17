@@ -127,35 +127,6 @@ extension AgoraVideoViewer {
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
             ])
-            //            #if os(iOS)
-            //            container.addSubview(button)
-            //            #elseif os(macOS)
-            //            container.addSubview(button)
-            //            #endif
-            //            button.frame = CGRect(
-            //                origin: CGPoint(x: buttonMargin, y: 40),
-            //                size: CGSize(width: buttonSize, height: buttonSize)
-            //            )
-            //            switch self.agoraSettings.buttonPosition {
-            //            case .top, .bottom:
-            //                button.frame.origin.x += (buttonMargin + buttonSize) * CGFloat(elem.offset)
-            //            case .left, .right:
-            //                button.frame.origin.y += (buttonMargin + buttonSize) * CGFloat(elem.offset)
-            //            }
-            //            #if os(iOS)
-            ////            button.layer.cornerRadius = buttonSize / 2
-            //            if elem.offset < builtinButtons.count {
-            ////                button.backgroundColor = self.agoraSettings.colors.buttonDefaultNormal
-            ////                button.tintColor = self.agoraSettings.colors.buttonTintColor
-            //            }
-            //            #elseif os(macOS)
-            //            button.isBordered = false
-            //            button.layer?.cornerRadius = buttonSize / 2
-            //            if elem.offset < builtinButtons.count {
-            ////                button.layer?.backgroundColor = self.agoraSettings.colors.buttonDefaultNormal.cgColor
-            ////                button.contentTintColor = self.agoraSettings.colors.buttonTintColor
-            //            }
-            //            #endif
         })
         self.setCamAndMicButtons()
         //        let contWidth = CGFloat(buttons.count) * (buttonSize + buttonMargin) + buttonMargin
@@ -375,15 +346,16 @@ extension AgoraVideoViewer {
         
         guard style == .pinned else { return  }
         
-        var translation = sender.translation(in: self)
-        var velocity = sender.velocity(in: self)
+        let translation = sender.translation(in: self)
+        let velocity = sender.velocity(in: self)
         
         print("hai translation \(translation)")
-        
-        let minOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2 - bottomTableHeight
-        let maxOffsetY = UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
+        let bottomH = self.agoraSettings.buttonSize + 40 + 20
+
+        let minOffsetY = UIScreen.main.bounds.height - bottomH - bottomTableHeight
+        let maxOffsetY = UIScreen.main.bounds.height - 30
         if sender.state == .began {
-            bottomContainerCenter = controlContainer.center
+            bottomContainerCenter = controlContainer.frame.origin
             
         } else if sender.state == .changed {
             
@@ -392,24 +364,24 @@ extension AgoraVideoViewer {
             newOffsetY = min(maxOffsetY, newOffsetY)
             
             print("hai translation \(newOffsetY) ->\(maxOffsetY). ->\(minOffsetY)  ->\(translation.y)")
-            controlContainer.center = CGPoint(x: controlContainer.center.x, y: newOffsetY)
+            controlContainer.frame.origin = CGPoint(x: controlContainer.frame.origin.x, y: newOffsetY)
             
         } else if sender.state == .ended {
             if velocity.y < 0 {
                 
-                let originalY = UIScreen.main.bounds.height - controlContainer.frame.height/2
-                if controlContainer.center.y < originalY - 70 {
-                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
+                let originalY = UIScreen.main.bounds.height - bottomH
+                if controlContainer.frame.origin.y < originalY - 70 {
+                    UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                        controlContainer.frame.origin = CGPoint(x: controlContainer.frame.origin.x, y: minOffsetY)
                     })
                 } else {
-                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                        controlContainer.center = CGPoint(x: controlContainer.center.x, y: originalY)
+                    UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                        controlContainer.frame.origin = CGPoint(x: controlContainer.frame.origin.x, y: originalY)
                     })
                 }
             } else {
-                UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                    controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
+                UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                    controlContainer.frame.origin = CGPoint(x: controlContainer.frame.origin.x, y: maxOffsetY)
                 })
             }
         }

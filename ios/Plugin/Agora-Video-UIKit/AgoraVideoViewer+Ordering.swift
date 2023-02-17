@@ -130,6 +130,9 @@ extension AgoraVideoViewer {
                 width: backgroundVideoHolder.frame.width * multDim,
                 height: backgroundVideoHolder.frame.height * multDim
             )
+            videoSessionView.layoutOptionViewForFullVideo(style: self.style)
+            
+            
             if idx == 0 {
                 videoSessionView.frame.origin = .zero
             } else {
@@ -252,9 +255,9 @@ extension AgoraVideoViewer {
 //        let bottomViewH: CGFloat = 40 + 20 + self.agoraSettings.buttonSize
         let collectionViewH: CGFloat = self.style == .strip ? 150 : 100
         let bottomOffset: CGFloat = self.style == .strip ? 10 : 0
-//        streamerCollectionView.frame.origin = CGPoint(x: 0, y: UIScreen.main.bounds.height - bottomViewH - collectionViewH + bottomOffset)
-//        streamerCollectionView.frame.size = CGSize(width: UIScreen.main.bounds.width, height: collectionViewH)
         guard let controlContainer = controlContainer else { return }
+        streamerCollectionView.removeFromSuperview()
+        addSubview(streamerCollectionView)
         streamerCollectionView.translatesAutoresizingMaskIntoConstraints = false
         for ct in streamerCollectionView.constraints {
             ct.isActive = false
@@ -268,40 +271,21 @@ extension AgoraVideoViewer {
         ])
         
         
-        //layout for expand
-        
-
-        let bottomMargin: CGFloat = controlContainer.frame.height
-        controlContainer.frame.origin = CGPoint(x: 5, y: UIScreen.main.bounds.height - bottomMargin)
-        
         DispatchQueue.main.async { [weak self] in
             self?.userListTableView.reloadData()
+            self?.bringSubviewToFront(controlContainer)
         }
-    }
-    
-    
-    func minimizeControlContainer() {
-        guard let controlContainer = controlContainer else { return }
-        let minOffsetY =  UIScreen.main.bounds.height - 30 + controlContainer.frame.height/2
-        UIView.animate(withDuration: 0.3, animations: { () -> Void in
-            controlContainer.center = CGPoint(x: controlContainer.center.x, y: minOffsetY)
-        })
-    }
-    
-    func maximizeControlContainer() {
-        guard let controlContainer = controlContainer else { return }
-        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2
-        UIView.animate(withDuration: 0.3, animations: { () -> Void in
-            controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
-        })
     }
     
     
     func resetControlContainer() {
         guard let controlContainer = controlContainer else { return }
-        let maxOffsetY = UIScreen.main.bounds.height - controlContainer.frame.height/2
-        UIView.animate(withDuration: 0.3, animations: { () -> Void in
-            controlContainer.center = CGPoint(x: controlContainer.center.x, y: maxOffsetY)
+        let bottomH = self.agoraSettings.buttonSize + 40 + 20
+
+        let newYoffset = UIScreen.main.bounds.height - bottomH
+        guard controlContainer.frame.origin.y != newYoffset else { return }
+        UIView.animate(withDuration: 0.5, animations: { () -> Void in
+            controlContainer.frame.origin = CGPoint(x: 5, y: newYoffset)
         })
     }
     
@@ -313,7 +297,8 @@ extension AgoraVideoViewer {
     var bottomTableHeight: CGFloat {
         let hasTopNorth: Bool = UIScreen.main.bounds.height >= 812
         
-        let videoCount = hasTopNorth ? 3 : 2
+        
+        let videoCount = min(hasTopNorth ? 4 : 3, participants.count)
         return CGFloat(videoCount * 68 + (hasTopNorth ? 30 : 20))
     }
     
@@ -335,7 +320,7 @@ extension AgoraVideoViewer {
             controlContainer.isHidden = self.isPipOn
         }
         
-        userListView.isHidden = isPipOn
+        userListTableView.isHidden = isPipOn
         self.streamerCollectionView.isHidden = self.isPipOn
     }
 }

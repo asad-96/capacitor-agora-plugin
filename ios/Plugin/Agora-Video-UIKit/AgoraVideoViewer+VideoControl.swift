@@ -145,7 +145,9 @@ extension AgoraVideoViewer {
     /// Toggle the microphone between on and off
     /// - Parameter sender: The sender is typically the microphone button
     @objc open func toggleMic(_ sender: MPButton?) {
-        self.setMic(to: !self.agoraSettings.micEnabled)
+        self.setMic(to: !self.agoraSettings.micEnabled) { finished in
+            self.delegate?.didChangeVideoConfig()
+        }
     }
 
     /// Turn screen sharing on/off

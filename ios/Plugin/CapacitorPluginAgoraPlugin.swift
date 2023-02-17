@@ -242,19 +242,10 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     public func didChangedActiveSpeaker() {
         wellCareVC?.didChangedActiveSpeaker()
     }
-//    func remoteStreamJoined() {
-//        let jsObject: [String: Any] = [
-//            EVENT: "join|leave",
-//            UID: "uid"
-//
-//        ]
-//        print("hai leftChannel:- \(jsObject)")
-//        notifyListeners("onRemoteStreamChanged", data: jsObject)
-//    }
-//
-//    func remoteStreamLeaved() {
-//
-//    }
+    
+    public func didChangeVideoConfig() {
+        wellCareVC?.didChangeVideoConfig()
+    }
 }
 
 struct VideoCallParams {
