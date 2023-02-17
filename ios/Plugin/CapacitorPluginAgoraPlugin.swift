@@ -40,6 +40,9 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         
         let roleStr = call.getString("role") ?? ""
         let role: ClientRole = ClientRole(rawValue: roleStr) ?? .host
+        let participant: JSObject? = call.getObject("user")
+        
+        
         //        initializeAgoraEngine(appId: appId)
         initViews(params, role: role)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
@@ -59,6 +62,27 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         ])
     }
     
+    @objc func setCountdown(_ call: CAPPluginCall) {
+        debugPrint("hai setCountdown")
+
+        let seconds = call.getInt("seconds") ?? 0
+        wellCareVC?.startCallTimer(seconds: seconds)
+    }
+    
+    @objc func showRecordingStatus(_ call: CAPPluginCall) {
+        debugPrint("hai showRecordingStatus")
+        let isShown = call.getBool("isShown") ?? false
+        wellCareVC?.showRecordingStatus(isShown: isShown)
+    }
+    
+    @objc func updateParticipantLists(_ call: CAPPluginCall) {
+        guard let values = call.getArray("participants") as? [JSObject] else {
+            return
+        }
+        let participants = values.compactMap({IParticipant(object: $0)})
+        wellCareVC?.updateParticipantLists(participants: participants)
+    }
+    
     //MARK: Sub Functions
     func initViews(_ params: VideoCallParams, role: ClientRole) {
         DispatchQueue.main.async {
@@ -72,15 +96,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
 //            vc.view.frame = UIScreen.main.bounds
 //            currentWindow?.addSubview(vc.view)
         }
-    }
-    
-    
-    
-    func updateParticipantLists(participants: [IParticipant]) {
-        //nhận dữ liệu từ bên web gửi qua
-        
-        wellCareVC?.updateParticipantLists(participants: participants)
-        
     }
 }
 
@@ -287,6 +302,26 @@ public struct IParticipant: Codable {
     let subtitle: String
     var hasJoined: Bool
     let uid: String
+    
+    init(_id: String?, name: String, avatar: IAvatar, role: ClientRole, subtitle: String, hasJoined: Bool, uid: String) {
+        self._id = _id
+        self.name = name
+        self.avatar = avatar
+        self.role = role
+        self.subtitle = subtitle
+        self.hasJoined = hasJoined
+        self.uid = uid
+    }
+    
+    init(object: JSObject) {
+        self._id = UUID().uuidString
+        self.name = (object["name"] as? String) ?? ""
+        self.avatar = IAvatar(url: "")
+        self.role =  ClientRole.audience
+        self.subtitle = (object["subtitle"] as? String) ?? ""
+        self.hasJoined = (object["hasJoined"] as? Bool) ?? false
+        self.uid = (object["uid"] as? String) ?? UUID().uuidString
+    }
 }
 
 enum ClientRole: String, Codable {

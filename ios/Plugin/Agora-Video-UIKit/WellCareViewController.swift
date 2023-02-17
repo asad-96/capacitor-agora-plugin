@@ -10,7 +10,6 @@ import AgoraRtcKit
 import MediaPlayer
 
 class WellCareViewController: UIViewController {
-    static let VideoCallInMins: Float = 5
     static let ReminderTimeToEndCall: Float = 60
     var agoraEngine: AgoraRtcEngineKit!
     // By default, set the current user role to broadcaster to both send and receive streams.
@@ -113,6 +112,13 @@ class WellCareViewController: UIViewController {
         return view
     }()
     
+    private lazy var recordImageView: UIImageView = {
+        let recordImageView = UIImageView(image: UIImage(named: "ic-record"))
+        recordImageView.contentMode = .scaleAspectFit
+        recordImageView.isHidden = true
+        return recordImageView
+    }()
+    
     private var countdownLabel: UILabel?
     let airplayVolume = MPVolumeView()
     private var callTimer: Timer?
@@ -157,8 +163,6 @@ class WellCareViewController: UIViewController {
         initializeAndJoinChannel()
         layoutCountdownView()
         layoutTopControls()
-        
-        startCallTimer()
     }
 
 
@@ -230,8 +234,6 @@ class WellCareViewController: UIViewController {
         label.font = .systemFont(ofSize: 12, weight: .semibold)
         
         countdownLabel = label
-        let recordImageView = UIImageView(image: UIImage(named: "ic-record"))
-        recordImageView.contentMode = .scaleAspectFit
         
         let clockImageView = UIImageView(image: UIImage(named: "ic-clock"))
         clockImageView.contentMode = .scaleAspectFit
@@ -457,12 +459,13 @@ extension WellCareViewController {
        hideReminderView()
     }
     
-    @objc func startCallTimer() {
-        guard role == .host else { return }
+    @objc func startCallTimer(seconds: Int) {
+//        guard role == .host else { return }
+        guard seconds > 0 else { return }
         countdownView.isHidden = false
         callTimer?.invalidate()
         callTimer = nil
-        callTime = Float(60 * WellCareViewController.VideoCallInMins)
+        callTime = Float(seconds)
         callTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(countDownCallTimer(_:)), userInfo: nil, repeats: true)
     }
     
@@ -478,7 +481,7 @@ extension WellCareViewController {
         let mins: Float = callTime / 60
         let secs: Float = callTime.truncatingRemainder(dividingBy: 60)
         
-        countdownLabel?.text = String(format: "%2.f:%2.f", mins, secs)
+        countdownLabel?.text = String(format: "%02.f:%02.f", mins, secs)
         if callTime == WellCareViewController.ReminderTimeToEndCall {
             showReminderView()
         }
@@ -601,6 +604,11 @@ extension WellCareViewController {
         default: break
         }
     }
+    
+    func showRecordingStatus(isShown: Bool) {
+        recordImageView.isHidden = !isShown
+    }
+
 }
 
 extension WellCareViewController: PIPControlViewDelegate {

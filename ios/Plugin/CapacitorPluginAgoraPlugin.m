@@ -7,4 +7,7 @@ CAP_PLUGIN(CapacitorPluginAgoraPlugin, "CapacitorPluginAgora",
            CAP_PLUGIN_METHOD(echo, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(joinChannel, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(leaveChannel, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(showRecordingStatus, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setCountdown, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(updateParticipantLists, CAPPluginReturnPromise);
 )
