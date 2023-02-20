@@ -40,7 +40,7 @@
     "@vueuse/core": "^9.6.0",
     "@wellcare/capacitor-plugin-agora": "file:..",
     "@wellcare/nuxt-module-chat": "^0.1.6",
-    "@wellcare/nuxt-module-conference": "0.0.8",
+    "@wellcare/nuxt-module-conference": "^0.0.9",
     "@wellcare/nuxt-module-data-layer": "^0.4.1",
     "@wellcare/nuxt-module-media": "^0.3.23",
     "@wellcare/vue-authen": "1.1.11",
