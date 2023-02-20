@@ -99,7 +99,7 @@ class WellCareViewController: UIViewController {
     
     private lazy var countdownView: UIView = {
         let view  = UIView()
-        view.isHidden = true
+        view.isHidden = false
         return view
     }()
     
@@ -122,21 +122,31 @@ class WellCareViewController: UIViewController {
     private lazy var blurView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
-//        blurEffectView.frame = view.bounds
-//        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//        view.addSubview(blurEffectView)
+        //        blurEffectView.frame = view.bounds
+        //        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        //        view.addSubview(blurEffectView)
         
         return blurEffectView
     }()
     
-    private var countdownLabel: UILabel?
-    let airplayVolume = MPVolumeView()
-    private var callTimer: Timer?
-    private var callTime: Float = 0
-    private var user: IParticipant?
-    private let params: VideoCallParams
-    private let delegate: AgoraVideoViewerDelegate?
-    var trayOriginalCenter: CGPoint = .zero
+    private lazy var countDownContainer: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 5
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor(named: "colorFFE600")?.cgColor
+        button.clipsToBounds = true
+        button.isUserInteractionEnabled = false
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
+        button.setTitleColor(.white, for: .normal)
+        button.setImage(UIImage(named: "ic-clock"), for: .normal)
+        button.setTitle("00:00", for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.isHidden = true
+        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
+
+        return button
+    }()
+    
     private lazy var pipControlView: PIPControlView = {
         let view = PIPControlView()
         view.delegate = self
@@ -149,6 +159,13 @@ class WellCareViewController: UIViewController {
         return panGesture
     }()
     
+    private let airplayVolume = MPVolumeView()
+    private var callTimer: Timer?
+    private var callTime: Float = 0
+    private var user: IParticipant?
+    private let params: VideoCallParams
+    private let delegate: AgoraVideoViewerDelegate?
+    var trayOriginalCenter: CGPoint = .zero
     private var isInit: Bool = false
     
     init(user: IParticipant? = nil,
@@ -203,13 +220,11 @@ class WellCareViewController: UIViewController {
         )
         agoraView?.user = user
         agoraView.fills(view: self.view)
-        
         agoraView.join(
             channel: channelName,
             with: token,
             as: .broadcaster
         )
-        
     }
     
     func layoutTopControls() {
@@ -256,31 +271,11 @@ class WellCareViewController: UIViewController {
     }
     
     func layoutCountdownView() {
-        let label = UILabel()
-        label.text = "00:00"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 12, weight: .semibold)
-        
-        countdownLabel = label
-        
-        let clockImageView = UIImageView(image: UIImage(named: "ic-clock"))
-        clockImageView.contentMode = .scaleAspectFit
-        
-        let countDownContainer = UIView()
-        
-        countDownContainer.layer.cornerRadius = 5
-        countDownContainer.layer.borderWidth = 1
-        countDownContainer.layer.borderColor = UIColor(named: "colorFFE600")?.cgColor
-        countDownContainer.clipsToBounds = true
-        
-        countDownContainer.addSubview(clockImageView)
-        countDownContainer.addSubview(label)
-        
         countdownView.addSubview(recordImageView)
         countdownView.addSubview(countDownContainer)
         
         view.addSubview(countdownView)
-        countdownView.frame = CGRect(x: 26, y: hasTopNorth ? 20 : 14, width: 65, height: 18)
+        countdownView.frame = CGRect(x: 26, y: hasTopNorth ? 20 : 14, width: 85, height: 18)
         recordImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -292,23 +287,11 @@ class WellCareViewController: UIViewController {
         ])
         
         countDownContainer.translatesAutoresizingMaskIntoConstraints = false
-        clockImageView.translatesAutoresizingMaskIntoConstraints = false
-        label.translatesAutoresizingMaskIntoConstraints = false
-
         NSLayoutConstraint.activate([
-            countDownContainer.rightAnchor.constraint(equalTo: countdownView.rightAnchor),
+//            countDownContainer.rightAnchor.constraint(equalTo: countdownView.rightAnchor),
             countDownContainer.topAnchor.constraint(equalTo: countdownView.topAnchor),
             countDownContainer.bottomAnchor.constraint(equalTo: countdownView.bottomAnchor),
             countDownContainer.leftAnchor.constraint(equalTo: countdownView.leftAnchor, constant: 15),
-
-            clockImageView.centerYAnchor.constraint(equalTo: countDownContainer.centerYAnchor),
-            clockImageView.leftAnchor.constraint(equalTo: countDownContainer.leftAnchor, constant: 2),
-            clockImageView.widthAnchor.constraint(equalToConstant: 11),
-            clockImageView.heightAnchor.constraint(equalToConstant: 12),
-            
-            label.centerYAnchor.constraint(equalTo: countDownContainer.centerYAnchor),
-            label.leftAnchor.constraint(equalTo: clockImageView.rightAnchor),
-
         ])
         
         view.addSubview(backButton)
@@ -498,7 +481,7 @@ extension WellCareViewController {
     
     @objc func startCallTimer(seconds: Int) {
         guard seconds > 0 else { return }
-        countdownView.isHidden = false
+        countDownContainer.isHidden = false
         callTimer?.invalidate()
         callTimer = nil
         callTime = Float(seconds)
@@ -508,7 +491,7 @@ extension WellCareViewController {
     @objc func stopCallTimer() {
         callTimer?.invalidate()
         callTimer = nil
-        
+        countDownContainer.isHidden = true
     }
     
     @objc func countDownCallTimer(_ timer: Timer) {
@@ -517,7 +500,10 @@ extension WellCareViewController {
         let mins: Float = callTime / 60
         let secs: Float = callTime.truncatingRemainder(dividingBy: 60)
         
-        countdownLabel?.text = String(format: "%02.f:%02.f", mins, secs)
+        let minsText: String = mins >= 10 ? "\(Int(mins))" : "0\(Int(mins))"
+        let secsText: String = secs >= 10 ? "\(Int(secs))" : "0\(Int(secs))"
+
+        countDownContainer.setTitle(String(format: "%@:%@", minsText, secsText), for: .normal)
         if callTime == WellCareViewController.ReminderTimeToEndCall {
             showReminderView()
         }
@@ -537,6 +523,13 @@ extension WellCareViewController {
     }
     
     func enterPictureInPictureMode() {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.enterPictureInPictureMode()
+            }
+            return
+        }
+        
         self.agoraView?.isPipOn = true
 
         let minimizedWidth = 190.0 * UIScreen.main.bounds.width / 384.0
@@ -645,9 +638,10 @@ extension WellCareViewController {
     }
     
     func showRecordingStatus(isShown: Bool) {
-        recordImageView.isHidden = !isShown
+        DispatchQueue.main.async{ [weak self] in
+            self?.recordImageView.isHidden = !isShown
+        }
     }
-
 }
 
 extension WellCareViewController: PIPControlViewDelegate {

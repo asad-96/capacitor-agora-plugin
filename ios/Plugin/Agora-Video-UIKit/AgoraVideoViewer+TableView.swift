@@ -27,11 +27,20 @@ extension AgoraVideoViewer {
     func updateParticipantLists(participants: [IParticipant]) {
         
         for participant in participants {
-            if let index = self.participants.firstIndex(where: {$0.uid == participant.uid}){
-                self.participants[index].name = participant.name
-                self.participants[index].avatar = participant.avatar
+            if let index = self.allPrticipants.firstIndex(where: {$0.uid == participant.uid}){
+//                if !participant.name.isEmpty {
+//                    self.participants[index].name = participant.name
+//                }
+//                if !participant.avatar.url.isEmpty {
+//                    self.participants[index].avatar = participant.avatar
+//                }
+                //                    self.participants[index].name = participant.name
+
+                debugPrint("[capacitor-agora] updateParticipantLists ???? \(participant.uid)")
             } else {
-                self.participants.append(participant)
+                self.allPrticipants.append(participant)
+                debugPrint("[capacitor-agora] updateParticipantLists ++++ \(participant.uid) ->\(participant.name)")
+
             }
             
             if let uid = UInt(participant.uid), let videoFeed = self.videoLookup[uid] {
@@ -39,6 +48,14 @@ extension AgoraVideoViewer {
             }
         }
         
+        debugPrint("[capacitor-agora] updateParticipantLists -----\(self.allPrticipants.count)")
+
+        for uid in self.videoLookup.keys {
+            if let index = self.allPrticipants.firstIndex(where: {$0.uid == "\(uid)"}) {
+                self.allPrticipants[index].hasJoined = true
+            }
+        }
+        allPrticipants = allPrticipants.filter({!$0.uid.isEmpty})
         DispatchQueue.main.async { [weak self] in
             self?.userListTableView.reloadData()
             self?.updateControlContainerLayout()
@@ -70,7 +87,7 @@ extension AgoraVideoViewer: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let videoCount = participants.count
+        let videoCount = allPrticipants.count
         debugPrint("[capacitor-agora] hai video count \(videoCount)")
         return videoCount
     }
@@ -81,7 +98,7 @@ extension AgoraVideoViewer: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let participant = participants[indexPath.row]
+        let participant = allPrticipants[indexPath.row]
         cell.updateContent(with: participant)
 
         cell.actionHandler = {[weak self] action in

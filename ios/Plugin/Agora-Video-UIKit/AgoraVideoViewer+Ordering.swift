@@ -298,7 +298,7 @@ extension AgoraVideoViewer {
         let hasTopNorth: Bool = UIScreen.main.bounds.height >= 812
         
         
-        let videoCount = min(hasTopNorth ? 4 : 3, participants.count)
+        let videoCount = min(hasTopNorth ? 4 : 3, allPrticipants.count)
         return CGFloat(videoCount * 68 + (hasTopNorth ? 30 : 20))
     }
     

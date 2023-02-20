@@ -22,6 +22,7 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     private let ROOM = "room"
     
     var wellCareVC: WellCareViewController?
+    var participants: [IParticipant] = []
     
     //MARK: Methods
     @objc func echo(_ call: CAPPluginCall) {
@@ -39,7 +40,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         let params = VideoCallParams(channelName: channelName, uid: uid, token: token, appID: appId)
         
         var user: IParticipant? = nil
-
         debugPrint("[capacitor-agora] join joinChannel \(appId) ->\(token) ->\(channelName)")
 
         if let jsUser: JSObject = call.getObject("user") {
@@ -80,22 +80,34 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     
     @objc func updateParticipantLists(_ call: CAPPluginCall) {
 
+        let allKeys = call.dictionaryRepresentation.allKeys
+        debugPrint("[capacitor-agora] updateParticipantLists allKeys \(allKeys)")
+
         guard let values = call.getArray("participants") as? [JSObject] else {
             debugPrint("[capacitor-agora] updateParticipantLists error")
 
             return
         }
         
-        debugPrint("[capacitor-agora] updateParticipantLists \(values.count)")
         let participants = values.compactMap({IParticipant(object: $0)})
-        wellCareVC?.updateParticipantLists(participants: participants)
+        
+        debugPrint("[capacitor-agora] updateParticipantLists \(participants.count)")
+        
+        for participant in participants {
+            debugPrint("[capacitor-agora] updateParticipantLists -> \(participant.uid) \(participant.name) -> \(participant.subtitle) ->\(participant.hasJoined)")
+        }
+        
+        self.participants = participants
+        if let wellCareVC = wellCareVC {
+            wellCareVC.updateParticipantLists(participants: participants)
+        }
     }
     
-    @objc func enterPictureInPictureMode() {
+    @objc func enterPictureInPictureMode(_ call: CAPPluginCall) {
         wellCareVC?.enterPictureInPictureMode()
     }
     
-    @objc func exitPictureInPictureMode() {
+    @objc func exitPictureInPictureMode(_ call: CAPPluginCall) {
         wellCareVC?.exitPictureInPictureMode()
     }
     
@@ -109,8 +121,17 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
             vc.modalPresentationStyle = .fullScreen
             self.wellCareVC = vc
             topMost?.present(vc, animated: true)
-//            vc.view.frame = UIScreen.main.bounds
-//            currentWindow?.addSubview(vc.view)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {[weak self] in
+                self?.wellCareVC?.updateParticipantLists(participants: self?.participants ?? [])
+            }
+            
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 15) {[weak self] in
+//                self?.wellCareVC?.startCallTimer(seconds: 1000)
+//            }
+//            
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {[weak self] in
+//                self?.wellCareVC?.showRecordingStatus(isShown: true)
+//            }
         }
     }
 }
@@ -140,11 +161,6 @@ extension UIApplication {
     }
 }
 
-//extension CapacitorPluginAgoraPlugin {
-//
-//}
-
-
 extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     
     public func remoteStreamJoined(uid: UInt) {
@@ -169,7 +185,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     
    
     public func leftChannel(_ channel: String) {
-       
+        participants = []
         wellCareVC?.dismiss(animated: true) { [weak self] in
             self?.wellCareVC = nil
         }
@@ -230,6 +246,7 @@ struct VideoCallParams {
     let token: String
     let appID: String
 }
+
 public enum AgoraControlButton: Int, Codable {
     case flip = 0, camera, call, mic, chat
 }

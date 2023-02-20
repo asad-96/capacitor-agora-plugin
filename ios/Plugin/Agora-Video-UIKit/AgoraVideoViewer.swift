@@ -195,7 +195,14 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         }
     }
     
-    public var user: IParticipant?
+    public var user: IParticipant? {
+        didSet {
+            var allParticipant: [IParticipant] = [user].compactMap({$0})
+            if !allParticipant.isEmpty {
+                self.updateParticipantLists(participants: allParticipant)
+            }
+        }
+    }
     /// Storing struct for holding data about the connection to Agora service.
     internal var connectionData: AgoraConnectionData!
     
@@ -494,12 +501,8 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     var remoteUserIDs: Set<UInt> = [] {
         didSet {
             debugPrint("[capacitor-agora] hai remoteUserIDs \(remoteUserIDs) \(userID)")
-            
-            let remoteParticipant = remoteUserIDs.compactMap({IParticipant(_id: nil, name: "", avatar: IAvatar(url: ""), role: .audience, subtitle: "", hasJoined: true, uid: "\($0)")})
-            
-            let allParticipant = remoteParticipant + [user].compactMap({$0})
-            self.updateParticipantLists(participants: allParticipant)
         }
     }
-    var participants: [IParticipant] = []
+    
+    var allPrticipants: [IParticipant] = []
 }
