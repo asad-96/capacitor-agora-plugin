@@ -220,10 +220,13 @@ public class AgoraSingleVideoView: MPView {
         NSLayoutConstraint.activate([
             stackView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor, constant: 0),
             stackView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
+            stackView.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, multiplier: 0.8),
+            
             shortNameLabel.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
             shortNameLabel.centerXAnchor.constraint(equalTo: avatarImageView.centerXAnchor),
             shortNameLabel.widthAnchor.constraint(equalTo: avatarImageView.widthAnchor, multiplier: 0.7),
             shortNameLabel.heightAnchor.constraint(equalTo: avatarImageView.heightAnchor, multiplier: 0.7),
+            
         ])
         
         
@@ -241,7 +244,10 @@ public class AgoraSingleVideoView: MPView {
         label.textColor = .white
         label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textAlignment = .center
-        label.text = "Hai Captain"
+        label.text = ""
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+
         return label
     }()
     
@@ -261,7 +267,7 @@ public class AgoraSingleVideoView: MPView {
         label.textColor = .white
         label.font = .systemFont(ofSize: 26, weight: .bold)
         label.textAlignment = .center
-        label.text = "H"
+        label.text = ""
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
         return label
@@ -366,7 +372,12 @@ public class AgoraSingleVideoView: MPView {
         } else {
             nameLabel.text = paticipant.name
         }
-        avatarImageView.downloaded(from: paticipant.avatar.url)
+        if let url = URL(string: paticipant.avatar.url) {
+            avatarImageView.downloaded(from: url)
+            shortNameLabel.isHidden = true
+        } else {
+            shortNameLabel.isHidden = false
+        }
         
         if paticipant.name.count > 1 {
             let str = "\(Array(paticipant.name)[0])"

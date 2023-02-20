@@ -198,10 +198,12 @@ class IParticipantTVC: UITableViewCell {
             nameLabel.text = "N/A"
         }
         
-        roleLabel.text = participant.role.rawValue
+        roleLabel.text = participant.subtitle
         
         thumbImageView.layer.borderColor = participant.role == .host ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
-        
+        if let url = URL(string: participant.avatar.url) {
+            thumbImageView.downloaded(from: url)
+        }
     }
     
     @objc func tappedCallButton(_ sender: UIButton) {

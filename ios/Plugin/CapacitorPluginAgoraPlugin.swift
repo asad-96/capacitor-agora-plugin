@@ -38,15 +38,17 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         let appId = call.getString(Constant.APPID) ?? ""
         let params = VideoCallParams(channelName: channelName, uid: uid, token: token, appID: appId)
         
-        let roleStr = call.getString("role") ?? ""
-        let role: ClientRole = ClientRole(rawValue: roleStr) ?? .host
+        var user: IParticipant? = nil
+
+        debugPrint("[capacitor-agora] join joinChannel \(appId) ->\(token) ->\(channelName)")
+
         if let jsUser: JSObject = call.getObject("user") {
-            let participant = IParticipant(object: jsUser)
+            user = IParticipant(object: jsUser)
         }
         
         
         //        initializeAgoraEngine(appId: appId)
-        initViews(params, role: role)
+        initViews(params, user: user)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
 //                call.resolve([
 //                    "value": implementation.echo("Join channel value")
@@ -66,7 +68,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     
     @objc func setCountdown(_ call: CAPPluginCall) {
         debugPrint("[capacitor-agora] setCountdown")
-
         let seconds = call.getInt("seconds") ?? 0
         wellCareVC?.startCallTimer(seconds: seconds)
     }
@@ -78,9 +79,14 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     }
     
     @objc func updateParticipantLists(_ call: CAPPluginCall) {
+
         guard let values = call.getArray("participants") as? [JSObject] else {
+            debugPrint("[capacitor-agora] updateParticipantLists error")
+
             return
         }
+        
+        debugPrint("[capacitor-agora] updateParticipantLists \(values.count)")
         let participants = values.compactMap({IParticipant(object: $0)})
         wellCareVC?.updateParticipantLists(participants: participants)
     }
@@ -89,13 +95,17 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         wellCareVC?.enterPictureInPictureMode()
     }
     
+    @objc func exitPictureInPictureMode() {
+        wellCareVC?.exitPictureInPictureMode()
+    }
+    
     //MARK: Sub Functions
-    func initViews(_ params: VideoCallParams, role: ClientRole) {
+    func initViews(_ params: VideoCallParams, user: IParticipant? = nil) {
         DispatchQueue.main.async {
 //            let currentWindow: UIWindow? = UIApplication.shared.windows.first
 
             let topMost = UIApplication.getTopViewController()
-            let vc = WellCareViewController(role: role, params: params, delegate: self)
+            let vc = WellCareViewController(user: user, params: params, delegate: self)
             vc.modalPresentationStyle = .fullScreen
             self.wellCareVC = vc
             topMost?.present(vc, animated: true)
@@ -104,59 +114,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         }
     }
 }
-
-//
-//extension CapacitorPluginAgoraPlugin: AgoraRtcEngineDelegate {
-//    public func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
-//        let jsObject: [String: Any] = [
-//            EVENT: "onUserJoined",
-//            UID: uid,
-//            ELAPSED: elapsed
-//        ]
-//
-//        print("onUserJoined:- \(jsObject)")
-//
-//        notifyListeners("onEventReceived", data: jsObject)
-//
-//        let videoCanvas = AgoraRtcVideoCanvas()
-//        videoCanvas.uid = uid
-//        videoCanvas.renderMode = .hidden
-//        videoCanvas.view = remoteView
-//        agoraEngine.setupRemoteVideo(videoCanvas)
-//    }
-//
-//    public func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
-//        let jsObject: [String: Any] = [
-//            EVENT: "onJoinChannelSuccess",
-//            CHANNEL: channel,
-//            UID: uid,
-//            ELAPSED: elapsed
-//        ]
-//        print("onJoinChannelSuccess:- \(jsObject)")
-//        notifyListeners("onEventReceived", data: jsObject)
-//    }
-//
-//
-//    public func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
-//        let jsObject: [String: Any] = [
-//            EVENT: "onUserOffline",
-//            UID: uid,
-//            REASON: reason
-//        ]
-//        print("onUserOffline:- \(jsObject)")
-//        notifyListeners("onEventReceived", data: jsObject)
-//    }
-//
-//    public func rtcEngine(_ engine: AgoraRtcEngineKit, didLeaveChannelWith stats: AgoraChannelStats) {
-//        let jsObject: [String: Any] = [
-//            EVENT: "onLeaveChannel",
-//            UID: stats.userCount
-//        ]
-//        print("onLeaveChannel:- \(jsObject)")
-//        notifyListeners("onEventReceived", data: jsObject)
-//    }
-//}
-
 
 class Constant {
     static let APPID = "appId"
@@ -305,7 +262,7 @@ public struct IParticipant: Codable {
     let role: ClientRole
     let subtitle: String
     var hasJoined: Bool
-    let uid: String
+    var uid: String
     
     init(_id: String?, name: String, avatar: IAvatar, role: ClientRole, subtitle: String, hasJoined: Bool, uid: String) {
         self._id = _id
@@ -320,8 +277,15 @@ public struct IParticipant: Codable {
     init(object: JSObject) {
         self._id = UUID().uuidString
         self.name = (object["name"] as? String) ?? ""
-        self.avatar = IAvatar(url: "")
-        self.role =  ClientRole.audience
+        if let avatarJS: JSObject = object["avatar"] as? JSObject, let avatarURL = avatarJS["url"] as? String{
+            self.avatar = IAvatar(url: avatarURL)
+        } else {
+            self.avatar = IAvatar(url: "")
+        }
+        
+        
+        let roleRawValue = (object["role"] as? String) ?? ""
+        self.role =  ClientRole(rawValue: roleRawValue) ?? ClientRole.host
         self.subtitle = (object["subtitle"] as? String) ?? ""
         self.hasJoined = (object["hasJoined"] as? Bool) ?? false
         self.uid = (object["uid"] as? String) ?? UUID().uuidString

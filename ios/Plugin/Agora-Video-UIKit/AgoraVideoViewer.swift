@@ -187,8 +187,15 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     /// Setting to zero will tell Agora to assign one for you once connected.
     public var userID: UInt {
         get { self.connectionData.rtcId }
-        set { self.connectionData.rtcId = newValue }
+        set {
+            self.connectionData.rtcId = newValue
+            self.user?.hasJoined = true
+            self.user?.uid = "\(userID)"
+
+        }
     }
+    
+    public var user: IParticipant?
     /// Storing struct for holding data about the connection to Agora service.
     internal var connectionData: AgoraConnectionData!
     
@@ -359,7 +366,6 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
             if oldValue != self.isPipOn {
                 if self.isPipOn {
                     self.style = .pinned
-                    self.delegate?.onEnterPIP()
                 }
                 self.layoutForPIP()
             }
@@ -490,9 +496,8 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
             debugPrint("[capacitor-agora] hai remoteUserIDs \(remoteUserIDs) \(userID)")
             
             let remoteParticipant = remoteUserIDs.compactMap({IParticipant(_id: nil, name: "", avatar: IAvatar(url: ""), role: .audience, subtitle: "", hasJoined: true, uid: "\($0)")})
-            let selfParticipant = [userID].compactMap({IParticipant(_id: nil, name: "", avatar: IAvatar(url: ""), role: .audience, subtitle: "", hasJoined: true, uid: "\($0)")})
             
-            let allParticipant = remoteParticipant + selfParticipant
+            let allParticipant = remoteParticipant + [user].compactMap({$0})
             self.updateParticipantLists(participants: allParticipant)
         }
     }

@@ -18,17 +18,17 @@ class WellCareViewController: UIViewController {
     // Update with the App ID of your project generated on Agora Console.
     var appID: String{
         return params.appID
-//        return "1a37e0ba7a96485bb1e538ab05439b96"
+        //        return "1a37e0ba7a96485bb1e538ab05439b96"
     }
     // Update with the temporary token generated in Agora Console.
     var token: String {
         return params.token
-//        return "007eJxTYJjmvu358milyX+9nXiv3JKO53do25m9hYtz8lHG5lsyzjsVGAwTjc1TDZISzRMtzUwsTJOSDFNNjS0SkwxMTYwtkyzNPJ++S24IZGRYs2kNKyMDBIL4PAwlqcUl8ckZiXl5qTkMDAAifiKI"
+        //        return "007eJxTYNDRtv67OG/J3uXvJxpPemVxwr1ERedRwHmhCctvSEvwbV2nwGCYaGyeapCUaJ5oaWZiYZqUZJhqamyRmGRgamJsmWRp1vf1U3JDICODbGcZMyMDBIL4PAwlqcUl8ckZiXl5qTkMDAB4DCMb"
     }
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName: String {
         return params.channelName
-//        return "test_channel"
+        //        return "test_channel"
     }
     
     // Create the view object.
@@ -57,7 +57,7 @@ class WellCareViewController: UIViewController {
         button.clipsToBounds = true
         button.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         button.setBackgroundColor(color: UIColor.black.withAlphaComponent(0.3), forState: .highlighted)
-
+        
         return button
     }()
     
@@ -69,7 +69,7 @@ class WellCareViewController: UIViewController {
         button.clipsToBounds = true
         button.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         button.setBackgroundColor(color: UIColor.black.withAlphaComponent(0.3), forState: .highlighted)
-
+        
         return button
     }()
     
@@ -93,7 +93,7 @@ class WellCareViewController: UIViewController {
         button.rounded(cornerRadius: 56.0/2.0)
         button.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         button.setBackgroundColor(color: UIColor.black.withAlphaComponent(0.3), forState: .highlighted)
-
+        
         return button
     }()
     
@@ -119,11 +119,21 @@ class WellCareViewController: UIViewController {
         return recordImageView
     }()
     
+    private lazy var blurView: UIVisualEffectView = {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+//        blurEffectView.frame = view.bounds
+//        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//        view.addSubview(blurEffectView)
+        
+        return blurEffectView
+    }()
+    
     private var countdownLabel: UILabel?
     let airplayVolume = MPVolumeView()
     private var callTimer: Timer?
     private var callTime: Float = 0
-    private let role: ClientRole
+    private var user: IParticipant?
     private let params: VideoCallParams
     private let delegate: AgoraVideoViewerDelegate?
     var trayOriginalCenter: CGPoint = .zero
@@ -139,10 +149,12 @@ class WellCareViewController: UIViewController {
         return panGesture
     }()
     
-    init(role: ClientRole,
+    private var isInit: Bool = false
+    
+    init(user: IParticipant? = nil,
          params: VideoCallParams,
          delegate:  AgoraVideoViewerDelegate? = nil) {
-        self.role = role
+        self.user = user
         self.params = params
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
@@ -165,10 +177,20 @@ class WellCareViewController: UIViewController {
         layoutTopControls()
     }
 
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard !isInit else { return }
+        addBlurView()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        guard !isInit else { return }
+        isInit = true
         agoraView?.reorganiseVideos()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.removeBlurView()
+        }
     }
     
     func initializeAndJoinChannel(){
@@ -179,6 +201,7 @@ class WellCareViewController: UIViewController {
                 rtcToken: token
             ), delegate: delegate
         )
+        agoraView?.user = user
         agoraView.fills(view: self.view)
         
         agoraView.join(
@@ -186,10 +209,10 @@ class WellCareViewController: UIViewController {
             with: token,
             as: .broadcaster
         )
+        
     }
     
     func layoutTopControls() {
-        
         view.addSubview(topControlerView)
         topControlerView.addSubview(airplayVolume)
         topControlerView.addSubview(buttonStackView)
@@ -234,7 +257,7 @@ class WellCareViewController: UIViewController {
     
     func layoutCountdownView() {
         let label = UILabel()
-        label.text = "12:21"
+        label.text = "00:00"
         label.textColor = .white
         label.font = .systemFont(ofSize: 12, weight: .semibold)
         
@@ -411,6 +434,15 @@ class WellCareViewController: UIViewController {
         countdownView.isHidden = true
     }
     
+    func addBlurView() {
+        blurView.frame = UIScreen.main.bounds
+        view.addSubview(blurView)
+    }
+    
+    func removeBlurView() {
+        blurView.removeFromSuperview()
+    }
+    
     func showAlertView(title: String?, message: String?, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
@@ -457,7 +489,7 @@ extension WellCareViewController {
     }
     
     @objc func tappedBackButton(_ sender: UIButton) {
-       dismiss(animated: true)
+        agoraView?.tappedEndCallButton()
     }
     
     @objc func tappedCloseReminderButton(_ sender: UIButton) {
@@ -465,7 +497,6 @@ extension WellCareViewController {
     }
     
     @objc func startCallTimer(seconds: Int) {
-//        guard role == .host else { return }
         guard seconds > 0 else { return }
         countdownView.isHidden = false
         callTimer?.invalidate()
@@ -506,6 +537,8 @@ extension WellCareViewController {
     }
     
     func enterPictureInPictureMode() {
+        self.agoraView?.isPipOn = true
+
         let minimizedWidth = 190.0 * UIScreen.main.bounds.width / 384.0
         self.view.frame = CGRect(origin: CGPoint(x: 50, y: 50), size: CGSize(width: minimizedWidth, height: minimizedWidth))
         self.view.layer.cornerRadius = 5
@@ -515,6 +548,25 @@ extension WellCareViewController {
         didChangedActiveSpeaker()
         didChangeVideoConfig()
     }
+    
+    func exitPictureInPictureMode() {
+        self.agoraView?.isPipOn = false
+        
+        let pip = (self.agoraView?.isPipOn ?? false)
+        topControlerView.isHidden = pip
+        countdownView.isHidden = pip
+        backButton.isHidden = pip
+        
+        self.view.frame = UIScreen.main.bounds
+        self.view.layer.cornerRadius = 0
+        pipControlView.removeFromSuperview()
+        view.removeGestureRecognizer(pandGesture)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.agoraView?.layoutForPIP()
+        }
+    }
+    
     
     func relayoutAgoraVideoView() {
         let pip = (self.agoraView?.isPipOn ?? false)
@@ -538,24 +590,6 @@ extension WellCareViewController {
             self?.agoraView?.layoutForPIP()
         }
     }
-    
-    func exitPictureInPictureMode() {
-        let pip = (self.agoraView?.isPipOn ?? false)
-        topControlerView.isHidden = pip
-        countdownView.isHidden = pip
-        backButton.isHidden = pip
-        
-        self.view.frame = UIScreen.main.bounds
-        self.view.layer.cornerRadius = 0
-        pipControlView.removeFromSuperview()
-        view.removeGestureRecognizer(pandGesture)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.agoraView?.layoutForPIP()
-//            self?.agoraView?.resetControlContainer()
-        }
-    }
-    
     
     @objc func handlePan(_ sender: UIPanGestureRecognizer) {
         var translation = sender.translation(in: self.view)

@@ -240,7 +240,8 @@ extension AgoraVideoViewer {
     }
     
     @objc func tappedChatButton() {
-        isPipOn = true
+//        isPipOn = true
+        self.delegate?.onEnterPIP()
     }
 
     
