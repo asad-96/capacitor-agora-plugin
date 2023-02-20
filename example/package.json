@@ -28,6 +28,7 @@
     "webpack": "nuxt webpack"
   },
   "dependencies": {
+    "capacitor-voice-recorder": "^4.0.1",
     "@capgo/camera-preview": "^3.6.17",
     "@mdi/js": "^7.0.0",
     "@nuxtjs/axios": "^5.13.6",
@@ -39,10 +40,11 @@
     "@vueuse/core": "^9.6.0",
     "@wellcare/capacitor-plugin-agora": "file:..",
     "@wellcare/nuxt-module-chat": "^0.1.6",
+    "@wellcare/nuxt-module-conference": "0.0.8",
     "@wellcare/nuxt-module-data-layer": "^0.4.1",
     "@wellcare/nuxt-module-media": "^0.3.23",
     "@wellcare/vue-authen": "1.1.11",
-    "@wellcare/vue-component": "^0.1.53",
+    "@wellcare/vue-component": "^0.1.61",
     "agora-rtc-sdk-ng": "^4.15.1",
     "axios": "^0.26.1",
     "cookie-universal-nuxt": "^2.1.5",

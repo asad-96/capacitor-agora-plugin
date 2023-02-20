@@ -3,7 +3,7 @@
     <v-text-field v-model="options.appId" clearable label="appId" />
     <v-text-field v-model="options.room" clearable label="room" />
     <v-text-field v-model="options.token" clearable label="token" />
-    <v-text-field v-model="options.uid" clearable label="uid" readonly />
+    <v-text-field v-model="options.uid" clearable label="uid" />
     <v-text-field v-model="options.chatRoom" clearable label="chat room" />
     <v-select
       v-model="options.roomStatus"
@@ -31,54 +31,30 @@
 </template>
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts">
-import {
-  defineComponent,
-  reactive,
-  useRouter,
-  useStore,
-  computed
-} from '@nuxtjs/composition-api'
+import { defineComponent, reactive, useRouter } from '@nuxtjs/composition-api'
 // import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 export default defineComponent({
   setup() {
-    const { state }: any = useStore()
     // const userId = computed(() => state.authen.user._id)
     const router = useRouter()
     const options = reactive({
       appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
-      room: 'test',
-      uid: '0',
-      chatRoom: 'test',
+      room: 'test1',
+      uid: '',
+      chatRoom: '',
       token:
-        '007eJxTYHDts53NwlLw5/4OnRMztkxW2df5tv8xB/OO8o83A6vFdkkpMCQlmpiZGKcZJRknGpqYphlZmpqbJlmYWxinGCeapiYb+rffTm4IZGTYkePBwAiFID4LQ0lqcQkDAwBl6x/K',
-      roomStatus: 'waiting',
+        '007eJxTYJDpTrv7z23J6T/8pf5rH22WNds7vyf9TIbrtduGMfMP3OJUYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU02dLrwKbkhkJEhfZMyCyMDBIL4rAwlqcUlhgwMAPlEIV8=',
+      roomStatus: 'meeting',
       role: 'host'
     })
+
     const enterWaitingRoom = () => {
       const decodeToken = encodeURIComponent(options.token)
       router.push(
-        `/room/${options.room}/waiting?uid=${options.uid}&token=${decodeToken}&appId=${options.appId}&roomStatus=${options.roomStatus}&role=${options.role}&chatRoom=${options.chatRoom}`
+        `/agora?room=${options.room}&uid=${options.uid}&token=${decodeToken}&appId=${options.appId}&roomStatus=${options.roomStatus}&role=${options.role}&chatRoom=${options.chatRoom}`
       )
     }
     return { options, enterWaitingRoom }
   }
-  // methods: {
-  //   joinChannel() {
-  //     console.log('appId: ', this.options.appId)
-  //     console.log('channel: ', this.options.room)
-  //     console.log('uid: ', this.options.uid)
-  //     console.log('token: ', this.options.token)
-  //     const options = {
-  //       room: this.options.room,
-  //       uid: this.options.uid,
-  //       token: this.options.token,
-  //       appId: this.options.appId
-  //     }
-  //     CapacitorPluginAgora.joinChannel(options).then((res: any) => {
-  //       console.log('res: ', res)
-  //     })
-  //     return ''
-  //   }
-  // }
 })
 </script>
