@@ -43,12 +43,9 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         //        initializeAgoraEngine(appId: appId)
         initViews(params, role: role)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
-        //        call.resolve([
-        //            "value": implementation.echo("Join channel value")
-        //        ])
-        
-        
-        
+        call.resolve([
+            "uid": uid
+        ])
     }
     
     @objc func leaveChannel(_ call: CAPPluginCall) {
