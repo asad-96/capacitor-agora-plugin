@@ -69,7 +69,8 @@ export default {
     ['@nuxtjs/firebase', firebaseConfig],
     ['@wellcare/vue-component', { prefix: 'w', level: 1 }],
     ['@wellcare/nuxt-module-chat', { prefix: 'w', level: 1 }],
-    ['@wellcare/nuxt-module-media', { prefix: 'w', level: 1 }]
+    ['@wellcare/nuxt-module-media', { prefix: 'w', level: 1 }],
+    ['@wellcare/nuxt-module-conference', { prefix: 'w', level: 1 }]
   ],
   build: buildConfg,
   head: headConfig,
