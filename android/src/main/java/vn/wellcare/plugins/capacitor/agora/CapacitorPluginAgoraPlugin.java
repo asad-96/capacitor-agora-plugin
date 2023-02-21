@@ -1,7 +1,5 @@
 package vn.wellcare.plugins.capacitor.agora;
 
-import static vn.wellcare.plugins.capacitor.agora.AgoraActivity.setOnAgoraEvent;
-
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -22,7 +20,7 @@ import vn.wellcare.plugins.capacitor.agora.util.Constant;
 @CapacitorPlugin(name = "CapacitorPluginAgora")
 public class CapacitorPluginAgoraPlugin
         extends Plugin
-        implements IrisEventHandler, AgoraActivity.OnAgoraEvent {
+        implements IrisEventHandler {
 
     public static final String NAME = "CapacitorPluginAgora";
     public IrisApiEngine irisApiEngine;
@@ -47,7 +45,6 @@ public class CapacitorPluginAgoraPlugin
             getActivity().startActivity(i);
             JSObject ret = new JSObject();
             call.resolve(ret);
-            setOnAgoraEvent(this);
         } catch (Exception e) {
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -92,8 +89,8 @@ public class CapacitorPluginAgoraPlugin
     }
 
 
-    @Override
-    public void onEvent(JSObject jsonObject) {
-        sendEvent(jsonObject);
-    }
+    // @Override
+    // public void onEvent(JSObject jsonObject) {
+    //     sendEvent(jsonObject);
+    // }
 }
