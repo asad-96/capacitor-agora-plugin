@@ -1,4 +1,4 @@
-package vn.wellcare.plugins.capacitor.starter.util;
+package vn.wellcare.plugins.capacitor.agora.util;
 
 public class Constant {
 

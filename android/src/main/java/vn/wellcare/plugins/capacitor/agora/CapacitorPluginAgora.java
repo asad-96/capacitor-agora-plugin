@@ -1,4 +1,4 @@
-package vn.wellcare.plugins.capacitor.starter;
+package vn.wellcare.plugins.capacitor.agora;
 
 import android.util.Log;
 

@@ -1,6 +1,6 @@
-package vn.wellcare.plugins.capacitor.starter;
+package vn.wellcare.plugins.capacitor.agora;
 
-import static vn.wellcare.plugins.capacitor.starter.AgoraActivity.setOnAgoraEvent;
+import static vn.wellcare.plugins.capacitor.agora.AgoraActivity.setOnAgoraEvent;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import java.util.List;
 
 import io.agora.iris.IrisApiEngine;
 import io.agora.iris.IrisEventHandler;
-import vn.wellcare.plugins.capacitor.starter.util.Constant;
+import vn.wellcare.plugins.capacitor.agora.util.Constant;
 
 @CapacitorPlugin(name = "CapacitorPluginAgora")
 public class CapacitorPluginAgoraPlugin
@@ -37,16 +37,20 @@ public class CapacitorPluginAgoraPlugin
 
     @PluginMethod
     public void joinChannel(PluginCall call) {
-        Intent i = new Intent(getActivity(), AgoraActivity.class);
-        i.putExtra(Constant.CHANNELNAME, call.getString(Constant.CHANNELNAME));
-        i.putExtra(Constant.UID, call.getString(Constant.UID));
-        i.putExtra(Constant.TOKEN, call.getString(Constant.TOKEN));
-        i.putExtra(Constant.APPID, call.getString(Constant.APPID));
-        getActivity().startActivity(i);
-
-        JSObject ret = new JSObject();
-        call.resolve(ret);
-        setOnAgoraEvent(this);
+        try {
+            System.out.println("call plugin funtion");
+            Intent i = new Intent(getActivity(), VideoCallAgoraActivity.class);
+            i.putExtra(Constant.CHANNELNAME, call.getString(Constant.CHANNELNAME));
+            i.putExtra(Constant.UID, call.getString(Constant.UID));
+            i.putExtra(Constant.TOKEN, call.getString(Constant.TOKEN));
+            i.putExtra(Constant.APPID, call.getString(Constant.APPID));
+            getActivity().startActivity(i);
+            JSObject ret = new JSObject();
+            call.resolve(ret);
+            setOnAgoraEvent(this);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @PluginMethod
