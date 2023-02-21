@@ -2,8 +2,8 @@ package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController
 
 import android.graphics.Color
 import com.google.android.material.snackbar.Snackbar
-import vn.wellcare.plugins.capacitor.starter.`agora-ui-kit`.AgoraButton
-import vn.wellcare.plugins.capacitor.starter.`agora-ui-kit`.AgoraVideoViewer
+import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraButton
+import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraVideoViewer
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject

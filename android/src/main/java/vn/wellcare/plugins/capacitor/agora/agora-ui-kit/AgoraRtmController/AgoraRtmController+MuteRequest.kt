@@ -1,6 +1,6 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController
 
-import vn.wellcare.plugins.capacitor.starter.`agora-ui-kit`.AgoraVideoViewer
+import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraVideoViewer
 import io.agora.rtc2.RtcEngine
 import io.agora.rtm.ErrorInfo
 import io.agora.rtm.ResultCallback

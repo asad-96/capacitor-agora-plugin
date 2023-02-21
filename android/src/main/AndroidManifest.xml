@@ -24,5 +24,9 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             tools:targetApi="n" />
     </application>
-
+    <activity
+            android:name="vn.wellcare.plugins.capacitor.agora.VideoCallAgoraActivity"
+            android:label="video-call-agora-activity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
 </manifest>

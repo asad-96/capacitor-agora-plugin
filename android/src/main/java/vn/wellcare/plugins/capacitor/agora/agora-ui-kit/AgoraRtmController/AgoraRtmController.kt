@@ -1,7 +1,7 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController
 
 import android.content.Context
-import vn.wellcare.plugins.capacitor.starter.`agora-ui-kit`.AgoraVideoViewer
+import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraVideoViewer
 import io.agora.rtm.ErrorInfo
 import io.agora.rtm.ResultCallback
 import io.agora.rtm.RtmClient

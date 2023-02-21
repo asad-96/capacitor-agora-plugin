@@ -1,6 +1,6 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController
 
-import vn.wellcare.plugins.capacitor.starter.`agora-ui-kit`.AgoraVideoViewer
+import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraVideoViewer
 import io.agora.rtm.RtmChannelAttribute
 import io.agora.rtm.RtmChannelListener
 import io.agora.rtm.RtmChannelMember

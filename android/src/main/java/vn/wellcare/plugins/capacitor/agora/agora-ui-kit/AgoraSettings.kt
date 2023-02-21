@@ -1,7 +1,7 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.graphics.Color
-import vn.wellcare.plugins.capacitor.starter.`agora-ui-kit`.AgoraRtmController.UserData
+import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController.UserData
 import io.agora.rtc2.Constants
 import io.agora.rtc2.video.VideoEncoderConfiguration
 

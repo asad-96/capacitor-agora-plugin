@@ -2,7 +2,7 @@ package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.app.Activity
 import android.graphics.Rect
-import vn.wellcare.plugins.capacitor.starter.`agora-ui-kit`.AgoraRtmController.AgoraRtmController
+import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController.AgoraRtmController
 import io.agora.rtc2.Constants
 import io.agora.rtc2.IRtcEngineEventHandler
 import io.agora.rtc2.UserInfo
