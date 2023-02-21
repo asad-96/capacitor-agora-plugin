@@ -24,7 +24,6 @@ public class CapacitorPluginAgoraPlugin
 
     public static final String NAME = "CapacitorPluginAgora";
     public IrisApiEngine irisApiEngine;
-    private CapacitorPluginAgora implementation = new CapacitorPluginAgora();
 
     String TAG = "CapacitorPluginAgoraPlugin";
 
@@ -54,7 +53,6 @@ public class CapacitorPluginAgoraPlugin
     public void leaveChannel(PluginCall call) {
         String value = call.getString("room");
         JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
         call.resolve(ret);
     }
 
