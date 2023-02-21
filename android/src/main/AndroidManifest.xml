@@ -16,13 +16,13 @@
 
     <application>
         <activity
-            android:name="vn.wellcare.plugins.capacitor.starter.AgoraActivity" 
+            android:name="vn.wellcare.plugins.capacitor.agora.VideoCallAgoraActivity"
             android:theme="@style/AppTheme.NoActionBar"            
+            android:label="video-call-agora-activity"            
             android:exported="true" 
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             tools:targetApi="n" />
     </application>
-
 </manifest>
