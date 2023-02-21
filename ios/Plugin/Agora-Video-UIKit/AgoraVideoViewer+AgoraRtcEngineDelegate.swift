@@ -191,6 +191,7 @@ extension AgoraVideoViewer: AgoraRtcEngineDelegate {
         self.setupRtmController(joining: channel)
         #endif
         self.delegate?.joinedChannel(channel: channel)
+        self.joinChannelCallBack?(uid, nil)
         self.agoraSettings.rtcDelegate?.rtcEngine?(engine, didJoinChannel: channel, withUid: uid, elapsed: elapsed)
         
         debugPrint("[capacitor-agora] hai joined -----------")
@@ -279,7 +280,8 @@ extension AgoraVideoViewer: AgoraRtcEngineDelegate {
                 userId: self.userID, callback: self.newTokenFetched
             )
         }
-        self.delegate?.tokenDidExpire(engine)
+        self.delegate?.tokenDidExpire(engine, uid: userID)
+        self.joinChannelCallBack?(userID, "token expires.")
         self.agoraSettings.rtcDelegate?.rtcEngineRequestToken?(engine)
     }
 

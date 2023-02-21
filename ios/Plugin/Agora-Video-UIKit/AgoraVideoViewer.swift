@@ -35,7 +35,7 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     func tokenWillExpire(_ engine: AgoraRtcEngineKit, tokenPrivilegeWillExpire token: String)
     /// The token used to connect to the current active channel has expired.
     /// - Parameter engine: Agora RTC Engine
-    func tokenDidExpire(_ engine: AgoraRtcEngineKit)
+    func tokenDidExpire(_ engine: AgoraRtcEngineKit, uid: UInt)
 #if os(iOS)
     /// presentAlert is a way to show any alerts that the AgoraVideoViewer wants to display.
     /// These could be relating to video or audio permissions.
@@ -85,7 +85,7 @@ public extension AgoraVideoViewerDelegate {
     func joinedChannel(channel: String) {}
     func leftChannel(_ channel: String) {}
     func tokenWillExpire(_ engine: AgoraRtcEngineKit, tokenPrivilegeWillExpire token: String) {}
-    func tokenDidExpire(_ engine: AgoraRtcEngineKit) {}
+    func tokenDidExpire(_ engine: AgoraRtcEngineKit, uid: UInt) {}
     #if os(iOS)
     func presentAlert(alert: UIAlertController, animated: Bool, viewer: UIView?) {
         if let viewCont = self as? UIViewController {
@@ -197,9 +197,14 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     
     public var user: IParticipant? {
         didSet {
-            var allParticipant: [IParticipant] = [user].compactMap({$0})
-            if !allParticipant.isEmpty {
-                self.updateParticipantLists(participants: allParticipant)
+ 
+            if let uid = user?.uid, uid.isEmpty {
+                user?.uid = "\(userID)"
+            } else {
+                var allParticipant: [IParticipant] = [user].compactMap({$0})
+                if !allParticipant.isEmpty {
+                    self.updateParticipantLists(participants: allParticipant)
+                }
             }
         }
     }
@@ -380,7 +385,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     }
     
     var cameraPosition:  AVCaptureDevice.Position = .front
-    
+    public var joinChannelCallBack: ((UInt, String?)->())?
     /// Creates an AgoraVideoViewer object, to be placed anywhere in your application.
     /// - Parameters:
     ///   - connectionData: Storing struct for holding data about the connection to Agora service.

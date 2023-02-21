@@ -48,7 +48,7 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         
         
         //        initializeAgoraEngine(appId: appId)
-        initViews(params, user: user)
+//        initViews(params, user: user)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
 //                call.resolve([
 //                    "value": implementation.echo("Join channel value")
@@ -56,6 +56,38 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
 //
 //
         
+        DispatchQueue.main.async {
+            
+            let topMost = UIApplication.getTopViewController()
+            let vc = WellCareViewController(user: user, params: params, delegate: self)
+            vc.modalPresentationStyle = .fullScreen
+           
+            
+            self.wellCareVC = vc
+            self.wellCareVC?.joinChannelCallBack = { uid, message in
+                if let _msg = message {
+                    debugPrint("[capacitor-agora] joinChannelCallBack \(uid) \(_msg)")
+                    call.reject(_msg)
+                } else {
+                    debugPrint("[capacitor-agora] joinChannelCallBack \(uid) \(message)")
+                    call.resolve([
+                        Constant.UID : uid
+                    ])
+                }
+            }
+            topMost?.present(vc, animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {[weak self] in
+                self?.wellCareVC?.updateParticipantLists(participants: self?.participants ?? [])
+            }
+        }
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 15) {[weak self] in
+//            self?.wellCareVC?.startCallTimer(seconds: 1000)
+//        }
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {[weak self] in
+//            self?.wellCareVC?.showRecordingStatus(isShown: true)
+//        }
     }
     
     @objc func leaveChannel(_ call: CAPPluginCall) {
@@ -109,30 +141,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     
     @objc func exitPictureInPictureMode(_ call: CAPPluginCall) {
         wellCareVC?.exitPictureInPictureMode()
-    }
-    
-    //MARK: Sub Functions
-    func initViews(_ params: VideoCallParams, user: IParticipant? = nil) {
-        DispatchQueue.main.async {
-//            let currentWindow: UIWindow? = UIApplication.shared.windows.first
-
-            let topMost = UIApplication.getTopViewController()
-            let vc = WellCareViewController(user: user, params: params, delegate: self)
-            vc.modalPresentationStyle = .fullScreen
-            self.wellCareVC = vc
-            topMost?.present(vc, animated: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {[weak self] in
-                self?.wellCareVC?.updateParticipantLists(participants: self?.participants ?? [])
-            }
-            
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 15) {[weak self] in
-//                self?.wellCareVC?.startCallTimer(seconds: 1000)
-//            }
-//            
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {[weak self] in
-//                self?.wellCareVC?.showRecordingStatus(isShown: true)
-//            }
-        }
     }
 }
 
@@ -200,6 +208,11 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     
     public func joinedChannel(channel: String) {
         debugPrint("[capacitor-agora] joinedChannel \(channel)")
+        let jsObject: [String: Any] = [
+            "status": "success"
+        ]
+        notifyListeners("joinedChannel", data: jsObject)
+
     }
     
     public func onEnterPIP() {
@@ -217,12 +230,12 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     }
     
     public func onSendAction(action: IParticipantAction, to participant: IParticipant) {
-        
         debugPrint("[capacitor-agora] onSendAction \(action.rawValue) to particiant \(participant.name)")
         
         
         let jsObject: [String: Any] = [
-            EVENT: action.event
+            EVENT: action.event,
+            Constant.UID: participant.uid
         ]
         notifyListeners("onParticipantAction", data: jsObject)
     }
@@ -237,6 +250,16 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     
     public func didChangeVideoConfig() {
         wellCareVC?.didChangeVideoConfig()
+    }
+    
+    public func tokenDidExpire(_ engine: AgoraRtcEngineKit, uid: UInt) {
+        debugPrint("[capacitor-agora] tokenDidExpire ")
+        let jsObject: [String: Any] = [
+            "code": "-999",
+            "msg": "tokenDidExpire",
+            "uid": uid
+        ]
+        notifyListeners("exception", data: jsObject)
     }
 }
 

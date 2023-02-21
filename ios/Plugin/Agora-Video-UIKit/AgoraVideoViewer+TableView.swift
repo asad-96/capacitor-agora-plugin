@@ -25,34 +25,22 @@ extension AgoraVideoViewer {
     }
     
     func updateParticipantLists(participants: [IParticipant]) {
-        
-        for participant in participants {
-            if let index = self.allPrticipants.firstIndex(where: {$0.uid == participant.uid}){
-//                if !participant.name.isEmpty {
-//                    self.participants[index].name = participant.name
-//                }
-//                if !participant.avatar.url.isEmpty {
-//                    self.participants[index].avatar = participant.avatar
-//                }
-                //                    self.participants[index].name = participant.name
+        self.allPrticipants = participants + [user].compactMap({$0}).filter({!$0.uid.isEmpty})
 
-                debugPrint("[capacitor-agora] updateParticipantLists ???? \(participant.uid)")
-            } else {
-                self.allPrticipants.append(participant)
-                debugPrint("[capacitor-agora] updateParticipantLists ++++ \(participant.uid) ->\(participant.name)")
-
-            }
-            
-            if let uid = UInt(participant.uid), let videoFeed = self.videoLookup[uid] {
-                videoFeed.updateVideoView(with: participant)
-            }
-        }
-        
         debugPrint("[capacitor-agora] updateParticipantLists -----\(self.allPrticipants.count)")
 
-        for uid in self.videoLookup.keys {
-            if let index = self.allPrticipants.firstIndex(where: {$0.uid == "\(uid)"}) {
-                self.allPrticipants[index].hasJoined = true
+        let alluserIds = videoLookup.keys
+        for i in 0 ..< allPrticipants.count {
+            let participant = allPrticipants[i]
+            if let uid = UInt(participant.uid) {
+                if alluserIds.contains(uid) {
+                    allPrticipants[i].hasJoined = true
+                } else {
+                    allPrticipants[i].hasJoined = false
+                }
+                if let videoFeed = self.videoLookup[uid] {
+                    videoFeed.updateVideoView(with: participant)
+                }
             }
         }
         allPrticipants = allPrticipants.filter({!$0.uid.isEmpty})

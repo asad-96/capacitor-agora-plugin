@@ -167,6 +167,7 @@ class WellCareViewController: UIViewController {
     private let delegate: AgoraVideoViewerDelegate?
     var trayOriginalCenter: CGPoint = .zero
     private var isInit: Bool = false
+    var joinChannelCallBack: ((UInt, String?)->())?
     
     init(user: IParticipant? = nil,
          params: VideoCallParams,
@@ -219,6 +220,7 @@ class WellCareViewController: UIViewController {
             ), delegate: delegate
         )
         agoraView?.user = user
+        agoraView?.joinChannelCallBack = joinChannelCallBack
         agoraView.fills(view: self.view)
         agoraView.join(
             channel: channelName,
