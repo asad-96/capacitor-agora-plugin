@@ -60,7 +60,7 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
             
             let topMost = UIApplication.getTopViewController()
             let vc = WellCareViewController(user: user, params: params, delegate: self)
-            vc.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .overFullScreen
            
             
             self.wellCareVC = vc
