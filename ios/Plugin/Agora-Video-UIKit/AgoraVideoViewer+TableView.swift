@@ -209,7 +209,7 @@ class IParticipantTVC: UITableViewCell {
         
         roleLabel.text = participant.subtitle
         
-        thumbImageView.layer.borderColor = participant.hasJoined ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
+        thumbImageView.layer.borderColor = !participant.hasJoined ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
         if let url = URL(string: participant.avatar.url) {
             thumbImageView.downloaded(from: url)
         }
