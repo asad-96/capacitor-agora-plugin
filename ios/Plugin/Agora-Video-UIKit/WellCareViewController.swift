@@ -23,12 +23,12 @@ class WellCareViewController: UIViewController {
     // Update with the temporary token generated in Agora Console.
     var token: String {
         return params.token
-        //        return "007eJxTYNDRtv67OG/J3uXvJxpPemVxwr1ERedRwHmhCctvSEvwbV2nwGCYaGyeapCUaJ5oaWZiYZqUZJhqamyRmGRgamJsmWRp1vf1U3JDICODbGcZMyMDBIL4PAwlqcUl8ckZiXl5qTkMDAB4DCMb"
+//                return "007eJxTYFgSlVbyn7f/4e/e3x+SJib4Ni69+3cl9xZrhUi3fk23ykYFhqREEzMT4zSjJONEQxPTNCNLU3PTJAtzC+MU40TT1GTDdMMfyQ2BjAzs56cwMzJAIIjPylCSWlxiyMAAANfuIJA="
     }
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName: String {
         return params.channelName
-        //        return "test_channel"
+//                return "test1"
     }
     
     // Create the view object.
@@ -159,6 +159,12 @@ class WellCareViewController: UIViewController {
         return panGesture
     }()
     
+    private lazy var tapGesture: UITapGestureRecognizer = {
+        let panGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+
+        return panGesture
+    }()
+    
     private let airplayVolume = MPVolumeView()
     private var callTimer: Timer?
     private var callTime: Float = 0
@@ -193,6 +199,8 @@ class WellCareViewController: UIViewController {
         initializeAndJoinChannel()
         layoutCountdownView()
         layoutTopControls()
+        
+        view.addGestureRecognizer(tapGesture)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -209,6 +217,8 @@ class WellCareViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.removeBlurView()
         }
+        
+        
     }
     
     func initializeAndJoinChannel(){
@@ -227,6 +237,8 @@ class WellCareViewController: UIViewController {
             with: token,
             as: .broadcaster
         )
+        
+        agoraView?.scheduleMinimizedBottomView()
     }
     
     func layoutTopControls() {
@@ -482,12 +494,24 @@ extension WellCareViewController {
     }
     
     @objc func startCallTimer(seconds: Int) {
+        debugPrint("[capacitor-agora] countDownCallTimer 111")
+
         guard seconds > 0 else { return }
-        countDownContainer.isHidden = false
-        callTimer?.invalidate()
-        callTimer = nil
-        callTime = Float(seconds)
-        callTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(countDownCallTimer(_:)), userInfo: nil, repeats: true)
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.startCallTimer(seconds: seconds)
+            }
+            return
+        }
+        debugPrint("[capacitor-agora] countDownCallTimer 2222")
+
+            self.countDownContainer.isHidden = false
+            self.callTimer?.invalidate()
+            self.callTimer = nil
+            self.callTime = Float(seconds)
+            self.callTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.countDownCallTimer(_:)), userInfo: nil, repeats: true)
+        
+       
     }
     
     @objc func stopCallTimer() {
@@ -498,7 +522,7 @@ extension WellCareViewController {
     
     @objc func countDownCallTimer(_ timer: Timer) {
         callTime -= 1
-        
+        debugPrint("[capacitor-agora] countDownCallTimer \(callTime)")
         let mins: Float = callTime / 60
         let secs: Float = callTime.truncatingRemainder(dividingBy: 60)
         
@@ -510,7 +534,7 @@ extension WellCareViewController {
             showReminderView()
         }
         
-        if callTime == 0 {
+        if callTime <= 0 {
             stopCallTimer()
             endCallTime()
         }
@@ -584,6 +608,10 @@ extension WellCareViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.agoraView?.layoutForPIP()
         }
+    }
+    
+    @objc func handleTap(_ sender: UITapGestureRecognizer) {
+        agoraView?.minimizedBottomView()
     }
     
     @objc func handlePan(_ sender: UIPanGestureRecognizer) {

@@ -99,8 +99,9 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
     }
     
     @objc func setCountdown(_ call: CAPPluginCall) {
-        debugPrint("[capacitor-agora] setCountdown")
         let seconds = call.getInt("seconds") ?? 0
+        debugPrint("[capacitor-agora] setCountdown \(seconds)")
+
         wellCareVC?.startCallTimer(seconds: seconds)
     }
     
@@ -177,7 +178,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
             UID: uid
             
         ]
-        print("hai leftChannel:- \(jsObject)")
+        debugPrint("[capacitor-agora] onRemoteStreamChanged \(jsObject)")
         notifyListeners("onRemoteStreamChanged", data: jsObject)
     }
     
@@ -187,7 +188,8 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
             UID: uid
             
         ]
-        print("hai leftChannel:- \(jsObject)")
+        debugPrint("[capacitor-agora] onRemoteStreamChanged \(jsObject)")
+
         notifyListeners("onRemoteStreamChanged", data: jsObject)
     }
     
@@ -202,7 +204,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
             EVENT: "leaved"
         ]
         
-        print("hai leftChannel:- \(jsObject)")
+        debugPrint("[capacitor-agora] onSelfAction \(jsObject)")
         notifyListeners("onSelfAction", data: jsObject)
     }
     

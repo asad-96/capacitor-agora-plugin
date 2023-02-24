@@ -25,7 +25,11 @@ extension AgoraVideoViewer {
     }
     
     func updateParticipantLists(participants: [IParticipant]) {
-        self.allPrticipants = participants + [user].compactMap({$0}).filter({!$0.uid.isEmpty})
+        self.allPrticipants = participants
+        
+        if let _user = user, !_user.uid.isEmpty, !self.allPrticipants.contains(where: {$0.uid == _user.uid}) {
+            self.allPrticipants.append(_user)
+        }
 
         debugPrint("[capacitor-agora] updateParticipantLists -----\(self.allPrticipants.count)")
 
@@ -205,7 +209,7 @@ class IParticipantTVC: UITableViewCell {
         
         roleLabel.text = participant.subtitle
         
-        thumbImageView.layer.borderColor = participant.role == .host ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
+        thumbImageView.layer.borderColor = participant.hasJoined ? UIColor(named: "colorFF5555")?.cgColor : UIColor(named: "color3BC638")?.cgColor
         if let url = URL(string: participant.avatar.url) {
             thumbImageView.downloaded(from: url)
         }

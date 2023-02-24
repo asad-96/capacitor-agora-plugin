@@ -284,9 +284,33 @@ extension AgoraVideoViewer {
 
         let newYoffset = UIScreen.main.bounds.height - bottomH
         guard controlContainer.frame.origin.y != newYoffset else { return }
-        UIView.animate(withDuration: 0.5, animations: { () -> Void in
+        UIView.animate(withDuration: 0.5) {
             controlContainer.frame.origin = CGPoint(x: 5, y: newYoffset)
-        })
+        } completion: { [weak self] _ in
+            self?.scheduleMinimizedBottomView()
+        }
+    }
+    
+    func scheduleMinimizedBottomView() {
+        bottomViewTimer?.invalidate()
+        bottomViewTimer = nil
+        bottomViewTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(minimizedBottomView), userInfo: nil, repeats: false)
+    }
+    
+    func stopBottomViewTimer() {
+        bottomViewTimer?.invalidate()
+        bottomViewTimer = nil
+    }
+    
+    @objc func minimizedBottomView() {
+        guard let controlContainer = controlContainer else { return }
+        let maxOffsetY = UIScreen.main.bounds.height - 30
+
+        UIView.animate(withDuration: 0.5) {
+            controlContainer.frame.origin = CGPoint(x: controlContainer.frame.origin.x, y: maxOffsetY)
+        } completion: { [weak self] _ in
+            self?.stopBottomViewTimer()
+        }
     }
     
     var videoTopMargin: CGFloat {

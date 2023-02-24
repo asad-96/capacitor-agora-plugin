@@ -201,10 +201,12 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
             if let uid = user?.uid, uid.isEmpty {
                 user?.uid = "\(userID)"
             } else {
-                var allParticipant: [IParticipant] = [user].compactMap({$0})
-                if !allParticipant.isEmpty {
-                    self.updateParticipantLists(participants: allParticipant)
+              
+                if let _user = user, !_user.uid.isEmpty,
+                   !self.allPrticipants.contains(where: {$0.uid == _user.uid}) {
+                        self.allPrticipants.append(_user)
                 }
+                self.updateParticipantLists(participants: allPrticipants)
             }
         }
     }
@@ -466,7 +468,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     var collectionViewVideos: [AgoraSingleVideoView] = []
     
     var bottomContainerCenter: CGPoint!
-    
+    var bottomViewTimer: Timer?
     /// Container for the buttons (such as mute, flip camera etc.)
     public var controlContainer: UIView?
     var camButton: MPButton?

@@ -344,7 +344,7 @@ extension AgoraVideoViewer {
     @objc func handleControlGesture(_ sender: UIPanGestureRecognizer) {
         guard let controlContainer = controlContainer else { return }
         
-        guard style == .pinned else { return  }
+//        guard style == .pinned else { return  }
         
         let translation = sender.translation(in: self)
         let velocity = sender.velocity(in: self)
@@ -379,6 +379,7 @@ extension AgoraVideoViewer {
                         controlContainer.frame.origin = CGPoint(x: controlContainer.frame.origin.x, y: originalY)
                     })
                 }
+                scheduleMinimizedBottomView()
             } else {
                 UIView.animate(withDuration: 0.5, animations: { () -> Void in
                     controlContainer.frame.origin = CGPoint(x: controlContainer.frame.origin.x, y: maxOffsetY)
