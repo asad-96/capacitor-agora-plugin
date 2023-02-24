@@ -216,6 +216,8 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     }
     
     public func onEnterPIP() {
+        debugPrint("[capacitor-agora] onSelfAction onEnterPIP")
+
         let jsObject: [String: Any] = [
             EVENT: "chat"
         ]
@@ -223,6 +225,8 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     }
     
     public func onLeavePIP() {
+        debugPrint("[capacitor-agora] onSelfAction onLeavePIP")
+
         let jsObject: [String: Any] = [
             EVENT: "exit_pip"
         ]
@@ -248,8 +252,13 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
         wellCareVC?.didChangedActiveSpeaker()
     }
     
-    public func didChangeVideoConfig() {
+    public func didChangeVideoConfig(event: String) {
+        debugPrint("[capacitor-agora] didChangeVideoConfig \(event) ")
+
         wellCareVC?.didChangeVideoConfig()
+         
+        let jsObject: [String: Any] = [: ]
+        notifyListeners("event", data: jsObject)
     }
     
     public func tokenDidExpire(_ engine: AgoraRtcEngineKit, uid: UInt) {

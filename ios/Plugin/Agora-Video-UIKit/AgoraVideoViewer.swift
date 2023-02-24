@@ -70,7 +70,7 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     )
 #endif
     
-    func didChangeVideoConfig()
+    func didChangeVideoConfig(event: String)
     func didChangedActiveSpeaker()
     func onEnterPIP()
     func onLeavePIP()

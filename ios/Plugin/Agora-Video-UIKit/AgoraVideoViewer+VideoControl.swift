@@ -98,7 +98,9 @@ extension AgoraVideoViewer {
     /// Toggle the camera between on and off
     /// - Parameter sender: The sender is typically the camera button
     @objc open func toggleCam(_ sender: MPButton?) {
-        self.setCam(to: !self.agoraSettings.cameraEnabled)
+        self.setCam(to: !self.agoraSettings.cameraEnabled) {[weak self] finished in
+            self?.delegate?.didChangeVideoConfig(event: "onCameraChanged")
+        }
     }
 
     /// Manually set the microphone to be enabled or disabled.
@@ -146,7 +148,7 @@ extension AgoraVideoViewer {
     /// - Parameter sender: The sender is typically the microphone button
     @objc open func toggleMic(_ sender: MPButton?) {
         self.setMic(to: !self.agoraSettings.micEnabled) { finished in
-            self.delegate?.didChangeVideoConfig()
+            self.delegate?.didChangeVideoConfig(event: "onMicrophoneChanged")
         }
     }
 
@@ -216,7 +218,10 @@ extension AgoraVideoViewer {
 
     #if os(iOS)
     /// Swap between front and back facing camera.
-    @objc open func flipCamera() { self.agkit.switchCamera() }
+    @objc open func flipCamera() {
+        self.agkit.switchCamera()
+        self.delegate?.didChangeVideoConfig(event: "onPlaybackDeviceChanged")
+    }
     #endif
 
     /// Toggle between being a host or a member of the audience.
