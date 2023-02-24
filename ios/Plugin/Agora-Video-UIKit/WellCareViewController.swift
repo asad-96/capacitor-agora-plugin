@@ -331,11 +331,11 @@ class WellCareViewController: UIViewController {
             index = (index + 1) % segmentedStyle.count
         }
         
-        if videoCount == 1 {
-            self.agoraView?.style = .pinned
-        } else {
+//        if videoCount == 1 {
+//            self.agoraView?.style = .pinned
+//        } else {
             self.agoraView?.style = segmentedStyle[index]
-        }
+//        }
         
         let currentStyle = self.agoraView?.style ?? .floating
         
