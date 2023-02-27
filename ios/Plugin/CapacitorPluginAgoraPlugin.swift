@@ -58,27 +58,32 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         
         DispatchQueue.main.async {
             
-            let topMost = UIApplication.getTopViewController()
-            let vc = WellCareViewController(user: user, params: params, delegate: self)
-            vc.modalPresentationStyle = .overFullScreen
-           
-            
-            self.wellCareVC = vc
-            self.wellCareVC?.joinChannelCallBack = { uid, message in
-                if let _msg = message {
-                    debugPrint("[capacitor-agora] joinChannelCallBack \(uid) \(_msg)")
-                    call.reject(_msg)
-                } else {
-                    debugPrint("[capacitor-agora] joinChannelCallBack \(uid) \(message)")
-                    call.resolve([
-                        Constant.UID : uid
-                    ])
+            if self.wellCareVC == nil {
+                let topMost = UIApplication.getTopViewController()
+                let vc = WellCareViewController(user: user, params: params, delegate: self)
+                vc.modalPresentationStyle = .overFullScreen
+               
+                
+                self.wellCareVC = vc
+                self.wellCareVC?.joinChannelCallBack = { uid, message in
+                    if let _msg = message {
+                        debugPrint("[capacitor-agora] joinChannelCallBack \(uid) \(_msg)")
+                        call.reject(_msg)
+                    } else {
+                        debugPrint("[capacitor-agora] joinChannelCallBack \(uid) \(message)")
+                        call.resolve([
+                            Constant.UID : uid
+                        ])
+                    }
+                }
+                vc.view.frame = UIScreen.main.bounds
+                topMost?.view.addSubview(vc.view)
+    //            topMost?.present(vc, animated: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {[weak self] in
+                    self?.wellCareVC?.updateParticipantLists(participants: self?.participants ?? [])
                 }
             }
-            topMost?.present(vc, animated: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {[weak self] in
-                self?.wellCareVC?.updateParticipantLists(participants: self?.participants ?? [])
-            }
+            
         }
         
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 15) {[weak self] in
@@ -196,9 +201,12 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
    
     public func leftChannel(_ channel: String) {
         participants = []
-        wellCareVC?.dismiss(animated: true) { [weak self] in
-            self?.wellCareVC = nil
-        }
+        wellCareVC?.stopCallTimer()
+//        wellCareVC?.dismiss(animated: true) { [weak self] in
+//            self?.wellCareVC = nil
+//        }
+        wellCareVC?.view.removeFromSuperview()
+        wellCareVC = nil
         
         let jsObject: [String: Any] = [
             EVENT: "leaved"
