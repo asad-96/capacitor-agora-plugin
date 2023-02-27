@@ -171,6 +171,7 @@ class WellCareViewController: UIViewController {
     var trayOriginalCenter: CGPoint = .zero
     private var isInit: Bool = false
     var joinChannelCallBack: ((UInt, String?)->())?
+    private var currentRoute: AVAudioSessionPortDescription?
     
     init(user: IParticipant? = nil,
          params: VideoCallParams,
@@ -192,18 +193,22 @@ class WellCareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        currentRoute = AVAudioSession.sharedInstance().currentRoute.inputs.first
+
         view.backgroundColor = .black
         initializeAndJoinChannel()
         layoutCountdownView()
         layoutTopControls()
-        
+//        setupNotifications()
         view.addGestureRecognizer(tapGesture)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        debugPrint("hai session new ----->")
         guard !isInit else { return }
         addBlurView()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -321,6 +326,23 @@ class WellCareViewController: UIViewController {
         ])
     }
     
+    func setupNotifications() {
+        // Get the default notification center instance.
+        let nc = NotificationCenter.default
+        nc.addObserver(self,
+                       selector: #selector(handleRouteChange),
+                       name: AVAudioSession.routeChangeNotification,
+                       object: nil)
+    }
+    
+    
+    func removeNotifications() {
+        NotificationCenter.default.removeObserver(self, name: AVAudioSession.routeChangeNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+
+    }
     @objc func tappedLayoutButton(_ sender: UIButton) {
         
         debugPrint("[capacitor-agora] hai tappedLayoutButton")
@@ -539,6 +561,19 @@ extension WellCareViewController {
     
     @objc func endCallTime() {
         self.agoraView?.tappedEndCallButton()
+    }
+
+
+    @objc func handleRouteChange(notification: Notification) {
+        // To be implemented.
+        guard let newInput = AVAudioSession.sharedInstance().currentRoute.inputs.first else {
+            return
+        }
+        guard !newInput.uid.isEmpty,
+              currentRoute?.uid != newInput.uid else { return }
+        currentRoute = newInput
+        debugPrint("hai session new ->\(currentRoute?.portName ?? "x") ->\(currentRoute?.uid ?? "y")")
+        delegate?.didChangeVideoConfig(event: "onMicrophoneChanged")
     }
     
     func onLeaveChat() {
