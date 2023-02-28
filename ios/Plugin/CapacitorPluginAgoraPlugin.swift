@@ -202,6 +202,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
     public func leftChannel(_ channel: String) {
         participants = []
         wellCareVC?.stopCallTimer()
+        wellCareVC?.removeNotifications()
 //        wellCareVC?.dismiss(animated: true) { [weak self] in
 //            self?.wellCareVC = nil
 //        }
@@ -222,6 +223,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
             "status": "success"
         ]
         notifyListeners("joinedChannel", data: jsObject)
+        wellCareVC?.setupNotifications()
 
     }
     
@@ -268,7 +270,7 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
         wellCareVC?.didChangeVideoConfig()
          
         let jsObject: [String: Any] = [: ]
-        notifyListeners("event", data: jsObject)
+        notifyListeners(event, data: jsObject)
     }
     
     public func tokenDidExpire(_ engine: AgoraRtcEngineKit, uid: UInt) {
