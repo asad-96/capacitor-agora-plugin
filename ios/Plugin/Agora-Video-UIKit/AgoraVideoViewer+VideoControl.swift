@@ -220,7 +220,7 @@ extension AgoraVideoViewer {
     /// Swap between front and back facing camera.
     @objc open func flipCamera() {
         self.agkit.switchCamera()
-        self.delegate?.didChangeVideoConfig(event: "onPlaybackDeviceChanged")
+//        self.delegate?.didChangeVideoConfig(event: "onPlaybackDeviceChanged")
     }
     #endif
 

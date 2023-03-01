@@ -172,6 +172,7 @@ class WellCareViewController: UIViewController {
     private var isInit: Bool = false
     var joinChannelCallBack: ((UInt, String?)->())?
     private var currentRoute: AVAudioSessionPortDescription?
+    private var isChangeAudioRoute: Bool = false
     
     init(user: IParticipant? = nil,
          params: VideoCallParams,
@@ -209,6 +210,7 @@ class WellCareViewController: UIViewController {
         guard !isInit else { return }
         addBlurView()
         
+//        setupNotifications()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -489,6 +491,7 @@ class WellCareViewController: UIViewController {
 extension WellCareViewController {
     
     @objc func tappedBluetoothButton(_ sender: UIButton) {
+        isChangeAudioRoute = true
         if let routePickerButton = airplayVolume.subviews.first(where: { $0 is UIButton }) as? UIButton {
            
             routePickerButton.sendActions(for: .touchUpInside)
@@ -566,14 +569,15 @@ extension WellCareViewController {
 
     @objc func handleRouteChange(notification: Notification) {
         // To be implemented.
+        guard isChangeAudioRoute else { return }
         guard let newInput = AVAudioSession.sharedInstance().currentRoute.inputs.first else {
             return
         }
-        guard !newInput.uid.isEmpty,
+        guard
               currentRoute?.uid != newInput.uid else { return }
         currentRoute = newInput
         debugPrint("hai session new ->\(currentRoute?.portName ?? "x") ->\(currentRoute?.uid ?? "y")")
-        delegate?.didChangeVideoConfig(event: "onMicrophoneChanged")
+        delegate?.didChangeVideoConfig(event: "onPlaybackDeviceChanged")
     }
     
     func onLeaveChat() {
