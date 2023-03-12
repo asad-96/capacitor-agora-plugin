@@ -195,21 +195,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
         }
     }
     
-    public var user: IParticipant? {
-        didSet {
- 
-            if let uid = user?.uid, uid.isEmpty {
-                user?.uid = "\(userID)"
-            } else {
-              
-                if let _user = user, !_user.uid.isEmpty,
-                   !self.allPrticipants.contains(where: {$0.uid == _user.uid}) {
-                        self.allPrticipants.append(_user)
-                }
-                self.updateParticipantLists(participants: allPrticipants)
-            }
-        }
-    }
+    public var user: IParticipant?
     /// Storing struct for holding data about the connection to Agora service.
     internal var connectionData: AgoraConnectionData!
     
@@ -385,7 +371,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
             }
         }
     }
-    
+
     var cameraPosition:  AVCaptureDevice.Position = .front
     public var joinChannelCallBack: ((UInt, String?)->())?
     /// Creates an AgoraVideoViewer object, to be placed anywhere in your application.
@@ -480,13 +466,7 @@ open class AgoraVideoViewer: MPView, SingleVideoViewDelegate {
     var endCallButton: MPButton?
     
     var partipantHConstraint: NSLayoutConstraint?
-    
-//    lazy var userListView: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = UIColor.black.withAlphaComponent(0.64)
-//        return view
-//    }()
-    
+
     lazy var userListTableView: UITableView = {
         let tableView = UITableView()
         tableView.delegate = self

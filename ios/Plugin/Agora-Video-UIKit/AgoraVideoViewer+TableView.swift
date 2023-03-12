@@ -27,9 +27,9 @@ extension AgoraVideoViewer {
     func updateParticipantLists(participants: [IParticipant]) {
         self.allPrticipants = participants
         
-        if let _user = user, !_user.uid.isEmpty, !self.allPrticipants.contains(where: {$0.uid == _user.uid}) {
-            self.allPrticipants.append(_user)
-        }
+//        if let _user = user, !_user.uid.isEmpty, !self.allPrticipants.contains(where: {$0.uid == _user.uid}) {
+//            self.allPrticipants.append(_user)
+//        }
 
         debugPrint("[capacitor-agora] updateParticipantLists -----\(self.allPrticipants.count)")
 

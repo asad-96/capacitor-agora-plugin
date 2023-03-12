@@ -89,6 +89,7 @@ extension AgoraVideoViewer {
             // no custom setup yet
             orgCustom(self, self.userVideoLookup.enumerated(), self.userVideoLookup.count)
         }
+        bringSubviewToFront(streamerCollectionView)
     }
 
     /// Display grid when there are only two video members
