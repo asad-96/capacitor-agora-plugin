@@ -13,10 +13,10 @@ import AppKit
 
 /// Collection View to display all connected users camera feeds. Used in the streamerCollectionView.
 internal class AgoraCollectionViewer: MPCollectionView {
-
+    
     static let cellSpacing: CGFloat = 5
     static let pinnedCellSize: CGFloat = 75
-
+    
     /// Details for the collection list of participants camera feeds.
     static var flowLayout: MPCollectionViewFlowLayout {
         let flowLayout = MPCollectionViewFlowLayout()
@@ -31,14 +31,14 @@ internal class AgoraCollectionViewer: MPCollectionView {
         flowLayout.minimumInteritemSpacing = AgoraCollectionViewer.cellSpacing
         return flowLayout
     }
-
-    #if os(iOS)
+    
+#if os(iOS)
     override init(frame: CGRect, collectionViewLayout layout: MPCollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
         self.backgroundColor = UIColor.clear
         self.register(AgoraCollectionItem.self, forCellWithReuseIdentifier: "collectionCell")
     }
-    #elseif os(macOS)
+#elseif os(macOS)
     init(frame: CGRect, collectionViewLayout layout: MPCollectionViewLayout) {
         super.init(frame: frame)
         self.collectionViewLayout = layout
@@ -50,12 +50,12 @@ internal class AgoraCollectionViewer: MPCollectionView {
         self.allowsMultipleSelection = false
         self.backgroundColors = [NSColor.windowBackgroundColor.withAlphaComponent(0.7)]
     }
-    #endif
-
+#endif
+    
     convenience init() {
         self.init(frame: .zero, collectionViewLayout: AgoraCollectionViewer.flowLayout)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -63,12 +63,12 @@ internal class AgoraCollectionViewer: MPCollectionView {
 
 /// Item in the collection view to contain the user's video feed, as well as microphone signal.
 open class AgoraCollectionItem: MPCollectionViewCell {
-    #if os(iOS)
+#if os(iOS)
     /// Icon to be displayed when the user is taken to the main view
     var backgroundIcon = MPImageView(
         image: MPImage(systemName: MPButton.pinSymbol)
     )
-    #elseif os(macOS)
+#elseif os(macOS)
     /// Icon to be displayed when the user is taken to the main view
     open var backgroundIcon: MPButton = {
         let icon = MPButton()
@@ -82,24 +82,24 @@ open class AgoraCollectionItem: MPCollectionViewCell {
         icon.isEnabled = false
         return icon
     }()
-
-    #endif
+    
+#endif
     /// View for the video frame.
     var agoraVideoView: AgoraSingleVideoView? {
         didSet {
             guard let avv = self.agoraVideoView else {
                 return
             }
-            #if os(iOS)
+#if os(iOS)
             avv.frame = self.bounds
             self.addSubview(avv)
-            #elseif os(macOS)
+#elseif os(macOS)
             avv.frame = self.view.bounds
             self.view.addSubview(avv)
-            #endif
+#endif
         }
     }
-    #if os(iOS)
+#if os(iOS)
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.addSubview(self.backgroundIcon)
@@ -111,13 +111,13 @@ open class AgoraCollectionItem: MPCollectionViewCell {
             .flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin
         ]
     }
-
+    
     /// Create view from NSCoder, not yet implemented.
     /// - Parameter coder: NSCoder to build the view from
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    #elseif os(macOS)
+#elseif os(macOS)
     override public func loadView() {
         self.view = NSView(frame: .zero)
     }
@@ -132,14 +132,14 @@ open class AgoraCollectionItem: MPCollectionViewCell {
             size: CGSize(width: 50, height: 50)
         )
         self.backgroundIcon.autoresizingMask = [.maxXMargin, .minXMargin, .maxYMargin, .minYMargin]
-     }
-    #endif
-
+    }
+#endif
+    
 }
 
 extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource {
-
-    #if os(iOS)
+    
+#if os(iOS)
     /// Asks your data source object for the cell that corresponds to the specified item in the collection view.
     /// - Parameters:
     ///   - collectionView: The collection view requesting this information.
@@ -158,7 +158,7 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
         cell.clipsToBounds = true
         return cell
     }
-
+    
     /// Asks your data source object for the number of items in the specified section.
     /// - Parameters:
     ///   - collectionView: The collection view requesting this information.
@@ -169,7 +169,7 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
         collectionView.isHidden = count == 0
         return count
     }
-
+    
     /// Tells the delegate that the specified cell is about to be displayed in the collection view.
     /// - Parameters:
     ///   - collectionView: The collection view object that is adding the cell.
@@ -181,7 +181,7 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
     ) {
         self.displayItem(cell, at: indexPath)
     }
-
+    
     /// Tells the delegate that the specified cell was removed from the collection view.
     /// - Parameters:
     ///   - collectionView: The collection view object that removed the cell.
@@ -195,7 +195,7 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
             fatalError("cell not valid")
         }
     }
-    #elseif os(macOS)
+#elseif os(macOS)
     public func collectionView(
         _ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath
     ) -> NSCollectionViewItem {
@@ -206,7 +206,7 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
         cell.view.layer?.backgroundColor = NSColor.blue.withAlphaComponent(0.4).cgColor
         return cell
     }
-
+    
     public func numberOfSections(in collectionView: NSCollectionView) -> Int {
         return 1
     }
@@ -224,8 +224,8 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
     public func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
         self.collectionView(collectionView, didSelectItemAt: indexPaths.first!)
     }
-    #endif
-
+#endif
+    
     internal func refreshCollectionData() {
         switch self.style {
         case .pinned, .collection, .strip:
@@ -252,17 +252,17 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
         }
         self.streamerCollectionView.reloadData()
     }
-
+    
     /// Both AppKit and UIKit delegate methods call this function, to have it all in one place
     /// - Parameters:
     ///   - item: UICollectionViewCell or NSCollectionViewItem to be displayed.
     ///   - indexPath: indexPath of the cell or item.
     internal func displayItem(_ item: MPCollectionViewCell, at indexPath: IndexPath) {
-        #if os(iOS)
+#if os(iOS)
         let newVid = self.collectionViewVideos[indexPath.row]
-        #elseif os(macOS)
+#elseif os(macOS)
         let newVid = self.collectionViewVideos[indexPath.item]
-        #endif
+#endif
         guard let cell = item as? AgoraCollectionItem else {
             fatalError("cell not valid")
         }
@@ -286,29 +286,61 @@ extension AgoraVideoViewer: MPCollectionViewDelegate, MPCollectionViewDataSource
                 self.agkit.setRemoteVideoStream(newVid.uid, type: .low)
             }
         }
+        debugPrint("[capacitor-agora]-> \(newVid.uid) ---> \(overrideActiveSpeaker)")
+        
         newVid.placeMuteAtBottom(style: style)
-
+        
+        let button = UIButton()
+        button.tag = indexPath.row + 100
+        button.addTarget(self, action: #selector(tappedCoverView(_:)), for: .touchUpInside)
+        if let coverView = cell.subviews.first(where: {$0.tag == (indexPath.row + 100)}) {
+            coverView.removeFromSuperview()
+        }
+        
+        cell.addSubview(button)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            button.topAnchor.constraint(equalTo: newVid.topAnchor),
+            button.leftAnchor.constraint(equalTo: newVid.leftAnchor),
+            button.rightAnchor.constraint(equalTo: newVid.rightAnchor),
+            button.bottomAnchor.constraint(equalTo: newVid.bottomAnchor),
+            
+        ])
     }
-
+    
     /// Tells the delegate that the item at the specified index path was selected.
     /// - Parameters:
     ///   - collectionView: The collection view object that is notifying you of the selection change.
     ///   - indexPath: The index path of the cell that was selected.
     public func collectionView(_ collectionView: MPCollectionView, didSelectItemAt indexPath: IndexPath) {
-        #if os(iOS)
+#if os(iOS)
         guard let agoraColItem = collectionView.cellForItem(at: indexPath) as? AgoraCollectionItem else {
             return
         }
-        #elseif os(macOS)
+#elseif os(macOS)
         guard let agoraColItem = collectionView.item(at: indexPath) as? AgoraCollectionItem else {
             return
         }
-        #endif
+#endif
         if self.overrideActiveSpeaker == agoraColItem.agoraVideoView?.uid {
             self.overrideActiveSpeaker = nil
             return
         }
         self.overrideActiveSpeaker = agoraColItem.agoraVideoView?.uid
+    }
+    
+    @objc func tappedCoverView(_ sender: UIButton) {
+        let index =  sender.tag - 100
+        guard index < self.collectionViewVideos.count else { return }
+        let newVid = self.collectionViewVideos[index]
+        
+        
+        debugPrint("[capacitor-agora] -> \(index) \(newVid.uid) ---> \(overrideActiveSpeaker)")
+        if self.overrideActiveSpeaker == newVid.uid {
+            self.overrideActiveSpeaker = nil
+            return
+        }
+        self.overrideActiveSpeaker = newVid.uid
     }
 }
 
