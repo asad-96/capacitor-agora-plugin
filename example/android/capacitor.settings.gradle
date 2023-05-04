@@ -7,3 +7,6 @@ project(':capgo-camera-preview').projectDir = new File('../node_modules/@capgo/c
 
 include ':wellcare-capacitor-plugin-agora'
 project(':wellcare-capacitor-plugin-agora').projectDir = new File('../node_modules/@wellcare/capacitor-plugin-agora/android')
+
+include ':capacitor-voice-recorder'
+project(':capacitor-voice-recorder').projectDir = new File('../node_modules/capacitor-voice-recorder/android')

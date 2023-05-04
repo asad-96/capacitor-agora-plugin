@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.setPadding
 import io.agora.rtc2.video.VideoCanvas
 import vn.wellcare.plugins.capacitor.agora.R
 
@@ -85,14 +86,16 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         val mutedLayout = FrameLayout.LayoutParams(DPToPx(context, 40), DPToPx(context, 40))
 //        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
 //        mutedLayout.gravity = Gravity.RIGHT
-        mutedLayout.gravity = Gravity.BOTTOM
+        mutedLayout.gravity = Gravity.BOTTOM or Gravity.RIGHT
 //        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
         mutedLayout.bottomMargin = DPToPx(context, 5)
         mutedLayout.leftMargin = DPToPx(context, 5)
 
         mutedFlag.setImageResource(android.R.drawable.stat_notify_call_mute)
+        mutedFlag.setBackgroundResource(R.drawable.rounded_end_call)
 
         mutedFlag.setColorFilter(this.micFlagColor)
+        mutedFlag.setPadding(DPToPx(context, 10))
         addView(mutedFlag, mutedLayout)
         this.audioMuted = true
     }

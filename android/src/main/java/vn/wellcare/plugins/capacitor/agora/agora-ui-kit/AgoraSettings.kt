@@ -63,12 +63,19 @@ class AgoraSettings {
         CAMERA,
         MIC,
         FLIP,
-        END
+        END,
+        CHAT,
+    }
+
+    public enum class TopButton {
+        FLASH,
+        LAYOUT,
+        BLUETOOTH
     }
     /**
      * The rendering mode of the video view for all videos within the view.
      */
-    public var videoRenderMode = Constants.RENDER_MODE_FIT
+    public var videoRenderMode = Constants.RENDER_MODE_HIDDEN
     /**
      * Where the buttons such as camera enable/disable should be positioned within the view.
      * TODO: This is not yet implemented
@@ -87,7 +94,10 @@ class AgoraSettings {
      * Which buttons should be enabled in this AgoraVideoView.
      */
     public var enabledButtons: MutableSet<BuiltinButton> = mutableSetOf(
-            BuiltinButton.CAMERA, BuiltinButton.MIC, BuiltinButton.FLIP, BuiltinButton.END
+        BuiltinButton.FLIP, BuiltinButton.CAMERA, BuiltinButton.END, BuiltinButton.MIC, BuiltinButton.CHAT
+    )
+    public var topButtons: MutableSet<TopButton> = mutableSetOf(
+        TopButton.FLASH, TopButton.BLUETOOTH, TopButton.LAYOUT
     )
 
     /**

@@ -4,12 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController.AgoraRtmChannelHandler
 import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController.AgoraRtmClientHandler
 import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController.AgoraRtmController
@@ -27,6 +31,7 @@ import io.agora.rtc2.video.VideoEncoderConfiguration
 import io.agora.rtm.RtmChannel
 import io.agora.rtm.RtmClient
 import vn.wellcare.plugins.capacitor.agora.R
+import vn.wellcare.plugins.capacitor.agora.util.IParticipant
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -69,7 +74,7 @@ interface AgoraVideoViewerDelegate {
 /**
  * View to contain all the video session objects, including camera feeds and buttons for settings
  */
-open class AgoraVideoViewer : FrameLayout {
+open class AgoraVideoViewer : CoordinatorLayout {
 
     /**
      * Style and organisation to be applied to all the videos in this view.
@@ -87,14 +92,22 @@ open class AgoraVideoViewer : FrameLayout {
             this.agkit.setClientRole(value)
         }
 
-    internal var controlContainer: ButtonContainer? = null
+    internal var controlContainer: BottomSheetContainer? = null
+    internal var buttonContainer: ButtonContainer? = null
+    internal var topButtonContainer: ButtonContainer? = null
+    internal var backButtonContainer: ButtonContainer? = null
     internal var camButton: AgoraButton? = null
     internal var micButton: AgoraButton? = null
     internal var flipButton: AgoraButton? = null
+    internal var chatButton: AgoraButton? = null
     internal var endCallButton: AgoraButton? = null
+    internal var layoutButton: AgoraButton? = null
+    internal var flashButton: AgoraButton? = null
+    internal var bluetoothButton: AgoraButton? = null
+    internal var backButton: AgoraButton? = null
     internal var screenShareButton: AgoraButton? = null
 
-    companion object {}
+    companion object;
 
     internal var remoteUserIDs: MutableSet<Int> = mutableSetOf()
     internal var userVideoLookup: MutableMap<Int, AgoraSingleVideoView> = mutableMapOf()
@@ -134,12 +147,12 @@ open class AgoraVideoViewer : FrameLayout {
             }
         }
 
-    /**
-     * ID of the local user.
-     * Setting to zero will tell Agora to assign one for you once connected.
-     */
-    public var userID: Int = 0
-        internal set
+//    /**
+//     * ID of the local user.
+//     * Setting to zero will tell Agora to assign one for you once connected.
+//     */
+//    public var userID: Int = 0
+//        internal set
 
     /**
      * A boolean to check whether the user has joined the RTC channel or not.
@@ -150,7 +163,7 @@ open class AgoraVideoViewer : FrameLayout {
      * The most recently active speaker in the session.
      * This will only ever be set to remote users, not the local user.
      */
-    public var activeSpeaker: Int? = null
+    var activeSpeaker: Int? = null
         internal set
     private val newHandler = AgoraVideoViewerHandler(this)
     internal val agoraRtmClientHandler = AgoraRtmClientHandler(this)
@@ -159,6 +172,8 @@ open class AgoraVideoViewer : FrameLayout {
     var rtcOverrideHandler: IRtcEngineEventHandler? = null
     var rtmClientOverrideHandler: AgoraRtmClientHandler? = null
     var rtmChannelOverrideHandler: AgoraRtmChannelHandler? = null
+
+    val bottomSheetHandler = Handler(Looper.getMainLooper())
 
     internal fun addUserVideo(userId: Int): AgoraSingleVideoView {
         this.userVideoLookup[userId]?.let { remoteView ->
@@ -237,7 +252,7 @@ open class AgoraVideoViewer : FrameLayout {
     /**
      * Active speaker override.
      */
-    public var overrideActiveSpeaker: Int? = null
+    var overrideActiveSpeaker: Int? = null
         set(newValue) {
             val oldValue = this.overrideActiveSpeaker
             field = newValue
@@ -273,25 +288,28 @@ open class AgoraVideoViewer : FrameLayout {
      * @param delegate: Delegate for the AgoraVideoViewer, used for some important callback methods.
      */
     @Throws(Exception::class)
-    @JvmOverloads public constructor(
+    @JvmOverloads
+    constructor(
             context: Context,
             connectionData: AgoraConnectionData,
-            style: Style = Style.FLOATING,
+            style: Style = Style.GRID,
             agoraSettings: AgoraSettings = AgoraSettings(),
+            user: IParticipant? = null,
             delegate: AgoraVideoViewerDelegate? = null
     ) : super(context) {
         this.connectionData = connectionData
         this.style = style
         this.agoraSettings = agoraSettings
         this.delegate = delegate
+        this.user = user
 //        this.setBackgroundColor(Color.BLUE)
         initAgoraEngine()
         this.addView(
-                this.backgroundVideoHolder,
-                ConstraintLayout.LayoutParams(
-                        ConstraintLayout.LayoutParams.MATCH_PARENT,
-                        ConstraintLayout.LayoutParams.MATCH_PARENT
-                )
+            this.backgroundVideoHolder,
+            ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_PARENT,
+                    ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
         )
         this.addView(
                 this.floatingVideoHolder,
@@ -300,6 +318,29 @@ open class AgoraVideoViewer : FrameLayout {
         this.floatingVideoHolder.setBackgroundColor(this.agoraSettings.colors.floatingBackgroundColor)
         this.floatingVideoHolder.background.alpha =
                 this.agoraSettings.colors.floatingBackgroundAlpha
+//
+//        this.backgroundVideoHolder.setOnClickListener {
+//            ((this.getControlContainer().layoutParams as CoordinatorLayout.LayoutParams).behavior as BottomSheetBehavior).apply {
+//                this.state = BottomSheetBehavior.STATE_COLLAPSED
+//            }
+//        }
+        (this.backgroundVideoHolder.adapter as GridViewAdapter).also {
+            it.onItemClick = {index ->
+                ((this.getControlContainer().layoutParams as LayoutParams).behavior as BottomSheetBehavior).apply {
+                    if (this.state == BottomSheetBehavior.STATE_COLLAPSED && this.peekHeight === resources.getDimensionPixelSize(R.dimen.bs_min_height)) {
+                        bottomSheetHandler.removeCallbacksAndMessages(null)
+                        this.peekHeight =
+                            resources.getDimensionPixelSize(R.dimen.bs_peek_height)
+                        bottomSheetHandler.postDelayed({
+                            this.peekHeight =
+                                resources.getDimensionPixelSize(R.dimen.bs_min_height)
+                        }, 5000)
+                    } else if (this.state == BottomSheetBehavior.STATE_EXPANDED) {
+                        this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+                }
+            }
+        }
     }
 
     val agoraRtmController = AgoraRtmController(this)
@@ -334,7 +375,50 @@ open class AgoraVideoViewer : FrameLayout {
     /**
      * Delegate for the AgoraVideoViewer, used for some important callback methods.
      */
-    public var delegate: AgoraVideoViewerDelegate? = null
+    var delegate: AgoraVideoViewerDelegate? = null
+
+    /**
+     * UserId Setting to zero will tell Agora to assign one for you once connected
+     */
+    var userID: Int
+        get() { return this.connectionData.rtcId }
+        set(value) {
+            this.connectionData.rtcId = value
+            this.user?.hasJoined = true
+            this.user?.uid = "$value"
+        }
+
+    /**
+     * User Participant
+     */
+    var user: IParticipant? = null
+                set(value) {
+                    user?.uid?.let { uid ->
+                        if (uid.isEmpty()) {
+                            user?.uid = userID.toString()
+                        } else {
+                            user?.let { _user ->
+                                if (!_user.uid.isEmpty() &&
+                                    !allParticipants.any { it.uid == _user.uid }) {
+                                    allParticipants.add(_user)
+                                }
+                                updateParticipantLists(participants = allParticipants)
+                            }
+                        }
+                    }
+                    field = value
+                }
+
+    /**
+     * Join Channel Callback
+     */
+    var joinChannelCallBack: ((UInt, String?) -> Unit)? = null
+
+    /**
+     * Room Participants
+     */
+    var allParticipants: ArrayList<IParticipant> = ArrayList()
+    var participantsAdapter: ItemAdapter? = null
 
     internal var floatingVideoHolder: RecyclerView = RecyclerView(context)
     internal var backgroundVideoHolder: RecyclerView = RecyclerView(context)
@@ -343,13 +427,13 @@ open class AgoraVideoViewer : FrameLayout {
      * Settings and customisations such as position of on-screen buttons, collection view of all channel members,
      * as well as agora video configuration.
      */
-    public var agoraSettings: AgoraSettings = AgoraSettings()
+    var agoraSettings: AgoraSettings = AgoraSettings()
         internal set
 
     /**
      * Style and organisation to be applied to all the videos in this AgoraVideoViewer.
      */
-    public var style: Style
+    var style: Style
         set(value: Style) {
             val oldValue = field
             field = value
@@ -362,13 +446,13 @@ open class AgoraVideoViewer : FrameLayout {
     /**
      * RtcEngine being used by this AgoraVideoViewer
      */
-    public lateinit var agkit: RtcEngine
+    lateinit var agkit: RtcEngine
         internal set
 
     /**
      * RTM client used by this [AgoraVideoViewer]
      */
-    public lateinit var agRtmClient: RtmClient
+    lateinit var agRtmClient: RtmClient
         internal set
     lateinit var agRtmChannel: RtmChannel
         internal set
@@ -436,7 +520,7 @@ open class AgoraVideoViewer : FrameLayout {
     private fun getRtcToken(channel: String, role: Int? = null, uid: Int? = null, fetchToken: Boolean) {
         if (fetchToken) {
             this.agoraSettings.tokenURL?.let { tokenURL ->
-                AgoraVideoViewer.Companion.fetchToken(
+                Companion.fetchToken(
                         tokenURL, channel, uid ?: this.userID,
                         object : TokenCallback {
                             override fun onSuccess(token: String) {
@@ -528,7 +612,44 @@ open class AgoraVideoViewer : FrameLayout {
             this.userID = it
         }
 
+        this.connectionData.channel = channel
         this.setupAgoraVideo()
         this.agkit.joinChannel(token ?: this.agoraSettings.tokenURL, channel, null, this.userID)
+    }
+
+    fun setStyleOfVideo(style: Style) {
+        this.style = style
+    }
+
+    fun updateParticipantLists(participants: List<IParticipant>) {
+        this.allParticipants = participants as ArrayList<IParticipant>
+
+        user?.let { _user ->
+            if (!_user.uid.isNullOrEmpty() && !allParticipants.any { it.uid == _user.uid }) {
+                allParticipants.add(_user)
+            }
+        }
+
+        print("[capacitor-agora] updateParticipantLists -----${allParticipants.size}")
+
+        /*val allUserIds = videoLookup.keys
+        for (i in allParticipants.indices) {
+            val participant = allParticipants[i]
+            participant.uid.toUIntOrNull()?.let { uid ->
+                allParticipants[i].hasJoined = allUserIds.contains(uid)
+                videoLookup[uid]?.updateVideoView(participant)
+            }
+        }*/
+        allParticipants = allParticipants.filter { it.uid.isNotEmpty() } as ArrayList<IParticipant>
+
+        (this.context as Activity).runOnUiThread {
+            participantsAdapter?.itemList = allParticipants
+            participantsAdapter?.notifyDataSetChanged()
+        }
+
+//        mainHandler.post {
+//            userListTableView.reloadData()
+//            updateControlContainerLayout()
+//        }
     }
 }

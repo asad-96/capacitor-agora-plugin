@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.agora.rtc2.Constants
 import io.agora.rtc2.RtcEngine
 import vn.wellcare.plugins.capacitor.agora.R
@@ -25,10 +27,10 @@ fun AgoraVideoViewer.reorganiseVideos() {
     (this.backgroundVideoHolder.layoutParams as? ViewGroup.MarginLayoutParams)
             ?.topMargin =
             if (this.floatingVideoHolder.visibility == View.VISIBLE) this.floatingVideoHolder.measuredHeight else 0
-    this.controlContainer?.let {
-        (this.backgroundVideoHolder.layoutParams as? ViewGroup.MarginLayoutParams)
-                ?.bottomMargin = if (it.visibility == View.VISIBLE) it.measuredHeight else 0
-    }
+//    this.controlContainer?.let {
+//        (this.backgroundVideoHolder.layoutParams as? ViewGroup.MarginLayoutParams)
+//                ?.bottomMargin = if (it.visibility == View.VISIBLE) it.measuredHeight else 0
+//    }
     this.organiseRecycleGrid()
 }
 
@@ -74,7 +76,6 @@ fun AgoraVideoViewer.organiseRecycleGrid() {
         this.backgroundVideoHolder.apply {
             layoutManager = remoteViewManager
             adapter = remoteViewAdapter
-//            setHasFixedSize(true)
         }
     } else {
         (this.backgroundVideoHolder.adapter as GridViewAdapter).uidList = gridList
@@ -82,6 +83,11 @@ fun AgoraVideoViewer.organiseRecycleGrid() {
                 if (gridList.count() == 2) 1 else maxSqrt.toInt()
         this.backgroundVideoHolder.adapter?.notifyDataSetChanged()
     }
+}
+
+
+fun AgoraVideoViewer.scheduleMinimizedBottomView() {
+// this.controlContainer
 }
 
 @ExperimentalUnsignedTypes
@@ -93,6 +99,9 @@ internal class GridViewAdapter(var uidList: List<Int>, private val agoraVC: Agor
         get() = max(1f, ceil(sqrt(uidList.count().toFloat())))
     val mRtcEngine: RtcEngine
         get() = this.agoraVC.agkit
+    var onItemClick : (index: Int )->Unit = { index ->
+
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemoteViewHolder {
         val remoteFrame = FrameLayout(parent.context)
@@ -111,6 +120,9 @@ internal class GridViewAdapter(var uidList: List<Int>, private val agoraVC: Agor
         // We have to do this since we mute the remote video in the onUserJoined callback to save on bandwidth
         val uid = uidList[position]
         val videoView = agoraVC.userVideoLookup[uidList[position]]
+        videoView?.setOnClickListener {
+            onItemClick(position)
+        }
 
         // We are tagging the SurfaceView object with the UID.
         // This keeps us from manually maintaining a mapping between the SurfaceView and UID
@@ -242,3 +254,4 @@ internal class FloatingViewAdapter(var uidList: List<Int>, private val agoraVC: 
 
     override fun getItemCount() = uidList.size
 }
+

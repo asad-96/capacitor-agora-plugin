@@ -10,7 +10,9 @@ data class AgoraConnectionData @JvmOverloads constructor(
         var appToken: String? = null,
         var username: String? = null,
         var rtmToken: String? = null,
+        var rtcToken: String? = null,
         var rtmId: String? = null,
+        var rtcId: Int =  0,
         var rtmChannelName: String? = null
 ) {
     /**

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color tools:ignore="UnusedResources" name="colorBottomSheet">#A3000000</color>
+    <color tools:ignore="UnusedResources" name="colorHungup">#FF5555</color>
+    <color tools:ignore="UnusedResources" name="colorHandle">#A8A8A8</color>
+    <color tools:ignore="UnusedResources" name="white">#FFFFFF</color>
+</resources>
