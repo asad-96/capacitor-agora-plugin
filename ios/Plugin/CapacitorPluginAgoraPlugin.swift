@@ -101,7 +101,9 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
             "value": implementation.echo("leaveChannel value")
         ])
         
-        wellCareVC?.endCallTime()
+        DispatchQueue.main.async { [weak self] in
+            self?.wellCareVC?.endCallTime()
+        }
     }
     
     @objc func setCountdown(_ call: CAPPluginCall) {
