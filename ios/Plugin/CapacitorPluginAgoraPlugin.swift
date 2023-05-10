@@ -46,7 +46,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
             user = IParticipant(object: jsUser)
         }
         
-        
         //        initializeAgoraEngine(appId: appId)
 //        initViews(params, user: user)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
@@ -78,7 +77,7 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
                 }
                 vc.view.frame = UIScreen.main.bounds
                 topMost?.view.addSubview(vc.view)
-    //            topMost?.present(vc, animated: true)
+//                topMost?.present(vc, animated: true)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {[weak self] in
                     self?.wellCareVC?.updateParticipantLists(participants: self?.participants ?? [])
                 }
@@ -101,6 +100,8 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         call.resolve([
             "value": implementation.echo("leaveChannel value")
         ])
+        
+        wellCareVC?.endCallTime()
     }
     
     @objc func setCountdown(_ call: CAPPluginCall) {
