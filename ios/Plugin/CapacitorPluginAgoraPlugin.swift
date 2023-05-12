@@ -352,7 +352,7 @@ public struct IParticipant: Codable {
         self.role =  ClientRole(rawValue: roleRawValue) ?? ClientRole.host
         self.subtitle = (object["subtitle"] as? String) ?? ""
         self.hasJoined = (object["hasJoined"] as? Bool) ?? false
-        self.uid = (object["uid"] as? String) ?? UUID().uuidString
+        self.uid = String((object["uid"] as? Int) ?? 0 )
     }
 }
 
