@@ -37,11 +37,6 @@ extension AgoraVideoViewer {
         for i in 0 ..< allPrticipants.count {
             let participant = allPrticipants[i]
             if let uid = UInt(participant.uid) {
-                if alluserIds.contains(uid) {
-                    allPrticipants[i].hasJoined = true
-                } else {
-                    allPrticipants[i].hasJoined = false
-                }
                 if let videoFeed = self.videoLookup[uid] {
                     videoFeed.updateVideoView(with: participant)
                 }
