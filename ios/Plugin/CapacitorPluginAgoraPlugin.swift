@@ -46,7 +46,6 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
             user = IParticipant(object: jsUser)
         }
         
-        
         //        initializeAgoraEngine(appId: appId)
 //        initViews(params, user: user)
         //        joinChannel(channelName: channelName, uid: UInt(uid), token: token)
@@ -78,7 +77,7 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
                 }
                 vc.view.frame = UIScreen.main.bounds
                 topMost?.view.addSubview(vc.view)
-    //            topMost?.present(vc, animated: true)
+//                topMost?.present(vc, animated: true)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {[weak self] in
                     self?.wellCareVC?.updateParticipantLists(participants: self?.participants ?? [])
                 }
@@ -101,6 +100,10 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         call.resolve([
             "value": implementation.echo("leaveChannel value")
         ])
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.wellCareVC?.endCallTime()
+        }
     }
     
     @objc func setCountdown(_ call: CAPPluginCall) {
@@ -349,7 +352,7 @@ public struct IParticipant: Codable {
         self.role =  ClientRole(rawValue: roleRawValue) ?? ClientRole.host
         self.subtitle = (object["subtitle"] as? String) ?? ""
         self.hasJoined = (object["hasJoined"] as? Bool) ?? false
-        self.uid = (object["uid"] as? String) ?? UUID().uuidString
+        self.uid = String((object["uid"] as? Int) ?? 0 )
     }
 }
 

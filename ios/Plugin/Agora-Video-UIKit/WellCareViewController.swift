@@ -18,14 +18,17 @@ class WellCareViewController: UIViewController {
     // Update with the App ID of your project generated on Agora Console.
     var appID: String{
         return params.appID
+//        return "1a37e0ba7a96485bb1e538ab05439b96"
     }
     // Update with the temporary token generated in Agora Console.
     var token: String {
         return params.token
+//        return "007eJxTYLimxZOV+/KaUZv5rT6TyqbwezNOvL1Y/vP0f9alcie6WecoMBgmGpunGiQlmidamplYmCYlGaaaGlskJhmYmhhbJlmaLXXlTWkIZGTYJprCxMgAgSA+C0NJanEJAwMAvJEgOQ=="
     }
     // Update with the channel name you used to generate the token in Agora Console.
     var channelName: String {
         return params.channelName
+//        return "test"
     }
     
     // Create the view object.
@@ -239,7 +242,8 @@ class WellCareViewController: UIViewController {
         agoraView.join(
             channel: channelName,
             with: token,
-            as: .broadcaster
+            as: .broadcaster,
+            uid: UInt(params.uid)
         )
         
         agoraView?.scheduleMinimizedBottomView()
