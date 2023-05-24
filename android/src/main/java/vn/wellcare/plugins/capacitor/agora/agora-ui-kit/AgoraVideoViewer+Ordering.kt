@@ -23,15 +23,16 @@ import kotlin.math.sqrt
  */
 @ExperimentalUnsignedTypes
 fun AgoraVideoViewer.reorganiseVideos() {
-    this.organiseRecycleFloating()
-    (this.backgroundVideoHolder.layoutParams as? ViewGroup.MarginLayoutParams)
-            ?.topMargin =
-            if (this.floatingVideoHolder.visibility == View.VISIBLE) this.floatingVideoHolder.measuredHeight else 0
 //    this.controlContainer?.let {
 //        (this.backgroundVideoHolder.layoutParams as? ViewGroup.MarginLayoutParams)
 //                ?.bottomMargin = if (it.visibility == View.VISIBLE) it.measuredHeight else 0
 //    }
     this.organiseRecycleGrid()
+    this.organiseRecycleFloating()
+
+    (this.floatingVideoHolder.layoutParams as? ViewGroup.MarginLayoutParams)
+        ?.bottomMargin = this.controlContainer?.measuredHeight ?: 0
+
 }
 
 /**
@@ -66,10 +67,10 @@ fun AgoraVideoViewer.organiseRecycleGrid() {
 
     if (this.backgroundVideoHolder.adapter == null) {
         val remoteViewManager = GridLayoutManager(
-                context,
-                max(maxSqrt.toInt(), 1),
-                GridLayoutManager.VERTICAL,
-                false
+            context,
+            max(maxSqrt.toInt(), 1),
+            GridLayoutManager.VERTICAL,
+            false
         )
         val remoteViewAdapter = GridViewAdapter(gridList, this)
 
@@ -80,7 +81,7 @@ fun AgoraVideoViewer.organiseRecycleGrid() {
     } else {
         (this.backgroundVideoHolder.adapter as GridViewAdapter).uidList = gridList
         (this.backgroundVideoHolder.layoutManager as? GridLayoutManager)?.spanCount =
-                if (gridList.count() == 2) 1 else maxSqrt.toInt()
+            if (gridList.count() == 2) 1 else maxSqrt.toInt()
         this.backgroundVideoHolder.adapter?.notifyDataSetChanged()
     }
 }
@@ -92,8 +93,8 @@ fun AgoraVideoViewer.scheduleMinimizedBottomView() {
 
 @ExperimentalUnsignedTypes
 internal class GridViewAdapter(var uidList: List<Int>, private val agoraVC: AgoraVideoViewer) :
-        RecyclerView.Adapter<GridViewAdapter.RemoteViewHolder>() {
-    class RemoteViewHolder(val frame: FrameLayout) : RecyclerView.ViewHolder(frame)
+    RecyclerView.Adapter<GridViewAdapter.RemoteViewHolder>() {
+    class RemoteViewHolder(val frame: CoordinatorLayout) : RecyclerView.ViewHolder(frame)
 
     val maxSqrt: Float
         get() = max(1f, ceil(sqrt(uidList.count().toFloat())))
@@ -104,12 +105,12 @@ internal class GridViewAdapter(var uidList: List<Int>, private val agoraVC: Agor
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemoteViewHolder {
-        val remoteFrame = FrameLayout(parent.context)
+        val remoteFrame = CoordinatorLayout(parent.context)
 
         // The width of the FrameLayout is set to half the parent's width.
         // This is to make sure that the Grid has 2 columns
         remoteFrame.layoutParams = RecyclerView.LayoutParams(
-                RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT
+            RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT
         )
         return RemoteViewHolder(remoteFrame)
     }
@@ -130,8 +131,8 @@ internal class GridViewAdapter(var uidList: List<Int>, private val agoraVC: Agor
         if (agoraVC.userID != uid) {
             if (agoraVC.agoraSettings.usingDualStream) {
                 mRtcEngine.setRemoteVideoStreamType(
-                        uidList[position],
-                        if (this.itemCount < agoraVC.agoraSettings.gridThresholdHighBitrate) Constants.VIDEO_STREAM_HIGH else Constants.VIDEO_STREAM_LOW
+                    uidList[position],
+                    if (this.itemCount < agoraVC.agoraSettings.gridThresholdHighBitrate) Constants.VIDEO_STREAM_HIGH else Constants.VIDEO_STREAM_LOW
                 )
             }
 //            mRtcEngine.muteRemoteVideoStream(uidList[position], false)
@@ -144,10 +145,10 @@ internal class GridViewAdapter(var uidList: List<Int>, private val agoraVC: Agor
 
 //        videoView.parent
         // We'll add the SurfaceView as a child to the FrameLayout which is actually the ViewHolder in our RecyclerView
-        (videoView?.parent as? FrameLayout)?.removeView(videoView)
+        (videoView?.parent as? CoordinatorLayout)?.removeView(videoView)
         holder.frame.addView(videoView)
         (holder.frame.layoutParams as? RecyclerView.LayoutParams)?.height =
-                agoraVC.backgroundVideoHolder.measuredHeight / maxSqrt.toInt()
+            agoraVC.backgroundVideoHolder.measuredHeight / maxSqrt.toInt()
     }
 
     override fun onViewRecycled(holder: RemoteViewHolder) {
@@ -165,8 +166,8 @@ internal class GridViewAdapter(var uidList: List<Int>, private val agoraVC: Agor
 
 @ExperimentalUnsignedTypes
 internal class FloatingViewAdapter(var uidList: List<Int>, private val agoraVC: AgoraVideoViewer) :
-        RecyclerView.Adapter<FloatingViewAdapter.RemoteViewHolder>() {
-    class RemoteViewHolder(val frame: FrameLayout) : RecyclerView.ViewHolder(frame)
+    RecyclerView.Adapter<FloatingViewAdapter.RemoteViewHolder>() {
+    class RemoteViewHolder(val frame: CoordinatorLayout) : RecyclerView.ViewHolder(frame)
 
     val maxSqrt: Float
         get() = max(1f, ceil(sqrt(uidList.count().toFloat())))
@@ -174,21 +175,21 @@ internal class FloatingViewAdapter(var uidList: List<Int>, private val agoraVC: 
         get() = this.agoraVC.agkit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemoteViewHolder {
-        val linearLayout = LinearLayout(parent.context)
-        val pinIcon = ImageView(parent.context)
-        pinIcon.setImageResource(R.drawable.baseline_push_pin_20)
-        pinIcon.layoutParams = ViewGroup.LayoutParams(100, 100)
-        linearLayout.addView(pinIcon)
-        linearLayout.gravity = Gravity.CENTER
+//        val linearLayout = LinearLayout(parent.context)
+//        val pinIcon = ImageView(parent.context)
+//        pinIcon.setImageResource(R.drawable.baseline_push_pin_20)
+//        pinIcon.layoutParams = ViewGroup.LayoutParams(100, 100)
+//        linearLayout.addView(pinIcon)
+//        linearLayout.gravity = Gravity.CENTER
 
-        val remoteFrame = FrameLayout(parent.context)
+        val remoteFrame = CoordinatorLayout(parent.context)
         // The width of the FrameLayout is set to half the parent's width.
         // This is to make sure that the Grid has 2 columns
         val recycleParams = RecyclerView.LayoutParams(190, 190)
         recycleParams.setMargins(5, 5, 5, 5)
         remoteFrame.layoutParams = recycleParams
-        remoteFrame.setBackgroundColor(Color.BLUE)
-        remoteFrame.addView(linearLayout)
+//        remoteFrame.setBackgroundColor(Color.BLUE)
+//        remoteFrame.addView(linearLayout)
         return RemoteViewHolder(remoteFrame)
     }
 
@@ -201,7 +202,7 @@ internal class FloatingViewAdapter(var uidList: List<Int>, private val agoraVC: 
         val audioMuted = agoraVC.userVideoLookup[uidList[position]]?.audioMuted
         val videoMuted = agoraVC.userVideoLookup[uidList[position]]?.videoMuted
         val activeSpeaker =
-                this.agoraVC.overrideActiveSpeaker ?: this.agoraVC.activeSpeaker ?: this.agoraVC.userID
+            this.agoraVC.overrideActiveSpeaker ?: this.agoraVC.activeSpeaker ?: this.agoraVC.userID
         if (activeSpeaker == uid) {
             return
         }
@@ -215,7 +216,7 @@ internal class FloatingViewAdapter(var uidList: List<Int>, private val agoraVC: 
 
 //        videoView.parent
         // We'll add the SurfaceView as a child to the FrameLayout which is actually the ViewHolder in our RecyclerView
-        (videoView?.parent as? FrameLayout)?.removeView(videoView)
+        (videoView?.parent as? CoordinatorLayout)?.removeView(videoView)
         holder.frame.addView(videoView)
         if (agoraVC.userID != uid) {
             if (agoraVC.agoraSettings.usingDualStream) {
