@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { NuxtOptions } from '@nuxt/types'
-import DotEnv from 'dotenv'
+import { config } from 'dotenv'
 import {
   axiosConfig,
   buildConfg,
@@ -13,7 +13,7 @@ import {
   vuetifyConfig,
   firebaseConfig
 } from './src/configs/index'
-DotEnv.config({ path: './.env' })
+config({ path: './.env' })
 
 export default {
   target: 'static',
@@ -40,7 +40,7 @@ export default {
     'nuxt-module-media': {
       uploadEndpoint:
         process.env.MEDIA_UPLOAD_ENDPOINT || 'https://upload.mhealthvn.com'
-    }    
+    }
   },
   dir: {
     assets: 'assets',
