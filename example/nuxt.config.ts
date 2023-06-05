@@ -36,7 +36,11 @@ export default {
       baseURL: process.env.API_ENDPOINT,
       accountBaseURL: process.env.ACCOUNT_BASE_URL,
       xTenantId: 'wellcare'
-    }
+    },
+    'nuxt-module-media': {
+      uploadEndpoint:
+        process.env.MEDIA_UPLOAD_ENDPOINT || 'https://upload.mhealthvn.com'
+    }    
   },
   dir: {
     assets: 'assets',
