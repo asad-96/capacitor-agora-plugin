@@ -16,7 +16,7 @@
     </template>
   </w-video-waiting-room>
 </template>
-<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+<!-- eslint-disable -->
 <script lang="ts">
 import {
   defineComponent,

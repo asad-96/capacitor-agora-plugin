@@ -1,0 +1,8 @@
+# Ignore artifacts:
+build
+coverage
+dist
+android
+ios
+.nuxt
+node_modules
