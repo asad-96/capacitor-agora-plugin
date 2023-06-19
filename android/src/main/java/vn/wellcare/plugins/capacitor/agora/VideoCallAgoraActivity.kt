@@ -61,6 +61,9 @@ class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
 
     override fun leftChannel(channel: String) {
         super.leftChannel(channel)
-        onBackPressed()
+        agoraVideoVideoViewer?.delegate = null
+        runOnUiThread {
+            onBackPressed()
+        }
     }
 }

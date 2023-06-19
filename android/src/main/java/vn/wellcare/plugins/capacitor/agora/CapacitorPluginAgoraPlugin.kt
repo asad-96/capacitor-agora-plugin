@@ -50,6 +50,8 @@ class CapacitorPluginAgoraPlugin : Plugin() {
         val value = call.getString("room")
         val ret = JSObject()
         call.resolve(ret)
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.agkit?.stopPreview()
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.leaveChannel()
     }
 
     @PluginMethod
