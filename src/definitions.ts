@@ -135,4 +135,9 @@ export interface CapacitorPluginAgoraPlugin {
       room?: string
     ) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle
+
+  /**
+   * Removes all listeners
+   */
+  removeAllListeners(): Promise<void>
 }
