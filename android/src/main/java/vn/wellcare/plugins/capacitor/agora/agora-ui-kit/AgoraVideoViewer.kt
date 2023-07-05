@@ -7,10 +7,11 @@ import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.PopupMenu
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -93,14 +94,17 @@ open class AgoraVideoViewer : CoordinatorLayout {
         }
 
     internal var controlContainer: BottomSheetContainer? = null
+    internal var topViewContainer: TopLayoutView? = null
+    internal var alertLayoutContainer: AlertLayoutView? = null
     internal var buttonContainer: ButtonContainer? = null
     internal var topButtonContainer: ButtonContainer? = null
     internal var backButtonContainer: ButtonContainer? = null
-    internal var camButton: AgoraButton? = null
-    internal var micButton: AgoraButton? = null
+    internal var camButton: AgoraButtonBottom? = null
+    internal var micButton: AgoraButtonBottom? = null
     internal var flipButton: AgoraButton? = null
-    internal var chatButton: AgoraButton? = null
-    internal var endCallButton: AgoraButton? = null
+    internal var participantsButton: AgoraButtonBottom? = null
+    internal var chatButton: AgoraButtonBottom? = null
+    internal var endCallButton: AgoraButtonBottom? = null
     internal var layoutButton: AgoraButton? = null
     internal var flashButton: AgoraButton? = null
     internal var bluetoothButton: AgoraButton? = null
@@ -304,20 +308,147 @@ open class AgoraVideoViewer : CoordinatorLayout {
         this.user = user
 //        this.setBackgroundColor(Color.BLUE)
         initAgoraEngine()
-        this.addView(
-            this.backgroundVideoHolder,
-            ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_PARENT,
-                    ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
+
+        //todo: Changes start
+        val backgroundLayoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.MATCH_PARENT
         )
-        this.addView(
-                this.floatingVideoHolder,
-                ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 200)
+
+        constraintLayoutFirst.layoutParams = backgroundLayoutParams
+
+        backgroundVideoHolder.layoutParams = RecyclerView.LayoutParams(
+            RecyclerView.LayoutParams.MATCH_PARENT,
+            RecyclerView.LayoutParams.MATCH_PARENT
         )
+
+        backgroundVideoHolder.id = View.generateViewId()
+        constraintLayoutFirst.addView(backgroundVideoHolder)
+
+        this.addView(constraintLayoutFirst)
+
+
+
+       constraintLayoutSecond.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.MATCH_PARENT
+        )
+
+        floatingVideoHolder.layoutParams = RecyclerView.LayoutParams(
+            RecyclerView.LayoutParams.MATCH_PARENT,
+            200
+        )
+
+
+        floatingVideoHolder.id = View.generateViewId()
+        floatingVideoHolder.setBackgroundColor(agoraSettings.colors.floatingBackgroundColor)
+        floatingVideoHolder.background.alpha = agoraSettings.colors.floatingBackgroundAlpha
+        constraintLayoutSecond.addView(floatingVideoHolder)
+
+        val constraints = ConstraintSet()
+        constraints.clone(constraintLayoutSecond)
+
+        constraints.connect(
+            floatingVideoHolder.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+
+        constraints.connect(
+            floatingVideoHolder.id,
+            ConstraintSet.END,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.END
+        )
+
+        constraints.connect(
+            floatingVideoHolder.id,
+            ConstraintSet.BOTTOM,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.BOTTOM
+        )
+
+        constraints.applyTo(constraintLayoutSecond)
+
+        this.addView(constraintLayoutSecond)
+
+//todo: Changes start
+
+
+
+
+        /*val bottomLayoutParams = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        bottomLayoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT
+        bottomLayoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT
+        bottomLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+
+        this.addView(this.floatingVideoHolder,bottomLayoutParams)
         this.floatingVideoHolder.setBackgroundColor(this.agoraSettings.colors.floatingBackgroundColor)
-        this.floatingVideoHolder.background.alpha =
-                this.agoraSettings.colors.floatingBackgroundAlpha
+        this.floatingVideoHolder.background.alpha = this.agoraSettings.colors.floatingBackgroundAlpha*/
+
+//        val bottomLayoutParams = ConstraintLayout.LayoutParams(
+//            ConstraintLayout.LayoutParams.MATCH_PARENT,
+//            ConstraintLayout.LayoutParams.MATCH_PARENT
+//        )
+//
+//
+//
+//        this.addView(this.floatingVideoHolder, bottomLayoutParams)
+//        this.floatingVideoHolder.
+//        this.floatingVideoHolder.setBackgroundColor(this.agoraSettings.colors.floatingBackgroundColor)
+//        this.floatingVideoHolder.background.alpha = this.agoraSettings.colors.floatingBackgroundAlpha
+
+
+
+//        val constraintLayout = ConstraintLayout(context)
+//        constraintLayout.id = View.generateViewId()
+//        val layoutParams = ViewGroup.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
+//        constraintLayout.layoutParams = layoutParams
+
+//        this.addView(
+//            this.backgroundVideoHolder,
+//            ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
+//        )
+
+//        this.addView(
+//            this.floatingVideoHolder,
+//            ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 200).apply {
+//                startToStart = ConstraintLayout.LayoutParams.PARENT_ID // Set the start constraint to the parent's start
+//                marginStart = 20 // Set the start margin to 20 pixels
+//
+//                endToEnd = ConstraintLayout.LayoutParams.PARENT_ID // Set the end constraint to the parent's end
+//                marginEnd = 25 // Set the end margin to 25 pixels
+//
+//                 // Set the top constraint to the parent's top
+//
+//                bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID // Set the bottom constraint to the parent's bottom
+////                bottomMargin = 200 // Set the bottom margin to 200 pixels
+//            }
+//        )
+//        this.floatingVideoHolder.setBackgroundColor(this.agoraSettings.colors.floatingBackgroundColor)
+//        this.floatingVideoHolder.background.alpha =
+//            this.agoraSettings.colors.floatingBackgroundAlpha
+
+//        val layoutParams = ConstraintLayout.LayoutParams(
+//            ConstraintLayout.LayoutParams.MATCH_PARENT,
+//            ConstraintLayout.LayoutParams.WRAP_CONTENT
+//        )
+//
+//        layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+//        layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+//        layoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+//
+//
+//        this.addView(this.floatingVideoHolder,layoutParams)
+//        this.floatingVideoHolder.setBackgroundColor(this.agoraSettings.colors.floatingBackgroundColor)
+//        this.floatingVideoHolder.background.alpha = this.agoraSettings.colors.floatingBackgroundAlpha
+
+
 //
 //        this.backgroundVideoHolder.setOnClickListener {
 //            ((this.getControlContainer().layoutParams as CoordinatorLayout.LayoutParams).behavior as BottomSheetBehavior).apply {
@@ -422,6 +553,10 @@ open class AgoraVideoViewer : CoordinatorLayout {
 
     internal var floatingVideoHolder: RecyclerView = RecyclerView(context)
     internal var backgroundVideoHolder: RecyclerView = RecyclerView(context)
+    var recyclerView: RecyclerView = RecyclerView(context)
+
+    internal var constraintLayoutFirst: ConstraintLayout = ConstraintLayout(context)
+    internal var constraintLayoutSecond: ConstraintLayout = ConstraintLayout(context)
 
     /**
      * Settings and customisations such as position of on-screen buttons, collection view of all channel members,

@@ -2,16 +2,24 @@ package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Handler
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.marginEnd
+import androidx.core.view.marginRight
+import androidx.core.view.marginTop
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -23,6 +31,10 @@ import vn.wellcare.plugins.capacitor.agora.util.IParticipant
 internal class BottomSheetContainer(context: Context) : LinearLayout(context)
 
 internal class ButtonContainer(context: Context) : LinearLayout(context)
+internal class TopLayoutView(context: Context) : LinearLayout(context)
+internal class AlertLayoutView(context: Context) : RelativeLayout(context)
+
+
 
 //@ExperimentalUnsignedTypes
 //internal fun AgoraVideoViewer.getControlContainer(): ButtonContainer {
@@ -40,18 +52,193 @@ internal class ButtonContainer(context: Context) : LinearLayout(context)
 //    return container
 //}
 
+private fun Int.dpToPx(): Int {
+    return (this * Resources.getSystem().displayMetrics.density).toInt()
+}
+
+@ExperimentalUnsignedTypes
+internal fun AgoraVideoViewer.getAlertLayout(): AlertLayoutView{
+    this.alertLayoutContainer?.let {
+        return it
+    }
+
+    val relativeLayout = AlertLayoutView(context)
+    relativeLayout.layoutParams = CoordinatorLayout.LayoutParams(
+        CoordinatorLayout.LayoutParams.MATCH_PARENT,
+        CoordinatorLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+        gravity = Gravity.CENTER
+//        setMargins(0,40,0,0)
+    }
+
+    val linearLayout = LinearLayout(context)
+    linearLayout.layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+        gravity = Gravity.CENTER
+        marginStart = 25.dpToPx()
+        marginEnd = 25.dpToPx()
+    }
+    linearLayout.setPadding(0,7.dpToPx(),0,7.dpToPx())
+    linearLayout.weightSum = 5f
+    linearLayout.setBackgroundResource(R.drawable.alram_layout_bg)
+
+
+
+    val subLinearLayout = LinearLayout(context)
+    subLinearLayout.layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+        gravity = Gravity.CENTER
+        setMargins(0, 10.dpToPx(), 0, 10.dpToPx())
+    }
+    subLinearLayout.orientation = LinearLayout.HORIZONTAL
+
+
+    val imageView = ImageView(context)
+    val imageViewLayoutParams = LinearLayout.LayoutParams(
+        0,
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        0.5f
+    )
+    imageViewLayoutParams.gravity = Gravity.CENTER
+    imageView.layoutParams = imageViewLayoutParams
+    imageView.setImageResource(R.drawable.alarm)
+
+    val textView = TextView(context)
+    val textViewLayoutParams = LinearLayout.LayoutParams(
+        0,
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        4f
+    )
+    textView.layoutParams = textViewLayoutParams
+    textView.maxLines = 5
+    textView.text = "1 minutes remain. Please wrap up your calls."
+    textView.setTextColor(Color.WHITE)
+//    textView.setPadding(0,0,10,0)
+
+    val okTextView = TextView(context)
+    val okTextViewLayoutParams = LinearLayout.LayoutParams(
+        0,
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        0.5f,
+    )
+    okTextViewLayoutParams.gravity = Gravity.CENTER or Gravity.BOTTOM
+    okTextViewLayoutParams.setMargins(0, 5.dpToPx(), 10.dpToPx(), 0)
+    okTextView.layoutParams = okTextViewLayoutParams
+    okTextView.text = "OK"
+    okTextView.textSize = 15f
+    okTextView.setTextColor(Color.WHITE)
+    okTextView.setPadding(20,0,0,0)
+    okTextView.setBackgroundResource(R.drawable.text_ok_bg)
+
+    subLinearLayout.addView(imageView)
+    subLinearLayout.addView(textView)
+    subLinearLayout.addView(okTextView)
+
+    linearLayout.addView(subLinearLayout)
+
+    relativeLayout.addView(linearLayout)
+
+    this.addView(relativeLayout)
+    this.alertLayoutContainer = relativeLayout
+
+    return relativeLayout
+
+}
+
+
+@ExperimentalUnsignedTypes
+internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView{
+    this.topViewContainer?.let {
+        return it
+    }
+    val linearLayout = TopLayoutView(context)
+    linearLayout.id = View.generateViewId()
+    val layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+    layoutParams.setMargins(60, 25, 60, 0)
+    linearLayout.layoutParams = layoutParams
+    linearLayout.orientation = LinearLayout.HORIZONTAL
+
+    val leftImage = ImageView(context)
+    val layoutParamsLeftImage = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+        gravity = Gravity.CENTER or Gravity.START
+        setMargins(0,0,10,0)
+    }
+    leftImage.layoutParams = layoutParamsLeftImage
+    leftImage.setImageResource(R.drawable.ic_ellipse)
+    linearLayout.addView(leftImage)
+
+    val textView = TextView(context)
+    textView.layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+    textView.text = " 12:21"
+    textView.setBackgroundResource(R.drawable.timer_text_background)
+    textView.setPadding(10,5,10,5)
+    textView.setTextColor(Color.WHITE)
+    val drawableLeft = context.resources.getDrawable(R.drawable.timer)
+    textView.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null)
+    linearLayout.addView(textView)
+
+    /*val innerLinearLayout = LinearLayout(context)
+    innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+    innerLinearLayout.gravity = Gravity.END
+
+
+    val rightImage = ImageView(context)
+    val layoutParamsRightImage = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+        gravity = Gravity.CENTER or Gravity.END
+        setMargins(0,0,0,0)
+    }
+    rightImage.layoutParams = layoutParamsRightImage
+    rightImage.setImageResource(R.drawable.signal)
+    innerLinearLayout.addView(rightImage)
+    linearLayout.addView(innerLinearLayout)
+*/
+    this.addView(linearLayout)
+    this.topViewContainer = linearLayout
+
+    return linearLayout
+
+}
+
+
+
 @ExperimentalUnsignedTypes
 internal fun AgoraVideoViewer.getControlContainer(): BottomSheetContainer {
     this.controlContainer?.let {
         return it
     }
     val bottomSheet = BottomSheetContainer(context)
+    bottomSheet.id = View.generateViewId()
     bottomSheet.layoutParams = ViewGroup.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,
         LinearLayout.LayoutParams.WRAP_CONTENT,
     )
     bottomSheet.orientation = LinearLayout.VERTICAL
+
+
     this.addView(bottomSheet)
+
+    // todo: Add Constraint Layout
+
+
 // Set the bottom sheet behavior3
     val bottomSheetBehavior = BottomSheetBehavior<LinearLayout>()
     bottomSheetBehavior.isFitToContents = true
@@ -62,21 +249,40 @@ internal fun AgoraVideoViewer.getControlContainer(): BottomSheetContainer {
 //    bottomSheetBehavior.
     bottomSheetBehavior.isDraggable = true
     bottomSheetBehavior.expandedOffset = 0
+    val reCreate = this
+    Log.i("MY_TAG","bottomSheet.id : ${bottomSheet.id}")
     bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
                 BottomSheetBehavior.STATE_COLLAPSED -> {
                     if (bottomSheetBehavior.peekHeight === resources.getDimensionPixelSize(R.dimen.bs_peek_height)) {
-                        bottomSheetHandler.postDelayed({
-                            bottomSheetBehavior.peekHeight =
-                                resources.getDimensionPixelSize(R.dimen.bs_min_height)
-                        }, 5000)
+                        Log.i("MY_TAG","COLLAPSED 3 : Called")
+//                        reCreate.reorganiseVideos()
+//                        if (reCreate.recyclerView.visibility == View.VISIBLE){
+//                            reCreate.recyclerView.visibility = View.GONE
+//                            Log.i("MY_TAG","visibility: GONE")
+//                        }
+//                        bottomSheetHandler.postDelayed({
+//                            bottomSheetBehavior.peekHeight =
+//                                resources.getDimensionPixelSize(R.dimen.bs_min_height)
+//                        }, 5000)
                     }
                 }
                 BottomSheetBehavior.STATE_EXPANDED -> {
+                    Log.i("MY_TAG","EXPANDED 1 : Called")
+//                    reCreate.reorganiseVideos()
                     bottomSheetHandler.removeCallbacksAndMessages(null)
                 }
                 BottomSheetBehavior.STATE_DRAGGING -> {
+                    Log.i("MY_TAG","DRAGGING 2 : Called")
+//                    reCreate.reorganiseVideos()
+//                    if (reCreate.recyclerView.visibility == View.GONE){
+//                        reCreate.recyclerView.visibility = View.VISIBLE
+//                        Log.i("MY_TAG","visibility: VISIBLE")
+//                    }else if (reCreate.recyclerView.visibility == View.VISIBLE){
+//                        reCreate.recyclerView.visibility = View.GONE
+//                        Log.i("MY_TAG","visibility: GONE")
+//                    }
                     bottomSheetBehavior.peekHeight =
                         resources.getDimensionPixelSize(R.dimen.bs_peek_height)
                 }
@@ -94,11 +300,24 @@ internal fun AgoraVideoViewer.getControlContainer(): BottomSheetContainer {
     layoutParams.marginStart = 10
     layoutParams.marginEnd = 10
     bottomSheet.layoutParams = layoutParams
-    bottomSheetHandler.postDelayed({
-        bottomSheetBehavior.peekHeight = resources.getDimensionPixelSize(R.dimen.bs_min_height)
-    }, 5000)
+//    bottomSheetHandler.postDelayed({
+//        Log.i("MY_TAG","postDelayed : Called")
+//        bottomSheetBehavior.peekHeight = resources.getDimensionPixelSize(R.dimen.bs_min_height)
+//        reCreate.reorganiseVideos()
+//    }, 5000)
     this.controlContainer = bottomSheet
     return bottomSheet
+}
+
+
+internal fun AgoraVideoViewer.getRecyclerView():RecyclerView{
+    val recyclerView = RecyclerView(context)
+    recyclerView.layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        500
+    )
+    recyclerView.layoutManager = LinearLayoutManager(context)
+    return recyclerView
 }
 
 internal fun AgoraVideoViewer.getControlContainerHandle(): LinearLayout {
@@ -154,13 +373,13 @@ internal fun AgoraVideoViewer.getTopButtonContainer(): ButtonContainer {
         CoordinatorLayout.LayoutParams.WRAP_CONTENT
     ).apply {
         gravity = Gravity.END or Gravity.TOP
+        setMargins(0, 70, 0, 0)
     }
     topButtons.orientation = LinearLayout.VERTICAL
     topButtons.setBackgroundColor(Color.TRANSPARENT)
     topButtons.visibility = View.VISIBLE
 //    topButtons.setPadding(16, 16, 16, 16)
     this.addView(topButtons)
-
     this.topButtonContainer = topButtons
     return topButtons
 }
@@ -175,7 +394,10 @@ internal fun AgoraVideoViewer.getBackButtonContainer(): ButtonContainer {
     backButtonContainer.layoutParams = CoordinatorLayout.LayoutParams(
         CoordinatorLayout.LayoutParams.WRAP_CONTENT,
         CoordinatorLayout.LayoutParams.WRAP_CONTENT
-    )
+    ).apply {
+        gravity = Gravity.START or Gravity.TOP
+        setMargins(0, 70, 0, 0)
+    }
     backButtonContainer.setBackgroundColor(Color.TRANSPARENT)
     backButtonContainer.visibility = View.VISIBLE
 //    topButtons.setPadding(16, 16, 16, 16)
@@ -186,11 +408,11 @@ internal fun AgoraVideoViewer.getBackButtonContainer(): ButtonContainer {
 }
 
 @ExperimentalUnsignedTypes
-internal fun AgoraVideoViewer.getCameraButton(): AgoraButton {
+internal fun AgoraVideoViewer.getCameraButton(): AgoraButtonBottom {
     this.camButton?.let {
         return it
     }
-    val agCamButton = AgoraButton(context = this.context)
+    val agCamButton = AgoraButtonBottom(context = this.context)
     agCamButton.clickAction = {
         (this.context as Activity).runOnUiThread {
             it.isSelected = !it.isSelected
@@ -205,11 +427,11 @@ internal fun AgoraVideoViewer.getCameraButton(): AgoraButton {
 }
 
 @ExperimentalUnsignedTypes
-internal fun AgoraVideoViewer.getMicButton(): AgoraButton {
+internal fun AgoraVideoViewer.getMicButton(): AgoraButtonBottom {
     this.micButton?.let {
         return it
     }
-    val agMicButton = AgoraButton(context = this.context)
+    val agMicButton = AgoraButtonBottom(context = this.context)
     agMicButton.clickAction = {
         it.isSelected = !it.isSelected
 //        it.background.setTint(if (it.isSelected) Color.RED else Color.GRAY)
@@ -223,17 +445,48 @@ internal fun AgoraVideoViewer.getMicButton(): AgoraButton {
 }
 
 @ExperimentalUnsignedTypes
-internal fun AgoraVideoViewer.getChatButton(): AgoraButton {
+internal fun AgoraVideoViewer.getChatButton(): AgoraButtonBottom {
     this.chatButton?.let {
         return it
     }
-    val agChatButton = AgoraButton(context = this.context)
+    val agChatButton = AgoraButtonBottom(context = this.context)
     agChatButton.clickAction = {
 
     }
     this.chatButton = agChatButton
     agChatButton.setImageResource(R.drawable.chat)
     return agChatButton
+}
+
+
+@ExperimentalUnsignedTypes
+internal fun AgoraVideoViewer.getParticipantsButton(): AgoraButtonBottom {
+    this.participantsButton?.let {
+        return it
+    }
+    val agParticipantsButton = AgoraButtonBottom(context = this.context)
+    agParticipantsButton.clickAction = {
+//        this.agkit.switchCamera()
+    }
+    this.participantsButton = agParticipantsButton
+    agParticipantsButton.setImageResource(R.drawable.ic_people_outline)
+    return agParticipantsButton
+}
+
+@ExperimentalUnsignedTypes
+internal fun AgoraVideoViewer.getEndCallButton(): AgoraButtonBottom {
+    this.endCallButton?.let {
+        return it
+    }
+    val hangupButton = AgoraButtonBottom(this.context)
+    hangupButton.clickAction = {
+        this.agkit.stopPreview()
+        this.leaveChannel()
+    }
+    hangupButton.setImageResource(R.drawable.ic_baseline_call_end_24)
+    hangupButton.background.setTint(ContextCompat.getColor(this.context, R.color.colorHungup))
+    this.endCallButton = hangupButton
+    return hangupButton
 }
 
 @ExperimentalUnsignedTypes
@@ -247,23 +500,8 @@ internal fun AgoraVideoViewer.getFlipButton(): AgoraButton {
     }
     this.flipButton = agFlipButton
     agFlipButton.setImageResource(R.drawable.rotate_camera)
+    agFlipButton.setBackgroundResource(R.drawable.top_button_background)
     return agFlipButton
-}
-
-@ExperimentalUnsignedTypes
-internal fun AgoraVideoViewer.getEndCallButton(): AgoraButton {
-    this.endCallButton?.let {
-        return it
-    }
-    val hangupButton = AgoraButton(this.context)
-    hangupButton.clickAction = {
-        this.agkit.stopPreview()
-        this.leaveChannel()
-    }
-    hangupButton.setImageResource(R.drawable.ic_baseline_call_end_24)
-    hangupButton.background.setTint(ContextCompat.getColor(this.context, R.color.colorHungup))
-    this.endCallButton = hangupButton
-    return hangupButton
 }
 
 @ExperimentalUnsignedTypes
@@ -339,19 +577,21 @@ internal fun AgoraVideoViewer.getBackButton(): AgoraButton {
 }
 
 @ExperimentalUnsignedTypes
-internal fun AgoraVideoViewer.getScreenShareButton(): AgoraButton? {
+internal fun AgoraVideoViewer.getScreenShareButton(): AgoraButtonBottom? {
     return null
 }
 
-internal fun AgoraVideoViewer.builtinButtons(): MutableList<AgoraButton> {
-    val rtnButtons = mutableListOf<AgoraButton>()
+internal fun AgoraVideoViewer.builtinButtons(): MutableList<AgoraButtonBottom> {
+    val rtnButtons = mutableListOf<AgoraButtonBottom>()
     for (button in this.agoraSettings.enabledButtons) {
         rtnButtons += when (button) {
             AgoraSettings.BuiltinButton.MIC -> this.getMicButton()
             AgoraSettings.BuiltinButton.CAMERA -> this.getCameraButton()
-            AgoraSettings.BuiltinButton.FLIP -> this.getFlipButton()
+//            AgoraSettings.BuiltinButton.FLIP -> this.getFlipButton()
+            AgoraSettings.BuiltinButton.PARTICIPANTS -> this.getParticipantsButton()
             AgoraSettings.BuiltinButton.END -> this.getEndCallButton()
             AgoraSettings.BuiltinButton.CHAT -> this.getChatButton()
+            AgoraSettings.BuiltinButton.PARTICIPANTS -> this.getChatButton()
         }
     }
     return rtnButtons
@@ -364,6 +604,7 @@ internal fun AgoraVideoViewer.topButtons(): MutableList<AgoraButton> {
             AgoraSettings.TopButton.FLASH -> this.getFlashButton()
             AgoraSettings.TopButton.BLUETOOTH -> this.getBluetoothButton()
             AgoraSettings.TopButton.LAYOUT -> this.getLayoutButton()
+            AgoraSettings.TopButton.FLIP -> this.getFlipButton()
         }
     }
     return rtnButtons
@@ -378,6 +619,8 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     val buttonContainer = this.getHorizontalButtonContainer()
     val buttons = this.builtinButtons() + this.agoraSettings.extraButtons
     val topButtons = this.topButtons()
+    this.getTopLayoutView()
+    this.getAlertLayout()
     container.visibility = if (buttons.isEmpty()) View.INVISIBLE else View.VISIBLE
 
     val buttonSize = 120
@@ -410,13 +653,15 @@ internal fun AgoraVideoViewer.addVideoButtons() {
 //    itemList.add(IParticipant("test", "test", IAvatar("test"), ClientRole.HOST, "", true, ""))
 //    itemList.add(IParticipant("test", "test", IAvatar("test"), ClientRole.HOST, "", true, ""))
     participantsAdapter = ItemAdapter(allParticipants)
-    val recyclerView = RecyclerView(context)
-    recyclerView.layoutParams = LinearLayout.LayoutParams(
+
+    this.recyclerView.layoutParams = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,
         500
     )
-    recyclerView.layoutManager = LinearLayoutManager(context)
-    recyclerView.adapter = participantsAdapter
+    this.recyclerView.layoutManager = LinearLayoutManager(context)
+
+    this.recyclerView.adapter = participantsAdapter
+    this.recyclerView.visibility = View.GONE
 
 /*    // Create the ListView
     val listView = ListView(context)
@@ -433,7 +678,7 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     listView.adapter = adapter*/
     container.addView(recyclerView)
     val contWidth = (buttons.size.toFloat() + buttonMargin) * buttons.count()
-    container.setPadding(0, 16, 0, 16)
+    container.setPadding(0, 20, 0, 20)
     this.positionButtonContainer(container, contWidth, buttonMargin)
 }
 

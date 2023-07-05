@@ -2,6 +2,7 @@ package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.view.Gravity
 import android.view.SurfaceView
@@ -9,6 +10,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.marginTop
 import androidx.core.view.setPadding
 import io.agora.rtc2.video.VideoCanvas
 import vn.wellcare.plugins.capacitor.agora.R
@@ -77,6 +79,7 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         this.setBackground()
         this.mutedFlag = ImageView(context)
         this.setupMutedFlag()
+        this.signalAndMicHandler()
 
         this.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
     }
@@ -86,7 +89,7 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         val mutedLayout = FrameLayout.LayoutParams(DPToPx(context, 40), DPToPx(context, 40))
 //        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
 //        mutedLayout.gravity = Gravity.RIGHT
-        mutedLayout.gravity = Gravity.BOTTOM or Gravity.RIGHT
+        mutedLayout.gravity = Gravity.TOP or Gravity.RIGHT
 //        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
         mutedLayout.bottomMargin = DPToPx(context, 5)
         mutedLayout.leftMargin = DPToPx(context, 5)
@@ -112,5 +115,35 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         val buttonLayout = FrameLayout.LayoutParams(100, 100)
         buttonLayout.gravity = Gravity.CENTER
         backgroundView.addView(personIcon, buttonLayout)
+    }
+
+    fun signalAndMicHandler(){
+
+
+
+        val signalImageView = ImageView(context)
+        signalImageView.id = View.generateViewId()
+        signalImageView.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+
+            gravity = Gravity.TOP or Gravity.RIGHT
+            setMargins(0,30,50,0)
+        }
+        signalImageView.setImageResource(R.drawable.signal)
+
+        val micImageView = ImageView(context)
+        micImageView.id = View.generateViewId()
+        micImageView.layoutParams = FrameLayout.LayoutParams(
+            DPToPx(context, 20), DPToPx(context, 20)
+        ).apply {
+            gravity = Gravity.TOP or Gravity.RIGHT
+            setMargins(0,30,100,0)
+        }
+        micImageView.setImageResource(R.drawable.ic_mic_off)
+
+        addView(signalImageView)
+        addView(micImageView)
     }
 }

@@ -62,15 +62,17 @@ class AgoraSettings {
     public enum class BuiltinButton {
         CAMERA,
         MIC,
-        FLIP,
+//        FLIP,
         END,
         CHAT,
+        PARTICIPANTS
     }
 
     public enum class TopButton {
         FLASH,
         LAYOUT,
-        BLUETOOTH
+        BLUETOOTH,
+        FLIP
     }
     /**
      * The rendering mode of the video view for all videos within the view.
@@ -94,10 +96,10 @@ class AgoraSettings {
      * Which buttons should be enabled in this AgoraVideoView.
      */
     public var enabledButtons: MutableSet<BuiltinButton> = mutableSetOf(
-        BuiltinButton.FLIP, BuiltinButton.CAMERA, BuiltinButton.END, BuiltinButton.MIC, BuiltinButton.CHAT
+        BuiltinButton.PARTICIPANTS, BuiltinButton.CAMERA, BuiltinButton.END, BuiltinButton.MIC, BuiltinButton.CHAT
     )
     public var topButtons: MutableSet<TopButton> = mutableSetOf(
-        TopButton.FLASH, TopButton.BLUETOOTH, TopButton.LAYOUT
+        TopButton.LAYOUT, TopButton.FLIP, TopButton.BLUETOOTH, TopButton.FLASH
     )
 
     /**
