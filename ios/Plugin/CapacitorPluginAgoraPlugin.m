@@ -11,4 +11,5 @@ CAP_PLUGIN(CapacitorPluginAgoraPlugin, "CapacitorPluginAgora",
            CAP_PLUGIN_METHOD(setCountdown, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(updateParticipantLists, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(enterPictureInPictureMode, CAPPluginReturnNone);
+           CAP_PLUGIN_METHOD(removeAllListeners, CAPPluginReturnNone);
 )
