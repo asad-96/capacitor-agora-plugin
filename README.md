@@ -26,6 +26,7 @@ npx cap sync
 * [`addListener('exception', ...)`](#addlistenerexception)
 * [`addListener('network-quality', ...)`](#addlistenernetwork-quality)
 * [`addListener('onSelfAction', ...)`](#addlisteneronselfaction)
+* [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -245,6 +246,17 @@ User action
 | **`listenerFunc`** | <code>(event: 'chat' \| 'leaved' \| 'back' \| 'exitPipMode', room?: string) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
+
+Removes all listeners
 
 --------------------
 
