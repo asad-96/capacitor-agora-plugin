@@ -36,7 +36,7 @@ fun AgoraRtmController.Companion.messageReceived(message: String, hostView: Agor
                         if (muteRequest.mute) "mute" else "unmute"
                     else if (muteRequest.mute) "disable" else "enable"
             ) {
-                var changingButton: AgoraButton?
+                var changingButton: AgoraButtonBottom?
                 var isMuted = muteRequest.mute
                 if (deviceType == DeviceType.MIC) {
                     hostView.agkit.muteLocalAudioStream(isMuted)
