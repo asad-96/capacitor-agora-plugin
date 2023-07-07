@@ -4,57 +4,64 @@
     <v-text-field v-model="options.room" clearable label="room" />
     <v-text-field v-model="options.token" clearable label="token" />
     <v-text-field v-model="options.uid" clearable label="uid" />
-    <v-text-field v-model="options.chatRoom" clearable label="chat room" />
-    <v-select
-      v-model="options.roomStatus"
-      :items="[
-        { label: 'waiting', value: 'waiting' },
-        { label: 'meeting', value: 'meeting' }
-      ]"
-      item-text="label"
-      item-value="value"
-      label="room status (mock)"
-    ></v-select>
-    <v-select
-      v-model="options.role"
-      :items="[
-        { label: 'host', value: 'host' },
-        { label: 'participant', value: 'participant' }
-      ]"
-      item-text="label"
-      item-value="value"
-      label="role (mock)"
-    ></v-select>
-    <v-btn @click="enterWaitingRoom">ENTER WAITING ROOM</v-btn>
+    <v-btn @click="join">Join</v-btn>
+    <v-btn @click="setTimeoutToLeave">Set timeout to leave</v-btn>
     <!-- <v-btn @click="joinChannel()">join</v-btn> -->
   </v-container>
 </template>
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts">
-import { defineComponent, reactive, useRouter } from '@nuxtjs/composition-api'
-// import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
+// @ts-nocheck
+import {
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  reactive,
+  useRouter
+} from '@nuxtjs/composition-api'
+import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 export default defineComponent({
   setup() {
     // const userId = computed(() => state.authen.user._id)
-    const router = useRouter()
     const options = reactive({
       appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
       room: 'test1',
-      uid: '',
-      chatRoom: '',
+      uid: 123123,
       token:
-        '007eJxTYJDpTrv7z23J6T/8pf5rH22WNds7vyf9TIbrtduGMfMP3OJUYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU02dLrwKbkhkJEhfZMyCyMDBIL4rAwlqcUlhgwMAPlEIV8=',
-      roomStatus: 'meeting',
-      role: 'host'
+        '007eJxTYKiJlp7Foqj7d/W0AIZw1x9sP5PWPJaxDbdoMsmV0trS66fAkJRoYmZinGaUZJxoaGKaZmRpam6aZGFuYZxinGiammz4r2x5SkMgI8PUN9mMjAwQCOKzMpSkFpcYMjAAAJQxHak='
     })
-
-    const enterWaitingRoom = () => {
-      const decodeToken = encodeURIComponent(options.token)
-      router.push(
-        `/agora?room=${options.room}&uid=${options.uid}&token=${decodeToken}&appId=${options.appId}&roomStatus=${options.roomStatus}&role=${options.role}&chatRoom=${options.chatRoom}`
-      )
+    const join = () => {
+      CapacitorPluginAgora.addListener('debug', (data) => {
+        console.log('[Wellcare] debug ' + JSON.stringify(data))
+      })
+      CapacitorPluginAgora.addListener('network-quality', (data) => {
+        console.log('[Wellcare] network-quality ' + JSON.stringify(data))
+      })
+      CapacitorPluginAgora.addListener('onSelfAction', (data) => {
+        console.log('[Wellcare] onSelfAction', data)
+      })
+      CapacitorPluginAgora.addListener('onParticipantAction', (data) => {
+        console.log('[Wellcare] onParticipantAction', data)
+      })
+      CapacitorPluginAgora.addListener('exception', (data) => {
+        console.log('[Wellcare] exception', data)
+      })
+      CapacitorPluginAgora.addListener('onRemoteStreamChanged', (data) => {
+        console.log('[Wellcare] onRemoteStreamChanged', data)
+      })
+      CapacitorPluginAgora.joinChannel({
+        room: options.room,
+        uid: options.uid,
+        token: options.token,
+        appId: options.appId,
+        user: {
+          name: 'Khai Hoan',
+          uid: 123123,
+          role: 'host'
+        }
+      })
     }
-    return { options, enterWaitingRoom }
+    return { options, join }
   }
 })
 </script>
