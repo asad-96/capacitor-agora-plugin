@@ -3,9 +3,11 @@ package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 import android.app.Activity
 import android.graphics.Rect
 import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.AgoraRtmController.AgoraRtmController
+import com.getcapacitor.JSObject
 import io.agora.rtc2.Constants
 import io.agora.rtc2.IRtcEngineEventHandler
 import io.agora.rtc2.UserInfo
+import vn.wellcare.plugins.capacitor.agora.CapacitorPluginAgoraPlugin
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -17,6 +19,10 @@ import java.util.logging.Logger
 @ExperimentalUnsignedTypes
 class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         IRtcEngineEventHandler() {
+
+    fun sendPluginEvent(event: String, data: JSObject) {
+        CapacitorPluginAgoraPlugin.sendEvent(event, data)
+    }
 
     override fun onClientRoleChanged(oldRole: Int, newRole: Int) {
         super.onClientRoleChanged(oldRole, newRole)
@@ -40,6 +46,12 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         this.hostView.remoteUserIDs.add(uid)
 
         this.hostView.rtcOverrideHandler?.onUserJoined(uid, elapsed)
+
+        val pluginEvent = JSObject()
+        pluginEvent.put("event", "join")
+        pluginEvent.put("uid", uid)
+        pluginEvent.put("elapsed", elapsed)
+        this.sendPluginEvent("onRemoteStreamChanged", pluginEvent)
     }
 
     override fun onRemoteAudioStateChanged(uid: Int, state: Int, reason: Int, elapsed: Int) {
@@ -61,6 +73,17 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         }
 
         this.hostView.rtcOverrideHandler?.onRemoteAudioStateChanged(uid, state, reason, elapsed)
+
+        val pluginEvent = JSObject()
+        pluginEvent.put("uid", uid)
+        pluginEvent.put("reason", reason)
+        pluginEvent.put("elapsed", elapsed)
+        if (state == Constants.REMOTE_AUDIO_STATE_STOPPED) {
+            pluginEvent.put("event", "mute")
+        } else {
+            pluginEvent.put("event", "unmute")
+        }
+        this.sendPluginEvent("onParticipantAction", pluginEvent)
     }
 
     override fun onUserOffline(uid: Int, reason: Int) {
@@ -76,6 +99,12 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         }
 
         this.hostView.rtcOverrideHandler?.onUserOffline(uid, reason)
+
+        val pluginEvent = JSObject()
+        pluginEvent.put("event", "leave")
+        pluginEvent.put("uid", uid)
+        pluginEvent.put("reason", reason)
+        this.sendPluginEvent("onRemoteStreamChanged", pluginEvent)
     }
 
     override fun onActiveSpeaker(uid: Int) {
@@ -105,6 +134,17 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         }
 
         this.hostView.rtcOverrideHandler?.onRemoteVideoStateChanged(uid, state, reason, elapsed)
+
+        val pluginEvent = JSObject()
+        pluginEvent.put("uid", uid)
+        pluginEvent.put("reason", reason)
+        pluginEvent.put("elapsed", elapsed)
+        if (state == Constants.REMOTE_VIDEO_STATE_PLAYING) {
+            pluginEvent.put("event", "enableCamera")
+        } else {
+            pluginEvent.put("event", "disableCamera")
+        }
+        this.sendPluginEvent("onParticipantAction", pluginEvent)
     }
 
     override fun onLocalVideoStateChanged(
@@ -282,6 +322,10 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         super.onError(err)
 
         this.hostView.rtcOverrideHandler?.onError(err)
+    
+        val pluginEvent = JSObject()
+        pluginEvent.put("code", err)
+        this.sendPluginEvent("exception", pluginEvent)
     }
 
     override fun onFacePositionChanged(
@@ -339,6 +383,11 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         super.onLeaveChannel(stats)
 
         this.hostView.rtcOverrideHandler?.onLeaveChannel(stats)
+
+        val pluginEvent = JSObject()
+        pluginEvent.put("event", "leaved")
+        this.sendPluginEvent("onSelfAction", pluginEvent)
+
     }
 
     override fun onLocalAudioStats(stats: LocalAudioStats?) {
@@ -381,6 +430,11 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         super.onNetworkQuality(uid, txQuality, rxQuality)
 
         this.hostView.rtcOverrideHandler?.onNetworkQuality(uid, txQuality, rxQuality)
+
+        val pluginEvent = JSObject()
+        pluginEvent.put("uid", uid)
+        pluginEvent.put("stats", JSObject().put("downlinkNetworkQuality", rxQuality).put("uplinkNetworkQuality", txQuality))
+        this.sendPluginEvent("network-quality", pluginEvent)
     }
 
     override fun onNetworkTypeChanged(type: Int) {

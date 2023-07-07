@@ -18,9 +18,6 @@ import android.os.Handler
 class CapacitorPluginAgoraPlugin : Plugin() {
     var TAG = "CapacitorPluginAgoraPlugin"
     private var mParticipants: List<IParticipant> = mutableListOf()
-    fun sendEvent(data: JSObject?) {
-        notifyListeners("onEventReceived", data)
-    }
 
     @PluginMethod
     fun joinChannel(call: PluginCall) {
@@ -95,5 +92,15 @@ class CapacitorPluginAgoraPlugin : Plugin() {
 
     companion object {
         const val NAME = "CapacitorPluginAgora"
+        var instance: CapacitorPluginAgoraPlugin? = null
+            private set
+
+        fun sendEvent(event: String, data: JSObject?) {
+            instance?.notifyListeners(event, data)
+        }
+    }
+
+    init {
+        instance = this
     }
 }

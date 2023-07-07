@@ -42,8 +42,6 @@ export const buildConfg: any = {
   // postcss: {},
   transpile: [/typed-vuex/, 'vee-validate/dist/rules', '@wellcare/vue-authen'],
   babel: {
-    plugins: [
-      ['@babel/plugin-proposal-private-methods', { loose: true }]
-    ]
+    plugins: [['@babel/plugin-proposal-private-methods', { loose: true }]]
   }
 }
