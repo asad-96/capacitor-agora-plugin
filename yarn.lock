@@ -364,7 +364,7 @@ acorn@^8.8.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.8.1.tgz#0a3f9cbecc4ec3bea6f0a80b66ae8dd2da250b73"
   integrity sha512-7zFpHzhnqYKrkYdUjF1HI1bzd0VygEGX8lFk4k5zVMqHEoES+P+7TKI+EvLO9WVMJ8eekdO0aDEK044xTXwPPA==
 
-agora-rtc-sdk-ng@^4.15.1:
+agora-rtc-sdk-ng@4.15.1:
   version "4.15.1"
   resolved "https://registry.yarnpkg.com/agora-rtc-sdk-ng/-/agora-rtc-sdk-ng-4.15.1.tgz#32b34c707de260a183b1c17fe6502c2d907f55cf"
   integrity sha512-U1I1jOjs9NJSDPAsFuRUgiFgKRx8/J5rH12zNaAGyyXt3A+MPfYAccgfvlJIEhWn02ey97xXDklvufGercJcvw==

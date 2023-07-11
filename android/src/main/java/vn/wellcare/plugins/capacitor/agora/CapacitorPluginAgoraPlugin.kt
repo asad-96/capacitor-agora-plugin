@@ -22,18 +22,20 @@ class CapacitorPluginAgoraPlugin : Plugin() {
     @PluginMethod
     fun joinChannel(call: PluginCall) {
         try {
-            println("call plugin funtion")
+            Log.d(TAG, "joinChannel")
+            // Get the data passed from the client app and start a new activity to join the channel            
             val data = call.data.toString()
             val i = Intent(activity, VideoCallAgoraActivity::class.java)
             i.putExtra(Constant.JOINROOM, data)
             activity.startActivity(i)
+             // Set the callback for when the user joins the channel
             VideoCallAgoraActivity.agoraVideoVideoViewer?.joinChannelCallBack =
                 { uid: UInt, message: String? ->
                     val ret = JSObject()
                     ret.put(Constant.UID, uid)
                     call.resolve(ret)
                 }
-
+            // Update the participant list after a delay of 10 seconds
             Handler().postDelayed({
                 VideoCallAgoraActivity.agoraVideoVideoViewer?.updateParticipantLists(this.mParticipants)
             }, 10000)
@@ -44,6 +46,8 @@ class CapacitorPluginAgoraPlugin : Plugin() {
 
     @PluginMethod
     fun leaveChannel(call: PluginCall) {
+        Log.d(TAG, "leaveChannel")
+        // Leave the channel and stop the video preview
         val value = call.getString("room")
         val ret = JSObject()
         call.resolve(ret)
@@ -53,6 +57,8 @@ class CapacitorPluginAgoraPlugin : Plugin() {
 
     @PluginMethod
     fun updateParticipantLists(call: PluginCall) {
+        Log.d(TAG, "updateParticipantLists")
+        // Update the participant list with the data passed from the client app
         val jsonArray = call.getArray("participants")
         val participants = mutableListOf<IParticipant>()
 
@@ -95,6 +101,7 @@ class CapacitorPluginAgoraPlugin : Plugin() {
         var instance: CapacitorPluginAgoraPlugin? = null
             private set
 
+        // Send an event with the specified data to the client app
         fun sendEvent(event: String, data: JSObject?) {
             instance?.notifyListeners(event, data)
         }
