@@ -3,6 +3,7 @@ package vn.wellcare.plugins.capacitor.agora
 import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -16,6 +17,7 @@ import vn.wellcare.plugins.capacitor.agora.util.Constant
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
 
 class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
+    var TAG = "CapacitorPluginAgoraPlugin"
     companion object {
         var agoraVideoVideoViewer: AgoraVideoViewer? = null
     }
