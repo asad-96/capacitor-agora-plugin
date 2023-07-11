@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Handler
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -16,10 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.marginEnd
-import androidx.core.view.marginRight
-import androidx.core.view.marginTop
+import androidx.core.view.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -27,6 +25,7 @@ import vn.wellcare.plugins.capacitor.agora.R
 import vn.wellcare.plugins.capacitor.agora.util.ClientRole
 import vn.wellcare.plugins.capacitor.agora.util.IAvatar
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
+import kotlin.math.roundToInt
 
 internal class BottomSheetContainer(context: Context) : LinearLayout(context)
 
@@ -182,7 +181,7 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView{
         LinearLayout.LayoutParams.WRAP_CONTENT,
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
-    textView.text = " 12:21"
+    textView.text = "12:21"
     textView.setBackgroundResource(R.drawable.timer_text_background)
     textView.setPadding(10,5,10,5)
     textView.setTextColor(Color.WHITE)
@@ -239,14 +238,14 @@ internal fun AgoraVideoViewer.getControlContainer(): BottomSheetContainer {
     // todo: Add Constraint Layout
 
 
-// Set the bottom sheet behavior3
+    // Set the bottom sheet behavior3
     val bottomSheetBehavior = BottomSheetBehavior<LinearLayout>()
     bottomSheetBehavior.isFitToContents = true
     bottomSheetBehavior.halfExpandedRatio = 0.5f
     bottomSheetBehavior.isHideable = false
     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     bottomSheetBehavior.peekHeight = resources.getDimensionPixelSize(R.dimen.bs_peek_height)
-//    bottomSheetBehavior.
+    // bottomSheetBehavior.
     bottomSheetBehavior.isDraggable = true
     bottomSheetBehavior.expandedOffset = 0
     val reCreate = this
@@ -467,6 +466,7 @@ internal fun AgoraVideoViewer.getParticipantsButton(): AgoraButtonBottom {
     val agParticipantsButton = AgoraButtonBottom(context = this.context)
     agParticipantsButton.clickAction = {
 //        this.agkit.switchCamera()
+        Log.d("Infor", "clicked")
     }
     this.participantsButton = agParticipantsButton
     agParticipantsButton.setImageResource(R.drawable.ic_people_outline)
@@ -622,8 +622,9 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     this.getTopLayoutView()
     this.getAlertLayout()
     container.visibility = if (buttons.isEmpty()) View.INVISIBLE else View.VISIBLE
-
-    val buttonSize = 120
+    var screenWidth = Resources.getSystem().displayMetrics.widthPixels
+    Log.d("INFO", "screen width: " + screenWidth)
+    val buttonSize = (screenWidth*0.2*0.6).roundToInt()
     val buttonMargin = 0f
 
     val llayout = LinearLayout.LayoutParams(buttonSize, buttonSize)
