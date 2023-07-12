@@ -4,29 +4,24 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
-import android.os.Handler
-import android.util.DisplayMetrics
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import vn.wellcare.plugins.capacitor.agora.R
-import vn.wellcare.plugins.capacitor.agora.util.ClientRole
-import vn.wellcare.plugins.capacitor.agora.util.IAvatar
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
+import java.lang.Exception
 import kotlin.math.roundToInt
 
 internal class BottomSheetContainer(context: Context) : LinearLayout(context)
@@ -52,7 +47,7 @@ internal class AlertLayoutView(context: Context) : RelativeLayout(context)
 //    return container
 //}
 
-private fun Int.dpToPx(): Int {
+fun Int.dpToPx(): Int {
     return (this * Resources.getSystem().displayMetrics.density).toInt()
 }
 
@@ -71,8 +66,8 @@ internal fun AgoraVideoViewer.getAlertLayout(): AlertLayoutView {
 //        setMargins(0,40,0,0)
     }
 
-    val linearLayout = LinearLayout(context)
-    linearLayout.layoutParams = LinearLayout.LayoutParams(
+    val alertContainer = LinearLayout(context)
+    alertContainer.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
     ).apply {
@@ -80,33 +75,34 @@ internal fun AgoraVideoViewer.getAlertLayout(): AlertLayoutView {
         marginStart = 25.dpToPx()
         marginEnd = 25.dpToPx()
     }
-    linearLayout.setPadding(0, 7.dpToPx(), 0, 7.dpToPx())
-    linearLayout.weightSum = 5f
-    linearLayout.setBackgroundResource(R.drawable.alram_layout_bg)
+    alertContainer.setPadding(0, 7.dpToPx(), 0, 7.dpToPx())
+    alertContainer.weightSum = 5f
+    alertContainer.setBackgroundResource(R.drawable.alram_layout_bg)
 
 
-    val subLinearLayout = LinearLayout(context)
-    subLinearLayout.layoutParams = LinearLayout.LayoutParams(
+    val subContainer = LinearLayout(context)
+    subContainer.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
     ).apply {
         gravity = Gravity.CENTER
         setMargins(0, 10.dpToPx(), 0, 10.dpToPx())
     }
-    subLinearLayout.orientation = LinearLayout.HORIZONTAL
+    subContainer.orientation = LinearLayout.HORIZONTAL
 
 
-    val imageView = ImageView(context)
+    val iconView = ImageView(context)
     val imageViewLayoutParams = LinearLayout.LayoutParams(
             0,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             0.5f
     )
     imageViewLayoutParams.gravity = Gravity.CENTER
-    imageView.layoutParams = imageViewLayoutParams
-    imageView.setImageResource(R.drawable.alarm)
+    iconView.layoutParams = imageViewLayoutParams
+    iconView.setImageResource(R.drawable.alarm)
 
     val textView = TextView(context)
+    textView.id = R.id.text
     val textViewLayoutParams = LinearLayout.LayoutParams(
             0,
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -114,11 +110,11 @@ internal fun AgoraVideoViewer.getAlertLayout(): AlertLayoutView {
     )
     textView.layoutParams = textViewLayoutParams
     textView.maxLines = 5
-    textView.text = "1 minutes remain. Please wrap up your calls."
+    textView.text = "alert"
     textView.setTextColor(Color.WHITE)
 //    textView.setPadding(0,0,10,0)
 
-    val okTextView = TextView(context)
+    val actionView = TextView(context)
     val okTextViewLayoutParams = LinearLayout.LayoutParams(
             0,
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -126,26 +122,28 @@ internal fun AgoraVideoViewer.getAlertLayout(): AlertLayoutView {
     )
     okTextViewLayoutParams.gravity = Gravity.CENTER or Gravity.BOTTOM
     okTextViewLayoutParams.setMargins(0, 5.dpToPx(), 10.dpToPx(), 0)
-    okTextView.layoutParams = okTextViewLayoutParams
-    okTextView.text = "OK"
-    okTextView.textSize = 15f
-    okTextView.setTextColor(Color.WHITE)
-    okTextView.setPadding(20, 0, 0, 0)
-    okTextView.setBackgroundResource(R.drawable.text_ok_bg)
+    actionView.layoutParams = okTextViewLayoutParams
+    actionView.text = "OK"
+    actionView.textSize = 15f
+    actionView.setTextColor(Color.WHITE)
+    actionView.setPadding(20, 0, 0, 0)
+    actionView.setBackgroundResource(R.drawable.text_ok_bg)
+    actionView.setOnClickListener{
+        relativeLayout.removeView(alertContainer)
+    }
 
-    subLinearLayout.addView(imageView)
-    subLinearLayout.addView(textView)
-    subLinearLayout.addView(okTextView)
+    subContainer.addView(iconView)
+    subContainer.addView(textView)
+    subContainer.addView(actionView)
 
-    linearLayout.addView(subLinearLayout)
+    alertContainer.addView(subContainer)
 
-    relativeLayout.addView(linearLayout)
+    relativeLayout.addView(alertContainer)
 
-    this.addView(relativeLayout)
+    // this.addView(relativeLayout)
     this.alertLayoutContainer = relativeLayout
 
     return relativeLayout
-
 }
 
 
@@ -530,6 +528,37 @@ internal fun AgoraVideoViewer.getBluetoothButton(): AgoraButton {
 //        it.setImageResource(if (it.isSelected) R.drawable.ic_mic_off else R.drawable.ic_mic)
 //        this.userVideoLookup[this.userID]?.audioMuted = it.isSelected
 //        this.agkit.muteLocalAudioStream(it.isSelected)
+        (this.context as Activity).runOnUiThread{
+            var isSetHeadPhone = false
+            it.isSelected = !it.isSelected
+            val audioManager = this.context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+            try {
+                if(it.isSelected) {
+                    for (device in devices) {
+                        if (device.type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+                            audioManager.startBluetoothSco()
+                            audioManager.isBluetoothScoOn = true
+                            isSetHeadPhone = true
+                            break
+                        }
+                    }
+                    if(!isSetHeadPhone) {
+                        audioManager.stopBluetoothSco()
+                        audioManager.isBluetoothScoOn = false
+                        audioManager.isSpeakerphoneOn = false
+                    }
+                }
+                else {
+                    audioManager.stopBluetoothSco()
+                    audioManager.isBluetoothScoOn = false
+                    audioManager.isSpeakerphoneOn = true
+                }
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
     this.bluetoothButton = agBluetoothButton
     agBluetoothButton.setImageResource(R.drawable.bluetooth_btn)

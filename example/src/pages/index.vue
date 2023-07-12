@@ -4,7 +4,7 @@
     <v-text-field v-model="options.room" clearable label="room" />
     <v-text-field v-model="options.token" clearable label="token" />
     <v-text-field v-model="options.uid" clearable label="uid" />
-    <v-btn @click="join">Join</v-btn>
+    <v-btn @click="join">Join (with aler after 10s)</v-btn>
     <v-btn @click="setTimeoutToLeave">Set timeout to leave</v-btn>
     <!-- <v-btn @click="joinChannel()">join</v-btn> -->
   </v-container>
@@ -12,13 +12,7 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script lang="ts">
 // @ts-nocheck
-import {
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  reactive,
-  useRouter
-} from '@nuxtjs/composition-api'
+import { defineComponent, reactive } from '@nuxtjs/composition-api'
 import { CapacitorPluginAgora } from '@wellcare/capacitor-plugin-agora'
 export default defineComponent({
   setup() {
@@ -28,7 +22,7 @@ export default defineComponent({
       room: 'test1',
       uid: 123123,
       token:
-        '007eJxTYAgMrm5R2bD3f/Tr+PdJJhYH1BgjNdevTXlXrxdhqNRczqTAkJySmGaUbJxqnJqaYmJuYWKZYmBkamaQbJlmYWKckpr4nmNtSkMgI8OZGSsYGKEQxGdlKEktLjFkYAAALAofSw=='
+        '007eJxTYLj972uG2yeur6+OxserL3JX/DCpcP9zqbZqI5sXhw96TtdQYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU02fC+2LqUhkJGhe4IpIyMDBIL4rAwlqcUlhgwMACJ2IXg='
     })
     const join = () => {
       CapacitorPluginAgora.addListener('debug', (data) => {
@@ -60,6 +54,11 @@ export default defineComponent({
           role: 'host'
         }
       })
+      setTimeout(() => {
+        CapacitorPluginAgora.showAlert({
+          alertText: 'hihi !'
+        })
+      }, 10000)
     }
     return { options, join }
   }
