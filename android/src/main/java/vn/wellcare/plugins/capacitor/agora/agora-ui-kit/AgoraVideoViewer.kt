@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.nfc.Tag
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -661,6 +663,13 @@ open class AgoraVideoViewer : CoordinatorLayout {
                 }
             }
             countDownTimer.start()
+        }
+    }
+
+    fun toggleRecordingIcon(value: Boolean) {
+        (this.context as Activity).runOnUiThread {
+            val recordIcon = findViewById<ImageView>(R.id.icon_recording)
+            recordIcon.visibility = if (value) View.VISIBLE else View.INVISIBLE
         }
     }
 
