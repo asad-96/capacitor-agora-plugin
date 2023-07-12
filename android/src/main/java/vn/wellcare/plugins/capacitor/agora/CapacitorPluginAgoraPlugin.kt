@@ -79,24 +79,16 @@ class CapacitorPluginAgoraPlugin : Plugin() {
         VideoCallAgoraActivity.agoraVideoVideoViewer?.showAlert(text ?: "ALERT!")
     }
 
+    @PluginMethod
+    fun setCountdown(call: PluginCall) {
+        var duration = call.getInt("seconds", 60)
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.countDown(duration?:60)
+    }
+
 //    override fun OnEvent(event: String, data: String, buffee: List<ByteArray>) {
 //        Log.e("OnEvent", "event: $event data: $data")
 //        Log.e("OnEvent", "list: " + buffee.size)
 //    }
-
-    protected fun showLongToast(msg: String?) {
-        runOnUIThread {
-            val context = context ?: return@runOnUIThread
-            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-        }
-    }
-
-    protected fun showShortToast(msg: String?) {
-        runOnUIThread {
-            val context = context ?: return@runOnUIThread
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-        }
-    }
 
     protected fun runOnUIThread(runnable: Runnable?) {
         runOnUIThread(runnable)

@@ -4,7 +4,7 @@
     <v-text-field v-model="options.room" clearable label="room" />
     <v-text-field v-model="options.token" clearable label="token" />
     <v-text-field v-model="options.uid" clearable label="uid" />
-    <v-btn @click="join">Join (with aler after 10s)</v-btn>
+    <v-btn @click="join">Join (with coundonw after 3s)</v-btn>
     <v-btn @click="setTimeoutToLeave">Set timeout to leave</v-btn>
     <!-- <v-btn @click="joinChannel()">join</v-btn> -->
   </v-container>
@@ -55,10 +55,10 @@ export default defineComponent({
         }
       })
       setTimeout(() => {
-        CapacitorPluginAgora.showAlert({
-          alertText: 'hihi !'
+        CapacitorPluginAgora.setCountdown({
+          seconds: 90
         })
-      }, 10000)
+      }, 3000)
     }
     return { options, join }
   }
