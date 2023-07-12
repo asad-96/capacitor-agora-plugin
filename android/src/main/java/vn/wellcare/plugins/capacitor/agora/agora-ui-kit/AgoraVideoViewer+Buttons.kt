@@ -18,7 +18,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.getcapacitor.JSObject
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import vn.wellcare.plugins.capacitor.agora.CapacitorPluginAgoraPlugin
 import vn.wellcare.plugins.capacitor.agora.R
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
 import java.lang.Exception
@@ -447,7 +449,7 @@ internal fun AgoraVideoViewer.getChatButton(): AgoraButtonBottom {
     }
     val agChatButton = AgoraButtonBottom(context = this.context)
     agChatButton.clickAction = {
-
+        CapacitorPluginAgoraPlugin.sendEvent("onSelfAction", JSObject().put("event", "chat"))
     }
     this.chatButton = agChatButton
     agChatButton.setImageResource(R.drawable.chat)
@@ -607,6 +609,9 @@ internal fun AgoraVideoViewer.getBackButton(): AgoraButton {
 //        it.setImageResource(if (it.isSelected) R.drawable.ic_mic_off else R.drawable.ic_mic)
 //        this.userVideoLookup[this.userID]?.audioMuted = it.isSelected
 //        this.agkit.muteLocalAudioStream(it.isSelected)
+        val data = JSObject()
+        data.put("event", "back")
+        CapacitorPluginAgoraPlugin.sendEvent("onSelfAction", data)
     }
     this.backButton = agBackButton
     agBackButton.setImageResource(R.drawable.ic_arrow_back_ios_new)
