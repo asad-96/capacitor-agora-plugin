@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
@@ -35,6 +36,7 @@ import vn.wellcare.plugins.capacitor.agora.R
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.math.floor
 
 /**
  * An interface for getting some common delegate callbacks without needing to subclass.
@@ -310,15 +312,15 @@ open class AgoraVideoViewer : CoordinatorLayout {
 
         //todo: Changes start
         val backgroundLayoutParams = ConstraintLayout.LayoutParams(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.MATCH_PARENT
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT
         )
 
         constraintLayoutFirst.layoutParams = backgroundLayoutParams
 
         backgroundVideoHolder.layoutParams = RecyclerView.LayoutParams(
-            RecyclerView.LayoutParams.MATCH_PARENT,
-            RecyclerView.LayoutParams.MATCH_PARENT
+                RecyclerView.LayoutParams.MATCH_PARENT,
+                RecyclerView.LayoutParams.MATCH_PARENT
         )
 
         backgroundVideoHolder.id = View.generateViewId()
@@ -328,14 +330,14 @@ open class AgoraVideoViewer : CoordinatorLayout {
 
 
 
-       constraintLayoutSecond.layoutParams = ConstraintLayout.LayoutParams(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.MATCH_PARENT
+        constraintLayoutSecond.layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT
         )
 
         floatingVideoHolder.layoutParams = RecyclerView.LayoutParams(
-            RecyclerView.LayoutParams.MATCH_PARENT,
-            200
+                RecyclerView.LayoutParams.MATCH_PARENT,
+                200
         )
 
 
@@ -348,24 +350,24 @@ open class AgoraVideoViewer : CoordinatorLayout {
         constraints.clone(constraintLayoutSecond)
 
         constraints.connect(
-            floatingVideoHolder.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
+                floatingVideoHolder.id,
+                ConstraintSet.START,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.START
         )
 
         constraints.connect(
-            floatingVideoHolder.id,
-            ConstraintSet.END,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.END
+                floatingVideoHolder.id,
+                ConstraintSet.END,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.END
         )
 
         constraints.connect(
-            floatingVideoHolder.id,
-            ConstraintSet.BOTTOM,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.BOTTOM
+                floatingVideoHolder.id,
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM
         )
 
         constraints.applyTo(constraintLayoutSecond)
@@ -397,7 +399,6 @@ open class AgoraVideoViewer : CoordinatorLayout {
 //        this.floatingVideoHolder.
 //        this.floatingVideoHolder.setBackgroundColor(this.agoraSettings.colors.floatingBackgroundColor)
 //        this.floatingVideoHolder.background.alpha = this.agoraSettings.colors.floatingBackgroundAlpha
-
 
 
 //        val constraintLayout = ConstraintLayout(context)
@@ -451,15 +452,15 @@ open class AgoraVideoViewer : CoordinatorLayout {
 //            }
 //        }
         (this.backgroundVideoHolder.adapter as GridViewAdapter).also {
-            it.onItemClick = {index ->
+            it.onItemClick = { index ->
                 ((this.getControlContainer().layoutParams as LayoutParams).behavior as BottomSheetBehavior).apply {
                     if (this.state == BottomSheetBehavior.STATE_COLLAPSED && this.peekHeight === resources.getDimensionPixelSize(R.dimen.bs_min_height)) {
                         bottomSheetHandler.removeCallbacksAndMessages(null)
                         this.peekHeight =
-                            resources.getDimensionPixelSize(R.dimen.bs_peek_height)
+                                resources.getDimensionPixelSize(R.dimen.bs_peek_height)
                         bottomSheetHandler.postDelayed({
                             this.peekHeight =
-                                resources.getDimensionPixelSize(R.dimen.bs_min_height)
+                                    resources.getDimensionPixelSize(R.dimen.bs_min_height)
                         }, 5000)
                     } else if (this.state == BottomSheetBehavior.STATE_EXPANDED) {
                         this.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -507,7 +508,9 @@ open class AgoraVideoViewer : CoordinatorLayout {
      * UserId Setting to zero will tell Agora to assign one for you once connected
      */
     var userID: Int
-        get() { return this.connectionData.rtcId }
+        get() {
+            return this.connectionData.rtcId
+        }
         set(value) {
             this.connectionData.rtcId = value
             this.user?.hasJoined = true
@@ -518,22 +521,22 @@ open class AgoraVideoViewer : CoordinatorLayout {
      * User Participant
      */
     var user: IParticipant? = null
-                set(value) {
-                    user?.uid?.let { uid ->
-                        if (uid.isEmpty()) {
-                            user?.uid = userID.toString()
-                        } else {
-                            user?.let { _user ->
-                                if (!_user.uid.isEmpty() &&
-                                    !allParticipants.any { it.uid == _user.uid }) {
-                                    allParticipants.add(_user)
-                                }
-                                updateParticipantLists(participants = allParticipants)
-                            }
+        set(value) {
+            user?.uid?.let { uid ->
+                if (uid.isEmpty()) {
+                    user?.uid = userID.toString()
+                } else {
+                    user?.let { _user ->
+                        if (!_user.uid.isEmpty() &&
+                                !allParticipants.any { it.uid == _user.uid }) {
+                            allParticipants.add(_user)
                         }
+                        updateParticipantLists(participants = allParticipants)
                     }
-                    field = value
                 }
+            }
+            field = value
+        }
 
     /**
      * Join Channel Callback
@@ -632,12 +635,35 @@ open class AgoraVideoViewer : CoordinatorLayout {
     }
 
     fun showAlert(text: String) {
-        (this.context as Activity).runOnUiThread{
+        (this.context as Activity).runOnUiThread {
             val textAlert = alertLayoutContainer?.findViewById<TextView>(R.id.text)
             textAlert?.text = text
             this.addView(alertLayoutContainer);
         }
     }
+
+    fun countDown(time: Int) {
+        (this.context as Activity).runOnUiThread {
+            var textCountdown = topViewContainer?.findViewById<TextView>(R.id.text_countdown)
+            val countDownTimer = object : CountDownTimer((time * 1000).toLong(), 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    // Update the UI with the remaining time
+                    val remainTime = millisUntilFinished / 1000;
+                    Log.d("CapacitorPluginAgoraPlugin", "remain time countdown: $remainTime")
+                    val minus = floor((remainTime / 60).toDouble()).toInt()
+                    val second = remainTime % 60
+                    textCountdown?.text = "${if (minus <= 9) "0$minus" else minus}:${if (second <= 9) "0$second" else second}"
+                }
+
+                override fun onFinish() {
+                    // Do something when the timer finishes
+                    textCountdown?.text = "--:--"
+                }
+            }
+            countDownTimer.start()
+        }
+    }
+
     /**
      * Join the Agora channel with optional token request
      * @param channel: Channel name to join
@@ -645,7 +671,8 @@ open class AgoraVideoViewer : CoordinatorLayout {
      * @param role: [AgoraClientRole](https://docs.agora.io/en/Video/API%20Reference/oc/Constants/AgoraClientRole.html) to join the channel as. Default: `.broadcaster`
      * @param uid: UID to be set when user joins the channel, default will be 0.
      */
-    @JvmOverloads fun join(channel: String, fetchToken: Boolean, role: Int? = null, uid: Int? = null) {
+    @JvmOverloads
+    fun join(channel: String, fetchToken: Boolean, role: Int? = null, uid: Int? = null) {
         this.setupAgoraVideo()
         getRtcToken(channel, role, uid, fetchToken)
 
@@ -720,7 +747,8 @@ open class AgoraVideoViewer : CoordinatorLayout {
      * @param role: [AgoraClientRole](https://docs.agora.io/en/Video/API%20Reference/oc/Constants/AgoraClientRole.html) to join the channel as.
      * @param uid: UID to be set when user joins the channel, default will be 0.
      */
-    @JvmOverloads fun join(channel: String, token: String? = null, role: Int? = null, uid: Int? = null) {
+    @JvmOverloads
+    fun join(channel: String, token: String? = null, role: Int? = null, uid: Int? = null) {
 
         if (role == Constants.CLIENT_ROLE_BROADCASTER) {
             AgoraVideoViewer.requestPermission(this.context)

@@ -177,11 +177,12 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
     linearLayout.addView(leftImage)
 
     val textView = TextView(context)
+    textView.id = R.id.text_countdown
     textView.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
     )
-    textView.text = "12:21"
+    textView.text = "--:--"
     textView.setBackgroundResource(R.drawable.timer_text_background)
     textView.setPadding(10, 5, 10, 5)
     textView.setTextColor(Color.WHITE)
