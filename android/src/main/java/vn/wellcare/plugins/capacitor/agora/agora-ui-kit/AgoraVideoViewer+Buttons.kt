@@ -587,7 +587,7 @@ internal fun AgoraVideoViewer.builtinButtons(): MutableList<AgoraButtonBottom> {
         rtnButtons += when (button) {
             AgoraSettings.BuiltinButton.MIC -> this.getMicButton()
             AgoraSettings.BuiltinButton.CAMERA -> this.getCameraButton()
-//            AgoraSettings.BuiltinButton.FLIP -> this.getFlipButton()
+            // AgoraSettings.BuiltinButton.FLIP -> this.getFlipButton()
             AgoraSettings.BuiltinButton.PARTICIPANTS -> this.getParticipantsButton()
             AgoraSettings.BuiltinButton.END -> this.getEndCallButton()
             AgoraSettings.BuiltinButton.CHAT -> this.getChatButton()
@@ -603,7 +603,7 @@ internal fun AgoraVideoViewer.topButtons(): MutableList<AgoraButton> {
         rtnButtons += when (button) {
             AgoraSettings.TopButton.FLASH -> this.getFlashButton()
             AgoraSettings.TopButton.BLUETOOTH -> this.getBluetoothButton()
-            AgoraSettings.TopButton.LAYOUT -> this.getLayoutButton()
+            // AgoraSettings.TopButton.LAYOUT -> this.getLayoutButton()
             AgoraSettings.TopButton.FLIP -> this.getFlipButton()
         }
     }
@@ -617,11 +617,11 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     val backButtonContainer = this.getBackButtonContainer()
     this.getControlContainerHandle()
     val buttonContainer = this.getHorizontalButtonContainer()
-    val buttons = this.builtinButtons() + this.agoraSettings.extraButtons
+    val bottomButtons = this.builtinButtons() + this.agoraSettings.extraButtons
     val topButtons = this.topButtons()
     this.getTopLayoutView()
     this.getAlertLayout()
-    container.visibility = if (buttons.isEmpty()) View.INVISIBLE else View.VISIBLE
+    container.visibility = if (bottomButtons.isEmpty()) View.INVISIBLE else View.VISIBLE
     var screenWidth = Resources.getSystem().displayMetrics.widthPixels
     Log.d("INFO", "screen width: " + screenWidth)
     val buttonSize = (screenWidth*0.2*0.6).roundToInt()
@@ -631,7 +631,7 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     llayout.gravity = Gravity.CENTER
     backButtonContainer.addView(this.getBackButton(), llayout)
 
-    buttons.forEach { button ->
+    bottomButtons.forEach { button ->
         val llayout = LinearLayout.LayoutParams(buttonSize, buttonSize)
         llayout.gravity = Gravity.CENTER
         buttonContainer.addView(button, llayout)
@@ -678,7 +678,7 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, items)
     listView.adapter = adapter*/
     container.addView(recyclerView)
-    val contWidth = (buttons.size.toFloat() + buttonMargin) * buttons.count()
+    val contWidth = (bottomButtons.size.toFloat() + buttonMargin) * bottomButtons.count()
     container.setPadding(0, 20, 0, 20)
     this.positionButtonContainer(container, contWidth, buttonMargin)
 }
