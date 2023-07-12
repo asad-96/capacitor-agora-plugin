@@ -24,6 +24,7 @@ class AgoraSettings {
      * Whether RTM should be initialised and used
      */
     public var rtmEnabled: Boolean = true
+
     /** URL to fetch tokens from. If supplied, this package will automatically fetch tokens
      * when the Agora Engine indicates it will be needed.
      * It will follow the URL pattern found in
@@ -62,7 +63,7 @@ class AgoraSettings {
     public enum class BuiltinButton {
         CAMERA,
         MIC,
-//        FLIP,
+        // FLIP,
         END,
         CHAT,
         PARTICIPANTS
@@ -70,46 +71,56 @@ class AgoraSettings {
 
     public enum class TopButton {
         FLASH,
-        LAYOUT,
+        // LAYOUT,
         BLUETOOTH,
         FLIP
     }
+
     /**
      * The rendering mode of the video view for all videos within the view.
      */
     public var videoRenderMode = Constants.RENDER_MODE_HIDDEN
+
     /**
      * Where the buttons such as camera enable/disable should be positioned within the view.
      * TODO: This is not yet implemented
      */
     public var buttonPosition = Position.BOTTOM
+
     /**
      * Where the floating collection view of video members be positioned within the view.
      * TODO: This is not yet implemented
      */
     public var floatPosition = Position.TOP
+
     /**
      * Agora's video encoder configuration.
      */
     public var videoConfiguration: VideoEncoderConfiguration = VideoEncoderConfiguration()
+
     /**
      * Which buttons should be enabled in this AgoraVideoView.
      */
     public var enabledButtons: MutableSet<BuiltinButton> = mutableSetOf(
-        BuiltinButton.PARTICIPANTS, BuiltinButton.CAMERA, BuiltinButton.END, BuiltinButton.MIC, BuiltinButton.CHAT
+            BuiltinButton.PARTICIPANTS, BuiltinButton.CAMERA, BuiltinButton.END, BuiltinButton.MIC, BuiltinButton.CHAT
     )
     public var topButtons: MutableSet<TopButton> = mutableSetOf(
-        TopButton.LAYOUT, TopButton.FLIP, TopButton.BLUETOOTH, TopButton.FLASH
+            // TopButton.LAYOUT,
+            TopButton.FLIP,
+            TopButton.BLUETOOTH,
+            TopButton.FLASH
     )
 
     /**
      * Colors for views inside AgoraVideoViewer
      */
     public var colors = AgoraViewerColors()
+
     /**
      * Full string for low bitrate stream parameter, including key of `che.video.lowBitRateStreamParameter`.
      */
     public var lowBitRateStream: String? = null
+
     /**
      * Maximum number of videos in the grid view before the low bitrate is adopted.
      */
@@ -135,6 +146,7 @@ class AgoraSettings {
      * A mutable list to add buttons to the default list of [BuiltinButton]
      */
     public var extraButtons: MutableList<AgoraButton> = mutableListOf()
+
     companion object {
         private const val defaultLowBitrateParam = "{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":5,\"bitRate\":140}}"
     }
@@ -147,19 +159,23 @@ class AgoraViewerColors {
     /**
      * Color of the view that signals a user has their mic muted. Default `Color.BLUE`
      */
-    var micFlag: Int = Color.BLUE
+    var micFlag: Int = Color.WHITE
+
     /**
      * Background colour of the scrollable floating viewer
      */
     var floatingBackgroundColor: Int = Color.LTGRAY
+
     /**
      * Opacity of the floating viewer background (0-255)
      */
     var floatingBackgroundAlpha: Int = 100
+
     /**
      * Background colour of the button holder
      */
     var buttonBackgroundColor: Int = Color.LTGRAY
+
     /**
      * Opacity of the button holder background (0-255)
      */
