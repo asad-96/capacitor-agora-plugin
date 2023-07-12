@@ -28,13 +28,13 @@ class CapacitorPluginAgoraPlugin : Plugin() {
             val i = Intent(activity, VideoCallAgoraActivity::class.java)
             i.putExtra(Constant.JOINROOM, data)
             activity.startActivity(i)
-             // Set the callback for when the user joins the channel
+            // Set the callback for when the user joins the channel
             VideoCallAgoraActivity.agoraVideoVideoViewer?.joinChannelCallBack =
-                { uid: UInt, message: String? ->
-                    val ret = JSObject()
-                    ret.put(Constant.UID, uid)
-                    call.resolve(ret)
-                }
+                    { uid: UInt, message: String? ->
+                        val ret = JSObject()
+                        ret.put(Constant.UID, uid)
+                        call.resolve(ret)
+                    }
             // Update the participant list after a delay of 10 seconds
             Handler().postDelayed({
                 VideoCallAgoraActivity.agoraVideoVideoViewer?.updateParticipantLists(this.mParticipants)
@@ -71,6 +71,12 @@ class CapacitorPluginAgoraPlugin : Plugin() {
         VideoCallAgoraActivity.agoraVideoVideoViewer?.updateParticipantLists(this.mParticipants)
         val ret = JSObject()
         call.resolve(ret)
+    }
+
+    @PluginMethod
+    fun showAlert(call: PluginCall) {
+        var text = call.getString("alertText", "this is default text alert !")
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.showAlert(text ?: "ALERT!")
     }
 
 //    override fun OnEvent(event: String, data: String, buffee: List<ByteArray>) {

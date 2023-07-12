@@ -109,7 +109,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
     internal var flashButton: AgoraButton? = null
     internal var bluetoothButton: AgoraButton? = null
     internal var backButton: AgoraButton? = null
-    internal var screenShareButton: AgoraButton? = null
+    // internal var screenShareButton: AgoraButton? = null
 
     companion object;
 
@@ -631,6 +631,13 @@ open class AgoraVideoViewer : CoordinatorLayout {
         return leaveChannelRtn
     }
 
+    fun showAlert(text: String) {
+        (this.context as Activity).runOnUiThread{
+            val textAlert = alertLayoutContainer?.findViewById<TextView>(R.id.text)
+            textAlert?.text = text
+            this.addView(alertLayoutContainer);
+        }
+    }
     /**
      * Join the Agora channel with optional token request
      * @param channel: Channel name to join
