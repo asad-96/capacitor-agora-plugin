@@ -85,10 +85,14 @@ class CapacitorPluginAgoraPlugin : Plugin() {
         VideoCallAgoraActivity.agoraVideoVideoViewer?.countDown(duration?:60)
     }
 
-//    override fun OnEvent(event: String, data: String, buffee: List<ByteArray>) {
-//        Log.e("OnEvent", "event: $event data: $data")
-//        Log.e("OnEvent", "list: " + buffee.size)
-//    }
+    @PluginMethod
+    fun showRecordingStatus(call: PluginCall) {
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.toggleRecordingIcon(call.getBoolean("isShown", false) ?: false)
+    }
+    //    override fun OnEvent(event: String, data: String, buffee: List<ByteArray>) {
+    //        Log.e("OnEvent", "event: $event data: $data")
+    //        Log.e("OnEvent", "list: " + buffee.size)
+    //    }
 
     protected fun runOnUIThread(runnable: Runnable?) {
         runOnUIThread(runnable)

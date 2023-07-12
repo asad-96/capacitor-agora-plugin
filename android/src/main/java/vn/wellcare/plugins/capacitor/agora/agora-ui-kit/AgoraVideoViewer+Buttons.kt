@@ -165,6 +165,7 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
     linearLayout.orientation = LinearLayout.HORIZONTAL
 
     val leftImage = ImageView(context)
+    leftImage.id = R.id.icon_recording
     val layoutParamsLeftImage = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
@@ -174,6 +175,7 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
     }
     leftImage.layoutParams = layoutParamsLeftImage
     leftImage.setImageResource(R.drawable.ic_ellipse)
+    leftImage.visibility = View.INVISIBLE
     linearLayout.addView(leftImage)
 
     val textView = TextView(context)
@@ -183,6 +185,7 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
             LinearLayout.LayoutParams.WRAP_CONTENT
     )
     textView.text = "--:--"
+    textView.setShadowLayer(10f, 0f, 0f, Color.BLACK)
     textView.setBackgroundResource(R.drawable.timer_text_background)
     textView.setPadding(10, 5, 10, 5)
     textView.setTextColor(Color.WHITE)
