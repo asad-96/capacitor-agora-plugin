@@ -12,6 +12,7 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginTop
 import androidx.core.view.setPadding
+import io.agora.rtc2.IRtcEngineEventHandler
 import io.agora.rtc2.video.VideoCanvas
 import vn.wellcare.plugins.capacitor.agora.R
 
@@ -119,7 +120,7 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
 
     fun signalAndMicHandler(){
         val signalImageView = ImageView(context)
-        signalImageView.id = View.generateViewId()
+        signalImageView.id = R.id.icon_signal
         signalImageView.layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.WRAP_CONTENT,
             FrameLayout.LayoutParams.WRAP_CONTENT
@@ -128,8 +129,8 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
             gravity = Gravity.TOP or Gravity.RIGHT
             setMargins(0,30,50,0)
         }
-        signalImageView.setImageResource(R.drawable.signal)
-
+        //signalImageView.setImageResource(R.drawable.signal)
+        signalImageView.visibility = View.INVISIBLE
 //        val micImageView = ImageView(context)
 //        micImageView.id = View.generateViewId()
 //        micImageView.layoutParams = FrameLayout.LayoutParams(

@@ -187,7 +187,7 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
             LinearLayout.LayoutParams.WRAP_CONTENT
     )
     textView.text = " --:-- "
-    textView.textSize = 25f
+    textView.textSize = 15f
     textView.setShadowLayer(10f, 0f, 0f, Color.BLACK)
     textView.setBackgroundResource(R.drawable.timer_text_background)
     textView.setPadding(5, 5, 5, 5)

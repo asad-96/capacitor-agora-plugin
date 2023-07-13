@@ -1,23 +1,23 @@
 package vn.wellcare.plugins.capacitor.agora
 
 import android.app.Activity
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.LinearLayout
+import android.widget.ImageView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import com.getcapacitor.JSObject
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.agora.rtc2.Constants
+import io.agora.rtc2.IRtcEngineEventHandler
+import io.agora.rtc2.RtcEngine
 import vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`.*
 import vn.wellcare.plugins.capacitor.agora.util.Constant
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
 
 class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
     var TAG = "CapacitorPluginAgoraPlugin"
+    private lateinit var mRtcEngine: RtcEngine
+
     companion object {
         var agoraVideoVideoViewer: AgoraVideoViewer? = null
     }
@@ -27,6 +27,9 @@ class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
         setContentView(R.layout.videocall_agora);
 
         initAgoraView();
+        val data = JSObject(intent.getStringExtra(Constant.JOINROOM).toString())
+        val appId = data.getString(Constant.APPID)
+        mRtcEngine = RtcEngine.create(applicationContext, appId, this.networkQualityListener)
         CapacitorPluginAgoraPlugin.sendEvent("onActivity", JSObject().put("isReady", true))
 //
 //        val persistentbottomSheet = findViewById<LinearLayout>(R.id.bottom_sheet)
@@ -60,19 +63,60 @@ class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
             Log.d(TAG, "initAgoraView - permissions granted")
             agoraVideoVideoViewer?.user = user
 //            agoraVideoVideoViewer?.joinChannelCallBack =
-            agoraVideoVideoViewer!!.join(channel ?: "", token, role = Constants.CLIENT_ROLE_BROADCASTER, uid);
+            agoraVideoVideoViewer!!.join(channel
+                    ?: "", token, role = Constants.CLIENT_ROLE_BROADCASTER, uid);
         } else {
-            Log.e(TAG, "initAgoraView - permissions not granted")            
+            Log.e(TAG, "initAgoraView - permissions not granted")
         }
     }
 
     override fun leftChannel(channel: String) {
-        Log.e(TAG, "leftChannel")            
+        Log.e(TAG, "leftChannel")
         super.leftChannel(channel)
         // Remove the video view from the activity's view and set the delegate to null
         agoraVideoVideoViewer?.delegate = null
         runOnUiThread {
             onBackPressed()
+        }
+    }
+
+    private val networkQualityListener = object : IRtcEngineEventHandler() {
+
+        override fun onNetworkQuality(uid: Int, txQuality: Int, rxQuality: Int) {
+            // Handle network quality updates
+            // Log.d(TAG, "onNetworkQuality: uid = $uid, txQuality = $txQuality, rxQuality = $rxQuality")
+            runOnUiThread {
+                val iconSignal = findViewById<ImageView>(R.id.icon_signal)
+                when {
+                    txQuality == 0 && rxQuality == 0 -> {
+                        iconSignal.setImageResource(R.drawable.no_signal)
+                        iconSignal.visibility = View.VISIBLE
+                    }
+                    txQuality == 1 || rxQuality == 1 -> {
+                        iconSignal.setImageResource(R.drawable.bad_signal)
+                        iconSignal.visibility = View.VISIBLE
+                    }
+                    txQuality == 2 || rxQuality == 2 -> {
+                        iconSignal.setImageResource(R.drawable.medium_signal)
+                        iconSignal.visibility = View.VISIBLE
+                    }
+                    txQuality == 3 || rxQuality == 3 -> {
+                        iconSignal.setImageResource(R.drawable.medium_signal)
+                        iconSignal.visibility = View.VISIBLE
+                    }
+                    txQuality == 4 && rxQuality == 4 -> {
+                        iconSignal.setImageResource(R.drawable.good_signal)
+                        iconSignal.visibility = View.VISIBLE
+                    }
+                    txQuality == 5 && rxQuality == 5 -> {
+                        iconSignal.setImageResource(R.drawable.good_signal)
+                        iconSignal.visibility = View.VISIBLE
+                    }
+                    else -> {
+                        iconSignal.visibility = View.VISIBLE
+                    }
+                }
+            }
         }
     }
 }
