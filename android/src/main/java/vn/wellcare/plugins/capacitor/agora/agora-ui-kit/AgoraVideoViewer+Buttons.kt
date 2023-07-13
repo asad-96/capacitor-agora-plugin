@@ -194,7 +194,21 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
     textView.setTextColor(Color.WHITE)
     val drawableLeft = context.resources.getDrawable(R.drawable.timer)
     textView.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null)
+
+    val signalImageView = ImageView(context)
+    signalImageView.id = R.id.icon_signal
+    signalImageView.layoutParams = LinearLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+
+        gravity = Gravity.CENTER or Gravity.END
+        setMargins(10,0,10,0)
+    }
+    //signalImageView.setImageResource(R.drawable.signal)
+    signalImageView.visibility = View.INVISIBLE
     linearLayout.addView(textView)
+    linearLayout.addView(signalImageView)
 
     /*val innerLinearLayout = LinearLayout(context)
     innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
