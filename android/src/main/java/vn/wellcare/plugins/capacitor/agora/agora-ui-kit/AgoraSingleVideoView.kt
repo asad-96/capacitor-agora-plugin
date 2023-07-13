@@ -118,9 +118,6 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
     }
 
     fun signalAndMicHandler(){
-
-
-
         val signalImageView = ImageView(context)
         signalImageView.id = View.generateViewId()
         signalImageView.layoutParams = FrameLayout.LayoutParams(
@@ -133,17 +130,17 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         }
         signalImageView.setImageResource(R.drawable.signal)
 
-        val micImageView = ImageView(context)
-        micImageView.id = View.generateViewId()
-        micImageView.layoutParams = FrameLayout.LayoutParams(
-            DPToPx(context, 20), DPToPx(context, 20)
-        ).apply {
-            gravity = Gravity.TOP or Gravity.RIGHT
-            setMargins(0,30,100,0)
-        }
-        micImageView.setImageResource(R.drawable.ic_mic_off)
+//        val micImageView = ImageView(context)
+//        micImageView.id = View.generateViewId()
+//        micImageView.layoutParams = FrameLayout.LayoutParams(
+//            DPToPx(context, 20), DPToPx(context, 20)
+//        ).apply {
+//            gravity = Gravity.TOP or Gravity.RIGHT
+//            setMargins(0,30,100,0)
+//        }
+//        micImageView.setImageResource(R.drawable.ic_mic_off)
 
         addView(signalImageView)
-        addView(micImageView)
+//        addView(micImageView)
     }
 }
