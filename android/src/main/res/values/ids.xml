@@ -2,4 +2,5 @@
 <resources>
     <item name="text_countdown" type="id" />
     <item name="icon_recording" type="id" />
+    <item name="icon_signal" type="id" />
 </resources>

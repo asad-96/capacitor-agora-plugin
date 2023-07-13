@@ -22,7 +22,7 @@ export default defineComponent({
       room: 'test1',
       uid: 123123,
       token:
-        '007eJxTYLj972uG2yeur6+OxserL3JX/DCpcP9zqbZqI5sXhw96TtdQYEhKNDEzMU4zSjJONDQxTTOyNDU3TbIwtzBOMU40TU02fC+2LqUhkJGhe4IpIyMDBIL4rAwlqcUlhgwMACJ2IXg='
+        '007eJxTYJizYckxI95Am8JA383XhOaoMsd0XbvB/3Zpmo3zT59tLMYKDEmJJmYmxmlGScaJhiamaUaWpuamSRbmFsYpxommqcmGPHnrUxoCGRlCEriYGRkgEMRnZShJLS4xZGAAANSxHPk='
     })
     const join = () => {
       CapacitorPluginAgora.addListener('debug', (data) => {
