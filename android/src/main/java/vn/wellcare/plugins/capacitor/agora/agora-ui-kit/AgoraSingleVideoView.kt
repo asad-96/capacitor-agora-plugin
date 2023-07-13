@@ -80,7 +80,7 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         this.setBackground()
         this.mutedFlag = ImageView(context)
         this.setupMutedFlag()
-        this.signalAndMicHandler()
+        // this.signalAndMicHandler()
 
         this.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
     }
@@ -118,19 +118,19 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         backgroundView.addView(personIcon, buttonLayout)
     }
 
-    fun signalAndMicHandler(){
-        val signalImageView = ImageView(context)
-        signalImageView.id = R.id.icon_signal
-        signalImageView.layoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-
-            gravity = Gravity.TOP or Gravity.RIGHT
-            setMargins(0,30,50,0)
-        }
-        //signalImageView.setImageResource(R.drawable.signal)
-        signalImageView.visibility = View.INVISIBLE
+//    fun signalAndMicHandler(){
+//        val signalImageView = ImageView(context)
+//        signalImageView.id = R.id.icon_signal
+//        signalImageView.layoutParams = FrameLayout.LayoutParams(
+//            FrameLayout.LayoutParams.WRAP_CONTENT,
+//            FrameLayout.LayoutParams.WRAP_CONTENT
+//        ).apply {
+//
+//            gravity = Gravity.TOP or Gravity.RIGHT
+//            setMargins(0,30,50,0)
+//        }
+//        signalImageView.setImageResource(R.drawable.signal)
+//        signalImageView.visibility = View.INVISIBLE
 //        val micImageView = ImageView(context)
 //        micImageView.id = View.generateViewId()
 //        micImageView.layoutParams = FrameLayout.LayoutParams(
@@ -140,8 +140,8 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
 //            setMargins(0,30,100,0)
 //        }
 //        micImageView.setImageResource(R.drawable.ic_mic_off)
-
-        addView(signalImageView)
+//
+//        addView(signalImageView)
 //        addView(micImageView)
-    }
+//    }
 }
