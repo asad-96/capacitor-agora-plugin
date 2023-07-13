@@ -654,12 +654,12 @@ open class AgoraVideoViewer : CoordinatorLayout {
                     Log.d("CapacitorPluginAgoraPlugin", "remain time countdown: $remainTime")
                     val minus = floor((remainTime / 60).toDouble()).toInt()
                     val second = remainTime % 60
-                    textCountdown?.text = "${if (minus <= 9) "0$minus" else minus}:${if (second <= 9) "0$second" else second}"
+                    textCountdown?.text = " ${if (minus <= 9) "0$minus" else minus}:${if (second <= 9) "0$second" else second} "
                 }
 
                 override fun onFinish() {
                     // Do something when the timer finishes
-                    textCountdown?.text = "--:--"
+                    textCountdown?.text = " --:-- "
                 }
             }
             countDownTimer.start()

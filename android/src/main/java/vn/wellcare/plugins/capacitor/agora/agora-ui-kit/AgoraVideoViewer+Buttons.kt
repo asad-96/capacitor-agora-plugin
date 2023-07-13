@@ -1,6 +1,8 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
@@ -184,10 +186,11 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
     )
-    textView.text = "--:--"
+    textView.text = " --:-- "
+    textView.textSize = 25f
     textView.setShadowLayer(10f, 0f, 0f, Color.BLACK)
     textView.setBackgroundResource(R.drawable.timer_text_background)
-    textView.setPadding(10, 5, 10, 5)
+    textView.setPadding(5, 5, 5, 5)
     textView.setTextColor(Color.WHITE)
     val drawableLeft = context.resources.getDrawable(R.drawable.timer)
     textView.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null)
@@ -535,34 +538,16 @@ internal fun AgoraVideoViewer.getBluetoothButton(): AgoraButton {
 //        this.userVideoLookup[this.userID]?.audioMuted = it.isSelected
 //        this.agkit.muteLocalAudioStream(it.isSelected)
         (this.context as Activity).runOnUiThread{
-            var isSetHeadPhone = false
             it.isSelected = !it.isSelected
             val audioManager = this.context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-            try {
-                if(it.isSelected) {
-                    for (device in devices) {
-                        if (device.type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-                            audioManager.startBluetoothSco()
-                            audioManager.isBluetoothScoOn = true
-                            isSetHeadPhone = true
-                            break
-                        }
-                    }
-                    if(!isSetHeadPhone) {
-                        audioManager.stopBluetoothSco()
-                        audioManager.isBluetoothScoOn = false
-                        audioManager.isSpeakerphoneOn = false
-                    }
-                }
-                else {
-                    audioManager.stopBluetoothSco()
-                    audioManager.isBluetoothScoOn = false
-                    audioManager.isSpeakerphoneOn = true
-                }
-            }
-            catch (e: Exception) {
-                e.printStackTrace()
+            if (audioManager.isSpeakerphoneOn && it.isSelected) {
+                // Switch to earpiece
+                audioManager.isSpeakerphoneOn = false
+                audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+            } else {
+                // Switch to speaker
+                audioManager.isSpeakerphoneOn = true
+                audioManager.mode = AudioManager.MODE_NORMAL
             }
         }
     }
