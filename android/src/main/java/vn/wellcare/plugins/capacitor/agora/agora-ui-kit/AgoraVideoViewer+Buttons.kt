@@ -483,7 +483,7 @@ internal fun AgoraVideoViewer.getEndCallButton(): AgoraButtonBottom {
     }
     val hangupButton = AgoraButtonBottom(this.context)
     hangupButton.clickAction = {
-        this.agkit.stopPreview()
+        // this.agkit.stopPreview()
         this.leaveChannel()
         (this.context as Activity).runOnUiThread{
           (this.context as Activity).finish()

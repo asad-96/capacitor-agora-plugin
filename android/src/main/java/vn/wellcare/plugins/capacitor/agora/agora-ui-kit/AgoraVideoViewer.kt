@@ -637,7 +637,13 @@ open class AgoraVideoViewer : CoordinatorLayout {
 //            this.delegate?.leftChannel(channelName)
 //        }
 //        return leaveChannelRtn
+        this.agkit.stopPreview()
         return this.agkit.leaveChannel()
+    }
+    fun close() {
+      (this.context as Activity).runOnUiThread {
+        (this.context as Activity).finish()
+      }
     }
 
     fun showAlert(text: String) {
