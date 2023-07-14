@@ -36,6 +36,7 @@ import io.agora.rtm.RtmChannel
 import io.agora.rtm.RtmClient
 import vn.wellcare.plugins.capacitor.agora.R
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
+import java.util.Objects
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.math.floor
@@ -96,6 +97,8 @@ open class AgoraVideoViewer : CoordinatorLayout {
             field = value
             this.agkit.setClientRole(value)
         }
+
+    var countDownTimer: CountDownTimer? =  null
 
     internal var controlContainer: BottomSheetContainer? = null
     internal var topViewContainer: TopLayoutView? = null
@@ -614,26 +617,27 @@ open class AgoraVideoViewer : CoordinatorLayout {
      * @return Same return as RtcEngine.leaveChannel, 0 means no problem, less than 0 means there was an issue leaving
      */
     fun leaveChannel(): Int {
-        val channelName = this.connectionData.channel ?: return 0
-        this.agkit.setupLocalVideo(null)
-        if (this.userRole == Constants.CLIENT_ROLE_BROADCASTER) {
-            this.agkit.stopPreview()
-        }
-        this.activeSpeaker = null
-        (this.context as Activity).runOnUiThread {
-            this.remoteUserIDs.forEach { this.removeUserVideo(it, false) }
-            this.remoteUserIDs = mutableSetOf()
-            this.userVideoLookup = mutableMapOf()
-            this.reorganiseVideos()
-            this.controlContainer?.visibility = INVISIBLE
-        }
-
-        val leaveChannelRtn = this.agkit.leaveChannel()
-        if (leaveChannelRtn >= 0) {
-            this.connectionData.channel = null
-            this.delegate?.leftChannel(channelName)
-        }
-        return leaveChannelRtn
+//        val channelName = this.connectionData.channel ?: return 0
+//        this.agkit.setupLocalVideo(null)
+//        if (this.userRole == Constants.CLIENT_ROLE_BROADCASTER) {
+//            this.agkit.stopPreview()
+//        }
+//        this.activeSpeaker = null
+//        (this.context as Activity).runOnUiThread {
+//            this.remoteUserIDs.forEach { this.removeUserVideo(it, false) }
+//            this.remoteUserIDs = mutableSetOf()
+//            this.userVideoLookup = mutableMapOf()
+//            this.reorganiseVideos()
+//            this.controlContainer?.visibility = INVISIBLE
+//        }
+//
+//        val leaveChannelRtn = this.agkit.leaveChannel()
+//        if (leaveChannelRtn >= 0) {
+//            this.connectionData.channel = null
+//            this.delegate?.leftChannel(channelName)
+//        }
+//        return leaveChannelRtn
+        return this.agkit.leaveChannel()
     }
 
     fun showAlert(text: String) {
@@ -647,7 +651,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
     fun countDown(time: Int) {
         (this.context as Activity).runOnUiThread {
             var textCountdown = topViewContainer?.findViewById<TextView>(R.id.text_countdown)
-            val countDownTimer = object : CountDownTimer((time * 1000).toLong(), 1000) {
+            countDownTimer = object : CountDownTimer((time * 1000).toLong(), 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     // Update the UI with the remaining time
                     val remainTime = millisUntilFinished / 1000;
@@ -662,8 +666,14 @@ open class AgoraVideoViewer : CoordinatorLayout {
                     textCountdown?.text = " --:-- "
                 }
             }
-            countDownTimer.start()
+            countDownTimer?.start()
         }
+    }
+
+    fun clearCountDown() {
+      if(countDownTimer != null) {
+        countDownTimer?.cancel()
+      }
     }
 
     fun toggleRecordingIcon(value: Boolean) {

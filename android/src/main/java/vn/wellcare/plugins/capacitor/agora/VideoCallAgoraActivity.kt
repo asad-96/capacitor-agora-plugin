@@ -36,6 +36,11 @@ class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
 //        val behavior: BottomSheetBehavior<*> = BottomSheetBehavior.from<View>(persistentbottomSheet)
     }
 
+    override fun onDestroy() {
+      super.onDestroy()
+      agoraVideoVideoViewer?.clearCountDown()
+    }
+
     private fun initAgoraView() {
         // Get the data passed from the previous activity
         val data = JSObject(intent.getStringExtra(Constant.JOINROOM).toString())

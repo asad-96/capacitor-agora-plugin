@@ -485,6 +485,9 @@ internal fun AgoraVideoViewer.getEndCallButton(): AgoraButtonBottom {
     hangupButton.clickAction = {
         this.agkit.stopPreview()
         this.leaveChannel()
+        (this.context as Activity).runOnUiThread{
+          (this.context as Activity).finish()
+        }
     }
     hangupButton.setImageResource(R.drawable.ic_baseline_call_end_24)
     hangupButton.background.setTint(ContextCompat.getColor(this.context, R.color.colorHungup))
