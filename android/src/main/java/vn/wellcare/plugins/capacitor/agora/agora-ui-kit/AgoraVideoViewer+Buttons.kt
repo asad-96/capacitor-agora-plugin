@@ -1,14 +1,11 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
-import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.util.Log
 import android.view.Gravity
@@ -25,7 +22,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import vn.wellcare.plugins.capacitor.agora.CapacitorPluginAgoraPlugin
 import vn.wellcare.plugins.capacitor.agora.R
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
-import java.lang.Exception
 import kotlin.math.roundToInt
 
 internal class BottomSheetContainer(context: Context) : LinearLayout(context)
@@ -194,21 +190,7 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
     textView.setTextColor(Color.WHITE)
     val drawableLeft = context.resources.getDrawable(R.drawable.timer)
     textView.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null)
-
-    val signalImageView = ImageView(context)
-    signalImageView.id = R.id.icon_signal
-    signalImageView.layoutParams = LinearLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-    ).apply {
-
-        gravity = Gravity.CENTER or Gravity.END
-        setMargins(10,0,10,0)
-    }
-    //signalImageView.setImageResource(R.drawable.signal)
-    signalImageView.visibility = View.INVISIBLE
     linearLayout.addView(textView)
-    linearLayout.addView(signalImageView)
 
     /*val innerLinearLayout = LinearLayout(context)
     innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
@@ -454,12 +436,13 @@ internal fun AgoraVideoViewer.getMicButton(): AgoraButtonBottom {
     agMicButton.clickAction = {
         it.isSelected = !it.isSelected
 //        it.background.setTint(if (it.isSelected) Color.RED else Color.GRAY)
-        it.setImageResource(if (it.isSelected) R.drawable.ic_mic_off else R.drawable.ic_mic)
+        Log.d("android agora", "microphone selected: ${it.isSelected}")
+        it.setImageResource(if (it.isSelected) R.drawable.ic_speaker_mute else R.drawable.ic_speaker)
         this.userVideoLookup[this.userID]?.audioMuted = it.isSelected
         this.agkit.muteLocalAudioStream(it.isSelected)
     }
     this.micButton = agMicButton
-    agMicButton.setImageResource(R.drawable.ic_mic)
+    agMicButton.setImageResource(R.drawable.ic_speaker)
     return agMicButton
 }
 
