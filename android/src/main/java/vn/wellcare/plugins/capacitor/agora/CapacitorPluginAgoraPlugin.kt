@@ -23,7 +23,7 @@ class CapacitorPluginAgoraPlugin : Plugin() {
     fun joinChannel(call: PluginCall) {
         try {
             Log.d(TAG, "joinChannel")
-            // Get the data passed from the client app and start a new activity to join the channel            
+            // Get the data passed from the client app and start a new activity to join the channel
             val data = call.data.toString()
             val i = Intent(activity, VideoCallAgoraActivity::class.java)
             i.putExtra(Constant.JOINROOM, data)
@@ -51,8 +51,10 @@ class CapacitorPluginAgoraPlugin : Plugin() {
         val value = call.getString("room")
         val ret = JSObject()
         call.resolve(ret)
-        VideoCallAgoraActivity.agoraVideoVideoViewer?.agkit?.stopPreview()
+        // VideoCallAgoraActivity.agoraVideoVideoViewer?.agkit?.stopPreview()
+        // VideoCallAgoraActivity.agoraVideoVideoViewer?.agkit?.leaveChannel()
         VideoCallAgoraActivity.agoraVideoVideoViewer?.leaveChannel()
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.close()
     }
 
     @PluginMethod
