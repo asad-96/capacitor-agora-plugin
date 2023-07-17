@@ -1,6 +1,7 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.graphics.Color
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ fun AgoraVideoViewer.reorganiseVideos() {
 //        (this.backgroundVideoHolder.layoutParams as? ViewGroup.MarginLayoutParams)
 //                ?.bottomMargin = if (it.visibility == View.VISIBLE) it.measuredHeight else 0
 //    }
+    Log.d("INFO", " reorganise videos ")
     this.organiseRecycleGrid()
     this.organiseRecycleFloating()
 
@@ -62,7 +64,7 @@ fun AgoraVideoViewer.organiseRecycleFloating() {
  */
 @ExperimentalUnsignedTypes
 fun AgoraVideoViewer.organiseRecycleGrid() {
-    val gridList = this.userVideosForGrid.keys.toList()
+    val gridList = this.userVideosForGrid.keys.toList().reversed()
     val maxSqrt = max(1f, ceil(sqrt(gridList.count().toFloat())))
 
     if (this.backgroundVideoHolder.adapter == null) {
