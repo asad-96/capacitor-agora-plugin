@@ -18,12 +18,15 @@ export default defineComponent({
   setup() {
     // const userId = computed(() => state.authen.user._id)
     const options = reactive({
-      appId: 'ba4643f2b3a145f29575b8783d3a5ec1',
+      appId: 'cdaf2c3e3eed47849d02560c9f843dea',
       room: 'test1',
       uid: 123123,
       token:
-        '007eJxTYJizYckxI95Am8JA383XhOaoMsd0XbvB/3Zpmo3zT59tLMYKDEmJJmYmxmlGScaJhiamaUaWpuamSRbmFsYpxommqcmGPHnrUxoCGRlCEriYGRkgEMRnZShJLS4xZGAAANSxHPk='
+        '007eJxTYJg+0SRhwuPZ0cpnr6l9tOOeGcC7v5nr1olbnw79j/i6/oufAkNySmKaUbJxqnFqaoqJuYWJZYqBkamZQbJlmoWJcUpqYv+MLSkNgYwMLf5yjIwMEAjiszKUpBaXGDIwAAA4oSJi'
     })
+    /**
+     * join agora video call use capacitor plugin
+     */
     const join = () => {
       CapacitorPluginAgora.addListener('debug', (data) => {
         console.log('[Wellcare] debug ' + JSON.stringify(data))
