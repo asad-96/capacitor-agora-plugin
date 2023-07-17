@@ -98,7 +98,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
             this.agkit.setClientRole(value)
         }
 
-    var countDownTimer: CountDownTimer? =  null
+    var countDownTimer: CountDownTimer? = null
 
     internal var controlContainer: BottomSheetContainer? = null
     internal var topViewContainer: TopLayoutView? = null
@@ -190,14 +190,13 @@ open class AgoraVideoViewer : CoordinatorLayout {
         this.userVideoLookup[userId]?.let { remoteView ->
             return remoteView
         }
-        val remoteVideoView =
-                AgoraSingleVideoView(this.context, userId, this.agoraSettings.colors.micFlag)
+        val remoteVideoView = AgoraSingleVideoView(this.context, userId, this.agoraSettings.colors.micFlag)
         remoteVideoView.canvas.renderMode = this.agoraSettings.videoRenderMode
         this.agkit.setupRemoteVideo(remoteVideoView.canvas)
 //        this.agkit.setRemoteVideoRenderer(remoteVideoView.uid, remoteVideoView.textureView)
         this.userVideoLookup[userId] = remoteVideoView
 
-        val density = Resources.getSystem().displayMetrics.density
+        // val density = Resources.getSystem().displayMetrics.density
 //        val hostControlLayout = FrameLayout.LayoutParams(40 * density.toInt(), 40 * density.toInt())
 //        hostControlLayout.gravity = Gravity.END
 //
@@ -242,8 +241,8 @@ open class AgoraVideoViewer : CoordinatorLayout {
 
     internal fun removeUserVideo(uid: Int, reogranise: Boolean = true) {
         val userSingleView = this.userVideoLookup[uid] ?: return
-//        val canView = userSingleView.hostingView ?: return
-        this.agkit.muteRemoteVideoStream(uid, true)
+//      val canView = userSingleView.hostingView ?: return
+        // this.agkit.muteRemoteVideoStream(uid, true)
         userSingleView.canvas.view = null
         this.userVideoLookup.remove(uid)
 
@@ -299,14 +298,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
      */
     @Throws(Exception::class)
     @JvmOverloads
-    constructor(
-            context: Context,
-            connectionData: AgoraConnectionData,
-            style: Style = Style.GRID,
-            agoraSettings: AgoraSettings = AgoraSettings(),
-            user: IParticipant? = null,
-            delegate: AgoraVideoViewerDelegate? = null
-    ) : super(context) {
+    constructor(context: Context, connectionData: AgoraConnectionData, style: Style = Style.GRID, agoraSettings: AgoraSettings = AgoraSettings(), user: IParticipant? = null, delegate: AgoraVideoViewerDelegate? = null) : super(context) {
         this.connectionData = connectionData
         this.style = style
         this.agoraSettings = agoraSettings
@@ -316,17 +308,11 @@ open class AgoraVideoViewer : CoordinatorLayout {
         initAgoraEngine()
 
         //todo: Changes start
-        val backgroundLayoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-        )
+        val backgroundLayoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
 
         constraintLayoutFirst.layoutParams = backgroundLayoutParams
 
-        backgroundVideoHolder.layoutParams = RecyclerView.LayoutParams(
-                RecyclerView.LayoutParams.MATCH_PARENT,
-                RecyclerView.LayoutParams.MATCH_PARENT
-        )
+        backgroundVideoHolder.layoutParams = RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT)
 
         backgroundVideoHolder.id = View.generateViewId()
         constraintLayoutFirst.addView(backgroundVideoHolder)
@@ -335,15 +321,9 @@ open class AgoraVideoViewer : CoordinatorLayout {
 
 
 
-        constraintLayoutSecond.layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-        )
+        constraintLayoutSecond.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
 
-        floatingVideoHolder.layoutParams = RecyclerView.LayoutParams(
-                RecyclerView.LayoutParams.MATCH_PARENT,
-                200
-        )
+        floatingVideoHolder.layoutParams = RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 200)
 
 
         floatingVideoHolder.id = View.generateViewId()
@@ -354,26 +334,11 @@ open class AgoraVideoViewer : CoordinatorLayout {
         val constraints = ConstraintSet()
         constraints.clone(constraintLayoutSecond)
 
-        constraints.connect(
-                floatingVideoHolder.id,
-                ConstraintSet.START,
-                ConstraintSet.PARENT_ID,
-                ConstraintSet.START
-        )
+        constraints.connect(floatingVideoHolder.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
 
-        constraints.connect(
-                floatingVideoHolder.id,
-                ConstraintSet.END,
-                ConstraintSet.PARENT_ID,
-                ConstraintSet.END
-        )
+        constraints.connect(floatingVideoHolder.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
-        constraints.connect(
-                floatingVideoHolder.id,
-                ConstraintSet.BOTTOM,
-                ConstraintSet.PARENT_ID,
-                ConstraintSet.BOTTOM
-        )
+        constraints.connect(floatingVideoHolder.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
 
         constraints.applyTo(constraintLayoutSecond)
 
@@ -461,11 +426,9 @@ open class AgoraVideoViewer : CoordinatorLayout {
                 ((this.getControlContainer().layoutParams as LayoutParams).behavior as BottomSheetBehavior).apply {
                     if (this.state == BottomSheetBehavior.STATE_COLLAPSED && this.peekHeight === resources.getDimensionPixelSize(R.dimen.bs_min_height)) {
                         bottomSheetHandler.removeCallbacksAndMessages(null)
-                        this.peekHeight =
-                                resources.getDimensionPixelSize(R.dimen.bs_peek_height)
+                        this.peekHeight = resources.getDimensionPixelSize(R.dimen.bs_peek_height)
                         bottomSheetHandler.postDelayed({
-                            this.peekHeight =
-                                    resources.getDimensionPixelSize(R.dimen.bs_min_height)
+                            this.peekHeight = resources.getDimensionPixelSize(R.dimen.bs_min_height)
                         }, 5000)
                     } else if (this.state == BottomSheetBehavior.STATE_EXPANDED) {
                         this.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -532,8 +495,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
                     user?.uid = userID.toString()
                 } else {
                     user?.let { _user ->
-                        if (!_user.uid.isEmpty() &&
-                                !allParticipants.any { it.uid == _user.uid }) {
+                        if (!_user.uid.isEmpty() && !allParticipants.any { it.uid == _user.uid }) {
                             allParticipants.add(_user)
                         }
                         updateParticipantLists(participants = allParticipants)
@@ -640,10 +602,11 @@ open class AgoraVideoViewer : CoordinatorLayout {
         this.agkit.stopPreview()
         return this.agkit.leaveChannel()
     }
+
     fun close() {
-      (this.context as Activity).runOnUiThread {
-        (this.context as Activity).finish()
-      }
+        (this.context as Activity).runOnUiThread {
+            (this.context as Activity).finish()
+        }
     }
 
     fun showAlert(text: String) {
@@ -677,9 +640,9 @@ open class AgoraVideoViewer : CoordinatorLayout {
     }
 
     fun clearCountDown() {
-      if(countDownTimer != null) {
-        countDownTimer?.cancel()
-      }
+        if (countDownTimer != null) {
+            countDownTimer?.cancel()
+        }
     }
 
     fun toggleRecordingIcon(value: Boolean) {
@@ -709,19 +672,16 @@ open class AgoraVideoViewer : CoordinatorLayout {
     private fun getRtcToken(channel: String, role: Int? = null, uid: Int? = null, fetchToken: Boolean) {
         if (fetchToken) {
             this.agoraSettings.tokenURL?.let { tokenURL ->
-                Companion.fetchToken(
-                        tokenURL, channel, uid ?: this.userID,
-                        object : TokenCallback {
-                            override fun onSuccess(token: String) {
-                                this@AgoraVideoViewer.connectionData.appToken = token
-                                this@AgoraVideoViewer.join(channel, token, role, uid)
-                            }
+                Companion.fetchToken(tokenURL, channel, uid ?: this.userID, object : TokenCallback {
+                    override fun onSuccess(token: String) {
+                        this@AgoraVideoViewer.connectionData.appToken = token
+                        this@AgoraVideoViewer.join(channel, token, role, uid)
+                    }
 
-                            override fun onError(error: TokenError) {
-                                Logger.getLogger("AgoraVideoUIKit", "Could not get RTC token: ${error.name}")
-                            }
-                        }
-                )
+                    override fun onError(error: TokenError) {
+                        Logger.getLogger("AgoraVideoUIKit", "Could not get RTC token: ${error.name}")
+                    }
+                })
             }
             return
         }
@@ -735,19 +695,15 @@ open class AgoraVideoViewer : CoordinatorLayout {
 
         if (fetchToken) {
             this.agoraSettings.tokenURL?.let { tokenURL ->
-                AgoraRtmController.Companion.fetchToken(
-                        tokenURL,
-                        rtmId = connectionData.rtmId as String,
-                        completion = object : RtmTokenCallback {
-                            override fun onSuccess(token: String) {
-                                connectionData.rtmToken = token
-                            }
+                AgoraRtmController.Companion.fetchToken(tokenURL, rtmId = connectionData.rtmId as String, completion = object : RtmTokenCallback {
+                    override fun onSuccess(token: String) {
+                        connectionData.rtmToken = token
+                    }
 
-                            override fun onError(error: RtmTokenError) {
-                                Logger.getLogger("AgoraVideoUIKit", "Could not get RTM token: ${error.name}")
-                            }
-                        }
-                )
+                    override fun onError(error: RtmTokenError) {
+                        Logger.getLogger("AgoraVideoUIKit", "Could not get RTM token: ${error.name}")
+                    }
+                })
             }
             return
         }
@@ -760,8 +716,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
         if (agoraSettings.rtmEnabled && isAgRtmClientInitialized()) {
             agoraRtmController.loginToRtm()
         } else {
-            Logger.getLogger("AgoraVideoUIKit")
-                    .log(Level.WARNING, "Username is null or RTM client has not been initialized")
+            Logger.getLogger("AgoraVideoUIKit").log(Level.WARNING, "Username is null or RTM client has not been initialized")
         }
     }
 
@@ -786,8 +741,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
             val leaveChannelRtn = this.leaveChannel()
             if (leaveChannelRtn < 0) {
                 // could not leave channel
-                Logger.getLogger("AgoraVideoUIKit")
-                        .log(Level.WARNING, "Could not leave channel: $leaveChannelRtn")
+                Logger.getLogger("AgoraVideoUIKit").log(Level.WARNING, "Could not leave channel: $leaveChannelRtn")
             } else {
                 this.join(channel, token, role, uid)
             }
