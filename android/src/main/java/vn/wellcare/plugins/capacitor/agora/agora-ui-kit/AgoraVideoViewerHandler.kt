@@ -94,7 +94,8 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         }
         if (this.hostView.userVideoLookup.containsKey(uid)) {
             (this.hostView.context as Activity).runOnUiThread {
-                this.hostView.removeUserVideo(uid)
+                // this.hostView.removeUserVideo(uid)
+                this.hostView.agkit.muteRemoteVideoStream(uid, true)
             }
         }
 
@@ -322,7 +323,7 @@ class AgoraVideoViewerHandler(private val hostView: AgoraVideoViewer) :
         super.onError(err)
 
         this.hostView.rtcOverrideHandler?.onError(err)
-    
+
         val pluginEvent = JSObject()
         pluginEvent.put("code", err)
         this.sendPluginEvent("exception", pluginEvent)
