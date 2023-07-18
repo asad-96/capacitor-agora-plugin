@@ -85,6 +85,11 @@ class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
         }
     }
 
+    override fun onBackPressed() {
+        // super.onBackPressed()
+        return;
+    }
+
     private val networkQualityListener = object : IRtcEngineEventHandler() {
 
         override fun onNetworkQuality(uid: Int, txQuality: Int, rxQuality: Int) {
