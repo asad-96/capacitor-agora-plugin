@@ -19,7 +19,7 @@ import AgoraRtmKit
 import AgoraRtmControl
 #endif
 import MediaPlayer
-
+import Capacitor
 /// An interface for getting some common delegate callbacks without needing to subclass.
 public protocol AgoraVideoViewerDelegate: AnyObject {
     /// Local user has joined the channel of a given name
@@ -74,6 +74,7 @@ public protocol AgoraVideoViewerDelegate: AnyObject {
     func didChangedActiveSpeaker()
     func onEnterPIP()
     func onLeavePIP()
+    func sendPluginEvent(_ event: String, _ data: JSObject)
     func onSendAction(action: IParticipantAction, to participant: IParticipant)
     func onTappedbutton(button: AgoraControlButton)
     func remoteStreamJoined(uid: UInt)

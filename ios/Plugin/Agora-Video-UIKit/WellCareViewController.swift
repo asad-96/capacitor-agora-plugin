@@ -512,7 +512,11 @@ extension WellCareViewController {
     }
     
     @objc func tappedBackButton(_ sender: UIButton) {
-        agoraView?.tappedEndCallButton()
+        // agoraView?.tappedEndCallButton()
+        let jsObject = [
+            "event": "back"
+        ]
+        agoraView?.delegate?.sendPluginEvent("onSelfAction", jsObject)
     }
     
     @objc func tappedCloseReminderButton(_ sender: UIButton) {

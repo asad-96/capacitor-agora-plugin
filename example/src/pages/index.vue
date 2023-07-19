@@ -36,6 +36,10 @@ export default defineComponent({
       })
       CapacitorPluginAgora.addListener('onSelfAction', (data) => {
         console.log('[Wellcare] onSelfAction', data)
+        const { event } = data
+        if (event === 'back') {
+          CapacitorPluginAgora.enterPictureInPictureMode()
+        }
       })
       CapacitorPluginAgora.addListener('onParticipantAction', (data) => {
         console.log('[Wellcare] onParticipantAction', data)

@@ -57,6 +57,11 @@ export interface CapacitorPluginAgoraPlugin {
   setCountdown(options: { seconds: number }): Promise<void>
 
   /**
+   * Show a countdown. A non-positive value will disable it.
+   */
+  showAlert(options: { alertText: string }): Promise<void>
+
+  /**
    * Enter picture-in-picture mode
    */
   enterPictureInPictureMode(): Promise<void>

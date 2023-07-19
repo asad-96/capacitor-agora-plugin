@@ -19,6 +19,7 @@ npx cap sync
 * [`setSpotlight(...)`](#setspotlight)
 * [`showRecordingStatus(...)`](#showrecordingstatus)
 * [`setCountdown(...)`](#setcountdown)
+* [`showAlert(...)`](#showalert)
 * [`enterPictureInPictureMode()`](#enterpictureinpicturemode)
 * [`addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)`](#addlisteneronmicrophonechanged--oncamerachanged--onplaybackdevicechanged)
 * [`addListener('onParticipantAction', ...)`](#addlisteneronparticipantaction)
@@ -127,6 +128,21 @@ Show a countdown. A non-positive value will disable it.
 | Param         | Type                              |
 | ------------- | --------------------------------- |
 | **`options`** | <code>{ seconds: number; }</code> |
+
+--------------------
+
+
+### showAlert(...)
+
+```typescript
+showAlert(options: { alertText: string; }) => Promise<void>
+```
+
+Show a countdown. A non-positive value will disable it.
+
+| Param         | Type                                |
+| ------------- | ----------------------------------- |
+| **`options`** | <code>{ alertText: string; }</code> |
 
 --------------------
 

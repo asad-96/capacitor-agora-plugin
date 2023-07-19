@@ -36,6 +36,11 @@ export class CapacitorPluginAgoraWeb
     return participantId
   }
 
+  async showAlert({ alertText }: { alertText: string }): Promise<void> {
+    console.log(alertText)
+    this.unavailable()
+  }
+
   async showRecordingStatus({ isShown }: { isShown: boolean }): Promise<void> {
     console.log(isShown)
     this.unavailable()

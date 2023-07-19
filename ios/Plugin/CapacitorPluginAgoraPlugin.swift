@@ -258,6 +258,10 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
         ]
         notifyListeners("onParticipantAction", data: jsObject)
     }
+
+    public func sendPluginEvent(_ event: String, _ data: JSObject) {
+        notifyListeners(event, data: data)
+    }
     
     public func onTappedbutton(button: AgoraControlButton) {
         wellCareVC?.onTappedbutton(button: button)
