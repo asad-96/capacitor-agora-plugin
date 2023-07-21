@@ -1,6 +1,7 @@
 package vn.wellcare.plugins.capacitor.agora
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -34,6 +35,15 @@ class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
 //
 //        val persistentbottomSheet = findViewById<LinearLayout>(R.id.bottom_sheet)
 //        val behavior: BottomSheetBehavior<*> = BottomSheetBehavior.from<View>(persistentbottomSheet)
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean,
+                                               newConfig: Configuration) {
+        if (isInPictureInPictureMode) {
+            CapacitorPluginAgoraPlugin.sendEvent("onSelfAction", JSObject().put("event", "enterPipMode"))
+        } else {
+            CapacitorPluginAgoraPlugin.sendEvent("onSelfAction", JSObject().put("event", "exitPipMode"))
+        }
     }
 
     override fun onDestroy() {

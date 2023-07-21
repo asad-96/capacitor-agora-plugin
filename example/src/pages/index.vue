@@ -35,20 +35,20 @@ export default defineComponent({
         console.log('[Wellcare] network-quality ' + JSON.stringify(data))
       })
       CapacitorPluginAgora.addListener('onSelfAction', (data) => {
-        console.log('[Wellcare] onSelfAction', data)
+        console.log('[Wellcare] onSelfAction', JSON.stringify(data))
         const { event } = data
         if (event === 'back') {
           CapacitorPluginAgora.enterPictureInPictureMode()
         }
       })
       CapacitorPluginAgora.addListener('onParticipantAction', (data) => {
-        console.log('[Wellcare] onParticipantAction', data)
+        console.log('[Wellcare] onParticipantAction', JSON.stringify(data))
       })
       CapacitorPluginAgora.addListener('exception', (data) => {
-        console.log('[Wellcare] exception', data)
+        console.log('[Wellcare] exception', JSON.stringify(data))
       })
       CapacitorPluginAgora.addListener('onRemoteStreamChanged', (data) => {
-        console.log('[Wellcare] onRemoteStreamChanged', data)
+        console.log('[Wellcare] onRemoteStreamChanged', JSON.stringify(data))
       })
       CapacitorPluginAgora.joinChannel({
         room: options.room,
