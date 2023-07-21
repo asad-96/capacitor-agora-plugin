@@ -1,6 +1,7 @@
 package vn.wellcare.plugins.capacitor.agora
 
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import com.getcapacitor.JSObject
@@ -13,12 +14,21 @@ import io.agora.iris.IrisEventHandler
 import vn.wellcare.plugins.capacitor.agora.util.Constant
 import vn.wellcare.plugins.capacitor.agora.util.IParticipant
 import android.os.Handler
+import androidx.annotation.RequiresApi
 
 @CapacitorPlugin(name = "CapacitorPluginAgora")
 class CapacitorPluginAgoraPlugin : Plugin() {
     var TAG = "CapacitorPluginAgoraPlugin"
     private var mParticipants: List<IParticipant> = mutableListOf()
 
+    @OptIn(ExperimentalUnsignedTypes::class)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @PluginMethod
+    fun enterPictureInPictureMode(call: PluginCall) {
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.enterPictureInPicture()
+        call.resolve()
+    }
+    
     @PluginMethod
     fun joinChannel(call: PluginCall) {
         try {

@@ -6,14 +6,17 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.nfc.Tag
+import android.os.Build
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.Rational
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -604,6 +607,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
         return this.agkit.leaveChannel()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun enterPictureInPicture() {
         val params = PictureInPictureParams.Builder().setAspectRatio(Rational(10, 16)).build()
         (this.context as Activity).enterPictureInPictureMode(params)
