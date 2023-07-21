@@ -1,6 +1,7 @@
 package vn.wellcare.plugins.capacitor.agora.`agora-ui-kit`
 
 import android.app.Activity
+import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
@@ -601,6 +602,14 @@ open class AgoraVideoViewer : CoordinatorLayout {
 //        return leaveChannelRtn
         this.agkit.stopPreview()
         return this.agkit.leaveChannel()
+    }
+
+    fun enterPictureInPicture() {
+        val params = PictureInPictureParams.Builder().setAspectRatio(Rational(10, 16)).build()
+        (this.context as Activity).enterPictureInPictureMode(params)
+//        PictureInPictureParams params = new PictureInPictureParams.Builder()
+//            .setAspectRatio(new Rational 10, 16)) // Portrait Aspect Ratio
+//        .build()
     }
 
     fun close() {
