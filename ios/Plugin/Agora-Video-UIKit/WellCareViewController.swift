@@ -566,7 +566,7 @@ extension WellCareViewController {
         
         if callTime <= 0 {
             stopCallTimer()
-            endCallTime()
+            //endCallTime()
         }
     }
     
