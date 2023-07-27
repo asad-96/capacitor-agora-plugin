@@ -39,6 +39,15 @@ class VideoCallAgoraActivity : Activity(), AgoraVideoViewerDelegate {
 //        val behavior: BottomSheetBehavior<*> = BottomSheetBehavior.from<View>(persistentbottomSheet)
     }
 
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean,
+                                               newConfig: Configuration) {
+        if (isInPictureInPictureMode) {
+            CapacitorPluginAgoraPlugin.sendEvent("onSelfAction", JSObject().put("event", "enterPipMode"))
+        } else {
+            CapacitorPluginAgoraPlugin.sendEvent("onSelfAction", JSObject().put("event", "exitPipMode"))
+        }
+    }
+
     override fun onDestroy() {
       super.onDestroy()
       agoraVideoVideoViewer?.clearCountDown()

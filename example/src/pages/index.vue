@@ -5,6 +5,10 @@
     <v-text-field v-model="options.token" clearable label="token" />
     <v-text-field v-model="options.uid" clearable label="uid" />
     <v-btn @click="join">Join (auto record after 3s)</v-btn>
+    <v-btn @click="mute">mute</v-btn>
+    <v-btn @click="unmute">unmute</v-btn>
+    <v-btn @click="enableCamera">enableCamera</v-btn>
+    <v-btn @click="disableCamera">disableCamera</v-btn>
     <v-btn @click="setTimeoutToLeave">Set timeout to leave</v-btn>
     <!-- <v-btn @click="joinChannel()">join</v-btn> -->
   </v-container>
@@ -27,6 +31,11 @@ export default defineComponent({
     /**
      * join agora video call use capacitor plugin
      */
+
+    const mute = () => CapacitorPluginAgora.mute()
+    const unmute = () => CapacitorPluginAgora.unmute()
+    const enableCamera = () => CapacitorPluginAgora.enableCamera()
+    const disableCamera = () => CapacitorPluginAgora.disableCamera()
     const join = () => {
       CapacitorPluginAgora.addListener('debug', (data) => {
         console.log('[Wellcare] debug ' + JSON.stringify(data))
@@ -35,20 +44,29 @@ export default defineComponent({
         console.log('[Wellcare] network-quality ' + JSON.stringify(data))
       })
       CapacitorPluginAgora.addListener('onSelfAction', (data) => {
-        console.log('[Wellcare] onSelfAction', data)
+        console.log('[Wellcare] onSelfAction', JSON.stringify(data))
         const { event } = data
         if (event === 'back') {
           CapacitorPluginAgora.enterPictureInPictureMode()
         }
       })
+      CapacitorPluginAgora.addListener('onCameraChanged', (data) => {
+        console.log('[Wellcare] onCameraChanged', JSON.stringify(data))
+      })
+      CapacitorPluginAgora.addListener('onMicrophoneChanged', (data) => {
+        console.log('[Wellcare] onMicrophoneChanged', JSON.stringify(data))
+      })
+      CapacitorPluginAgora.addListener('onPlaybackDeviceChanged', (data) => {
+        console.log('[Wellcare] onPlaybackDeviceChanged', JSON.stringify(data))
+      })
       CapacitorPluginAgora.addListener('onParticipantAction', (data) => {
-        console.log('[Wellcare] onParticipantAction', data)
+        console.log('[Wellcare] onParticipantAction', JSON.stringify(data))
       })
       CapacitorPluginAgora.addListener('exception', (data) => {
-        console.log('[Wellcare] exception', data)
+        console.log('[Wellcare] exception', JSON.stringify(data))
       })
       CapacitorPluginAgora.addListener('onRemoteStreamChanged', (data) => {
-        console.log('[Wellcare] onRemoteStreamChanged', data)
+        console.log('[Wellcare] onRemoteStreamChanged', JSON.stringify(data))
       })
       CapacitorPluginAgora.joinChannel({
         room: options.room,
@@ -67,7 +85,7 @@ export default defineComponent({
         })
       }, 3000)
     }
-    return { options, join }
+    return { options, join, mute, unmute, enableCamera, disableCamera }
   }
 })
 </script>

@@ -65,6 +65,27 @@ export interface CapacitorPluginAgoraPlugin {
    * Enter picture-in-picture mode
    */
   enterPictureInPictureMode(): Promise<void>
+  /*
+
+  /**
+   * Mute audio
+   */
+  mute(): Promise<void>
+
+  /**
+   * Unmute audio
+   */
+  unmute(): Promise<void>
+
+  /**
+   * Enable camera
+   */
+  enableCamera(): Promise<void>
+
+  /**
+   * Disable camera
+   */
+  disableCamera(): Promise<void>
 
   // EVENTS
   /**
@@ -136,7 +157,7 @@ export interface CapacitorPluginAgoraPlugin {
   addListener(
     eventName: 'onSelfAction',
     listenerFunc: (
-      event: 'chat' | 'leaved' | 'back' | 'exitPipMode',
+      event: 'chat' | 'leaved' | 'back' | 'exitPipMode' | 'enterPipMode',
       room?: string
     ) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle

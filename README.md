@@ -21,6 +21,10 @@ npx cap sync
 * [`setCountdown(...)`](#setcountdown)
 * [`showAlert(...)`](#showalert)
 * [`enterPictureInPictureMode()`](#enterpictureinpicturemode)
+* [`mute()`](#mute)
+* [`unmute()`](#unmute)
+* [`enableCamera()`](#enablecamera)
+* [`disableCamera()`](#disablecamera)
 * [`addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)`](#addlisteneronmicrophonechanged--oncamerachanged--onplaybackdevicechanged)
 * [`addListener('onParticipantAction', ...)`](#addlisteneronparticipantaction)
 * [`addListener('onRemoteStreamChanged', ...)`](#addlisteneronremotestreamchanged)
@@ -158,6 +162,48 @@ Enter picture-in-picture mode
 --------------------
 
 
+### mute()
+
+```typescript
+mute() => Promise<void>
+```
+
+--------------------
+
+
+### unmute()
+
+```typescript
+unmute() => Promise<void>
+```
+
+Unmute audio
+
+--------------------
+
+
+### enableCamera()
+
+```typescript
+enableCamera() => Promise<void>
+```
+
+Enable camera
+
+--------------------
+
+
+### disableCamera()
+
+```typescript
+disableCamera() => Promise<void>
+```
+
+Disable camera
+
+--------------------
+
+
 ### addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)
 
 ```typescript
@@ -251,15 +297,15 @@ Network Quality
 ### addListener('onSelfAction', ...)
 
 ```typescript
-addListener(eventName: 'onSelfAction', listenerFunc: (event: 'chat' | 'leaved' | 'back' | 'exitPipMode', room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onSelfAction', listenerFunc: (event: 'chat' | 'leaved' | 'back' | 'exitPipMode' | 'enterPipMode', room?: string | undefined) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 User action
 
-| Param              | Type                                                                                          |
-| ------------------ | --------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code>'onSelfAction'</code>                                                                   |
-| **`listenerFunc`** | <code>(event: 'chat' \| 'leaved' \| 'back' \| 'exitPipMode', room?: string) =&gt; void</code> |
+| Param              | Type                                                                                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onSelfAction'</code>                                                                                     |
+| **`listenerFunc`** | <code>(event: 'chat' \| 'leaved' \| 'back' \| 'exitPipMode' \| 'enterPipMode', room?: string) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

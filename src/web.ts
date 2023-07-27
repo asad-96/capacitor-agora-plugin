@@ -65,6 +65,22 @@ export class CapacitorPluginAgoraWeb
   async leaveChannel() {
     console.log('leaveChannel')
   }
+
+  async mute(): Promise<void> {
+    this.unimplemented()
+  }
+
+  async unmute(): Promise<void> {
+    this.unimplemented()
+  }
+
+  async enableCamera(): Promise<void> {
+    this.unimplemented()
+  }
+
+  async disableCamera(): Promise<void> {
+    this.unimplemented()
+  }
 }
 
 const CapacitorPluginAgora = new CapacitorPluginAgoraWeb()

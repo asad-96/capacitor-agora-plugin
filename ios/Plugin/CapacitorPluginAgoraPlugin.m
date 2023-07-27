@@ -12,4 +12,8 @@ CAP_PLUGIN(CapacitorPluginAgoraPlugin, "CapacitorPluginAgora",
            CAP_PLUGIN_METHOD(updateParticipantLists, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(enterPictureInPictureMode, CAPPluginReturnNone);
            CAP_PLUGIN_METHOD(removeAllListeners, CAPPluginReturnNone);
+           CAP_PLUGIN_METHOD(mute, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(unmute, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(enableCamera, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(disableCamera, CAPPluginReturnPromise);
 )

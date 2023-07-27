@@ -566,7 +566,7 @@ extension WellCareViewController {
         
         if callTime <= 0 {
             stopCallTimer()
-            endCallTime()
+            //endCallTime()
         }
     }
     
@@ -585,7 +585,7 @@ extension WellCareViewController {
               currentRoute?.uid != newInput.uid else { return }
         currentRoute = newInput
         debugPrint("hai session new ->\(currentRoute?.portName ?? "x") ->\(currentRoute?.uid ?? "y")")
-        delegate?.didChangeVideoConfig(event: "onPlaybackDeviceChanged")
+        delegate?.didChangeVideoConfig(event: "onPlaybackDeviceChanged", data: [:])
     }
     
     func onLeaveChat() {
@@ -707,6 +707,14 @@ extension WellCareViewController {
 //                self?.flashButton.alpha = isTorchSupported ? 1 : 0.5
 //            }
             break
+        case .mic:
+            DispatchQueue.main.async {
+                self.agoraView.micButton?.sendActions(for: .touchUpInside)
+            }
+        case .camera:
+            DispatchQueue.main.async {
+                self.agoraView.camButton?.sendActions(for: .touchUpInside)
+            }
         default: break
         }
     }
