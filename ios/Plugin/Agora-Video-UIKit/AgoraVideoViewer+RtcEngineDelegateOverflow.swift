@@ -251,7 +251,7 @@ extension AgoraVideoViewer {
             videoFeed.signalView.image = good ? UIImage(named: "ic-signal-good") : UIImage(named: "ic-signal-bad")
             
             if uid == self.userID {
-                delegate?.didChangeVideoConfig(event: "network-quality")
+                delegate?.didChangeVideoConfig(event: "network-quality", data: [:])
             }
         }
       }

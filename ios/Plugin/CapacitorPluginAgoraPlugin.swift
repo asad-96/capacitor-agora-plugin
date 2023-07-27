@@ -32,6 +32,34 @@ public class CapacitorPluginAgoraPlugin: CAPPlugin {
         ])
     }
     
+    @objc func mute(_ call: CAPPluginCall) {
+        if wellCareVC?.agoraView.agoraSettings.micEnabled == true {
+            wellCareVC?.agoraView.delegate?.onTappedbutton(button: .mic)
+        }
+        call.resolve()
+    }
+    
+    @objc func unmute(_ call: CAPPluginCall) {
+        if (!(wellCareVC?.agoraView.agoraSettings.micEnabled ?? true)) {
+            wellCareVC?.agoraView.delegate?.onTappedbutton(button: .mic)
+        }
+        call.resolve()
+    }
+    
+    @objc func enableCamera(_ call: CAPPluginCall) {
+        if (!(wellCareVC?.agoraView.agoraSettings.cameraEnabled ?? true)) {
+            wellCareVC?.agoraView.delegate?.onTappedbutton(button: .camera)
+        }
+        call.resolve()
+    }
+    
+    @objc func disableCamera(_ call: CAPPluginCall) {
+        if wellCareVC?.agoraView.agoraSettings.cameraEnabled == true {
+            wellCareVC?.agoraView.delegate?.onTappedbutton(button: .camera)
+        }
+        call.resolve()
+    }
+    
     @objc func joinChannel(_ call: CAPPluginCall) {
         let channelName = call.getString(Constant.CHANNELNAME) ?? ""
         let uid = call.getInt(Constant.UID) ?? 0
@@ -179,7 +207,6 @@ extension UIApplication {
 }
 
 extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
-    
     public func remoteStreamJoined(uid: UInt) {
         let jsObject: [String: Any] = [
             EVENT: "join",
@@ -271,13 +298,11 @@ extension CapacitorPluginAgoraPlugin: AgoraVideoViewerDelegate {
         wellCareVC?.didChangedActiveSpeaker()
     }
     
-    public func didChangeVideoConfig(event: String) {
+    public func didChangeVideoConfig(event: String, data: Any) {
         debugPrint("[capacitor-agora] didChangeVideoConfig \(event) ")
 
         wellCareVC?.didChangeVideoConfig()
-         
-        let jsObject: [String: Any] = [: ]
-        notifyListeners(event, data: jsObject)
+        notifyListeners(event, data: data as! [String : Any])
     }
     
     public func tokenDidExpire(_ engine: AgoraRtcEngineKit, uid: UInt) {

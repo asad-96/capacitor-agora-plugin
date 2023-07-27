@@ -21,6 +21,10 @@ npx cap sync
 * [`setCountdown(...)`](#setcountdown)
 * [`showAlert(...)`](#showalert)
 * [`enterPictureInPictureMode()`](#enterpictureinpicturemode)
+* [`mute()`](#mute)
+* [`unmute()`](#unmute)
+* [`enableCamera()`](#enablecamera)
+* [`disableCamera()`](#disablecamera)
 * [`addListener('onMicrophoneChanged' | 'onCameraChanged' | 'onPlaybackDeviceChanged', ...)`](#addlisteneronmicrophonechanged--oncamerachanged--onplaybackdevicechanged)
 * [`addListener('onParticipantAction', ...)`](#addlisteneronparticipantaction)
 * [`addListener('onRemoteStreamChanged', ...)`](#addlisteneronremotestreamchanged)
@@ -154,6 +158,48 @@ enterPictureInPictureMode() => Promise<void>
 ```
 
 Enter picture-in-picture mode
+
+--------------------
+
+
+### mute()
+
+```typescript
+mute() => Promise<void>
+```
+
+--------------------
+
+
+### unmute()
+
+```typescript
+unmute() => Promise<void>
+```
+
+Unmute audio
+
+--------------------
+
+
+### enableCamera()
+
+```typescript
+enableCamera() => Promise<void>
+```
+
+Enable camera
+
+--------------------
+
+
+### disableCamera()
+
+```typescript
+disableCamera() => Promise<void>
+```
+
+Disable camera
 
 --------------------
 

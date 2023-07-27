@@ -9,6 +9,7 @@ import AgoraRtcKit
 import AVKit
 #if canImport(AgoraRtmControl)
 import AgoraRtmControl
+import Capacitor
 #endif
 
 extension AgoraVideoViewer {
@@ -99,7 +100,10 @@ extension AgoraVideoViewer {
     /// - Parameter sender: The sender is typically the camera button
     @objc open func toggleCam(_ sender: MPButton?) {
         self.setCam(to: !self.agoraSettings.cameraEnabled) {[weak self] finished in
-            self?.delegate?.didChangeVideoConfig(event: "onCameraChanged")
+            let dataToSend = [
+                "enabled": self?.agoraSettings.cameraEnabled
+            ]
+            self?.delegate?.didChangeVideoConfig(event: "onCameraChanged", data: dataToSend)
         }
     }
 
@@ -148,7 +152,10 @@ extension AgoraVideoViewer {
     /// - Parameter sender: The sender is typically the microphone button
     @objc open func toggleMic(_ sender: MPButton?) {
         self.setMic(to: !self.agoraSettings.micEnabled) { finished in
-            self.delegate?.didChangeVideoConfig(event: "onMicrophoneChanged")
+            let dataToSend = [
+                "enabled": self.agoraSettings.micEnabled
+            ]
+            self.delegate?.didChangeVideoConfig(event: "onMicrophoneChanged", data: dataToSend)
         }
     }
 
