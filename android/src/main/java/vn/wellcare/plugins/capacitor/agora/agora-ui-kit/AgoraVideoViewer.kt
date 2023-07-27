@@ -6,10 +6,12 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.nfc.Tag
+import android.os.Build
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.Rational
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -87,7 +89,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
      * Style and organisation to be applied to all the videos in this view.
      */
     enum class Style {
-        GRID, FLOATING, COLLECTION
+        GRID, FLOATING, COLLECTION, STRIP, PINNED
     }
 
     /**
@@ -102,6 +104,7 @@ open class AgoraVideoViewer : CoordinatorLayout {
     var countDownTimer: CountDownTimer? = null
 
     internal var controlContainer: BottomSheetContainer? = null
+    internal var participantsLayout: LinearLayout? = null
     internal var topViewContainer: TopLayoutView? = null
     internal var alertLayoutContainer: AlertLayoutView? = null
     internal var buttonContainer: ButtonContainer? = null
@@ -605,11 +608,29 @@ open class AgoraVideoViewer : CoordinatorLayout {
     }
 
     fun enterPictureInPicture() {
-        val params = PictureInPictureParams.Builder().setAspectRatio(Rational(10, 16)).build()
-        (this.context as Activity).enterPictureInPictureMode(params)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setPiPUIVisible(true)
+            val params = PictureInPictureParams.Builder().setAspectRatio(Rational(16, 16)).build()
+            (this.context as Activity).enterPictureInPictureMode(params)
+//            this.reorganiseVideos()
+        }
 //        PictureInPictureParams params = new PictureInPictureParams.Builder()
 //            .setAspectRatio(new Rational 10, 16)) // Portrait Aspect Ratio
 //        .build()
+    }
+
+    fun setPiPUIVisible(enabled: Boolean) {
+        val visibilityChange = if (enabled) View.GONE else View.VISIBLE
+        (this.context as Activity).runOnUiThread {
+            this.controlContainer?.visibility = visibilityChange
+            this.topButtonContainer?.visibility = visibilityChange
+            this.backButtonContainer?.visibility = visibilityChange
+            this.topViewContainer?.visibility = visibilityChange
+        }
+    }
+
+    fun exitPictureInPicture() {
+        setPiPUIVisible(false)
     }
 
     fun close() {

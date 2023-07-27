@@ -79,17 +79,32 @@ class CapacitorPluginAgoraPlugin : Plugin() {
     fun showAlert(call: PluginCall) {
         var text = call.getString("alertText", "this is default text alert !")
         VideoCallAgoraActivity.agoraVideoVideoViewer?.showAlert(text ?: "ALERT!")
+        call.resolve()
     }
 
     @PluginMethod
     fun setCountdown(call: PluginCall) {
         var duration = call.getInt("seconds", 60)
         VideoCallAgoraActivity.agoraVideoVideoViewer?.countDown(duration?:60)
+        call.resolve()
     }
 
     @PluginMethod
     fun showRecordingStatus(call: PluginCall) {
         VideoCallAgoraActivity.agoraVideoVideoViewer?.toggleRecordingIcon(call.getBoolean("isShown", false) ?: false)
+        call.resolve()
+    }
+
+    @PluginMethod
+    fun enterPictureInPictureMode(call: PluginCall) {
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.enterPictureInPicture()
+        call.resolve()
+    }
+
+    @PluginMethod
+    fun exitPictureInPictureMode(call: PluginCall) {
+        VideoCallAgoraActivity.agoraVideoVideoViewer?.exitPictureInPicture()
+        call.resolve()
     }
     //    override fun OnEvent(event: String, data: String, buffee: List<ByteArray>) {
     //        Log.e("OnEvent", "event: $event data: $data")

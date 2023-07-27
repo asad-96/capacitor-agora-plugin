@@ -13,8 +13,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.LinearLayout.LayoutParams
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginTop
+import androidx.core.view.setMargins
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.getcapacitor.JSObject
@@ -191,21 +195,8 @@ internal fun AgoraVideoViewer.getTopLayoutView(): TopLayoutView {
     val drawableLeft = context.resources.getDrawable(R.drawable.timer)
     textView.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null)
 
-    val signalImageView = ImageView(context)
-    signalImageView.id = R.id.icon_signal
-    signalImageView.layoutParams = LinearLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-    ).apply {
-
-        gravity = Gravity.CENTER or Gravity.END
-        setMargins(10,0,10,0)
-    }
-    //signalImageView.setImageResource(R.drawable.signal)
-    signalImageView.visibility = View.INVISIBLE
-
     linearLayout.addView(textView)
-    linearLayout.addView(signalImageView)
+//    linearLayout.addView(signalImageView)
 
     /*val innerLinearLayout = LinearLayout(context)
     innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
@@ -325,6 +316,68 @@ internal fun AgoraVideoViewer.getControlContainer(): BottomSheetContainer {
     return bottomSheet
 }
 
+internal fun AgoraVideoViewer.getParticipantLayout(): LinearLayout {
+    this.participantsLayout?.let {
+        return it
+    }
+    val participants = LinearLayout(context)
+    val layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.MATCH_PARENT
+    )
+    participants.orientation = LinearLayout.VERTICAL
+    participants.gravity = Gravity.TOP
+    participants.setBackgroundResource(R.drawable.bottom_sheet_background)
+
+    val participantHeader = LinearLayout(context)
+    participantHeader.layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        200
+    )
+    (participantHeader.layoutParams as ViewGroup.MarginLayoutParams).apply {
+        setMargins(0, 32, 0, 0)
+    }
+    participantHeader.setPadding(48)
+    participantHeader.gravity = LinearLayout.HORIZONTAL
+//    participantHeader.marginTop = 20
+
+    val headerText = TextView(context).apply {
+        textSize = 26.0F
+    }
+    val headerTextLayoutParams = LayoutParams(
+        LayoutParams.WRAP_CONTENT,
+        96
+    ).apply {
+        weight = 1.0F
+    }
+    headerText.text = "Participants"
+    headerText.setTextColor(Color.WHITE)
+
+    val closeIcon = View(context)
+    closeIcon.setBackgroundResource(R.drawable.close_icon)
+    val closeIconLayoutParams = LinearLayout.LayoutParams(
+        96,
+        96
+    )
+    closeIcon.setOnClickListener {
+        this.participantsLayout?.visibility = View.GONE
+    }
+//    closeIcon.setPadding(96)
+//    closeIcon.apply {
+//        setPadding(16, 48, 16, 16)
+//    }
+
+//    participantHeader.setBackgroundColor( Color.YELLOW)
+    participantHeader.addView(headerText, headerTextLayoutParams)
+    participantHeader.addView(closeIcon, closeIconLayoutParams)
+    participants.addView(participantHeader)
+
+    this.addView(participants, layoutParams)
+    this.participantsLayout = participants
+    this.participantsLayout?.visibility = View.GONE
+    return participants
+}
+
 
 internal fun AgoraVideoViewer.getRecyclerView(): RecyclerView {
     val recyclerView = RecyclerView(context)
@@ -389,7 +442,7 @@ internal fun AgoraVideoViewer.getTopButtonContainer(): ButtonContainer {
             CoordinatorLayout.LayoutParams.WRAP_CONTENT
     ).apply {
         gravity = Gravity.END or Gravity.TOP
-        setMargins(0, 70, 0, 0)
+        setMargins(70, 70, 0, 0)
     }
     topButtons.orientation = LinearLayout.VERTICAL
     topButtons.setBackgroundColor(Color.TRANSPARENT)
@@ -483,7 +536,7 @@ internal fun AgoraVideoViewer.getParticipantsButton(): AgoraButtonBottom {
     }
     val agParticipantsButton = AgoraButtonBottom(context = this.context)
     agParticipantsButton.clickAction = {
-//        this.agkit.switchCamera()
+        this.getParticipantLayout().visibility = View.VISIBLE
         Log.d("Infor", "clicked")
     }
     this.participantsButton = agParticipantsButton
@@ -650,7 +703,7 @@ internal fun AgoraVideoViewer.topButtons(): MutableList<AgoraButton> {
         rtnButtons += when (button) {
             AgoraSettings.TopButton.FLASH -> this.getFlashButton()
             AgoraSettings.TopButton.BLUETOOTH -> this.getBluetoothButton()
-            // AgoraSettings.TopButton.LAYOUT -> this.getLayoutButton()
+             AgoraSettings.TopButton.LAYOUT -> this.getLayoutButton()
             AgoraSettings.TopButton.FLIP -> this.getFlipButton()
         }
     }
@@ -662,6 +715,7 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     val container = this.getControlContainer()
     val topButtonContainer = this.getTopButtonContainer()
     val backButtonContainer = this.getBackButtonContainer()
+    val participantContainer = this.getParticipantLayout()
     this.getControlContainerHandle()
     val buttonContainer = this.getHorizontalButtonContainer()
     val bottomButtons = this.builtinButtons() + this.agoraSettings.extraButtons
@@ -706,10 +760,12 @@ internal fun AgoraVideoViewer.addVideoButtons() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             500
     )
+    (this.recyclerView.layoutParams as ViewGroup.MarginLayoutParams).apply {
+        setMargins(48)
+    }
     this.recyclerView.layoutManager = LinearLayoutManager(context)
 
     this.recyclerView.adapter = participantsAdapter
-    this.recyclerView.visibility = View.GONE
 
 /*    // Create the ListView
     val listView = ListView(context)
@@ -724,7 +780,7 @@ internal fun AgoraVideoViewer.addVideoButtons() {
     val items = listOf("Item 1", "Item 2", "Item 3")
     val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, items)
     listView.adapter = adapter*/
-    container.addView(recyclerView)
+    participantContainer.addView(recyclerView)
     val contWidth = (bottomButtons.size.toFloat() + buttonMargin) * bottomButtons.count()
     container.setPadding(0, 20, 0, 20)
     this.positionButtonContainer(container, contWidth, buttonMargin)

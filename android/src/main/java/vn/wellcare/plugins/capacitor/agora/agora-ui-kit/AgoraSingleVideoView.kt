@@ -9,6 +9,7 @@ import android.view.SurfaceView
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginTop
 import androidx.core.view.setPadding
@@ -42,6 +43,11 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         }
 
     /**
+     * Signal status for this user
+     */
+    var signalStrength: Int = 3
+
+    /**
      * Is the video turned off for this user.
      */
     var videoMuted: Boolean = true
@@ -62,6 +68,7 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
      * Icon to show if this user is muting their microphone
      */
     var mutedFlag: ImageView
+    var signalStatus: ImageView
     var backgroundView: FrameLayout
     var micFlagColor: Int = micColor
 
@@ -79,29 +86,48 @@ class AgoraSingleVideoView(context: Context, uid: Int, micColor: Int) : FrameLay
         this.backgroundView = FrameLayout(context)
         this.setBackground()
         this.mutedFlag = ImageView(context)
+        this.signalStatus = ImageView(context)
         this.setupMutedFlag()
-        // this.signalAndMicHandler()
+        this.setupSignalStatus()
 
         this.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
     }
 
     private fun setupMutedFlag() {
 
-        val mutedLayout = FrameLayout.LayoutParams(DPToPx(context, 40), DPToPx(context, 40))
+        val mutedLayout = FrameLayout.LayoutParams(DPToPx(context, 24), DPToPx(context, 24))
 //        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
 //        mutedLayout.gravity = Gravity.RIGHT
         mutedLayout.gravity = Gravity.TOP or Gravity.RIGHT
 //        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-        mutedLayout.bottomMargin = DPToPx(context, 5)
-        mutedLayout.leftMargin = DPToPx(context, 5)
+        mutedLayout.topMargin = DPToPx(context, 5)
+        mutedLayout.rightMargin = DPToPx(context, 5)
 
         mutedFlag.setImageResource(android.R.drawable.stat_notify_call_mute)
         mutedFlag.setBackgroundResource(R.drawable.rounded_end_call)
 
         mutedFlag.setColorFilter(this.micFlagColor)
-        mutedFlag.setPadding(DPToPx(context, 10))
+        mutedFlag.setPadding(DPToPx(context, 5))
         addView(mutedFlag, mutedLayout)
         this.audioMuted = true
+    }
+
+    private fun setupSignalStatus() {
+//        signalImageView.id = R.id.icon_signal
+        val signalLayout = FrameLayout.LayoutParams(DPToPx(context, 24), DPToPx(context, 24))
+//        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+//        mutedLayout.gravity = Gravity.RIGHT
+        signalLayout.gravity = Gravity.TOP or Gravity.RIGHT
+//        mutedLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        signalLayout.topMargin = DPToPx(context, 5)
+        signalLayout.rightMargin = DPToPx(context, 40)
+
+        this.signalStatus.setImageResource(R.drawable.no_signal)
+//        this.signalStatus.setBackgroundResource(R.drawable.rounded_end_call)
+
+        this.signalStatus.setColorFilter(this.micFlagColor)
+        this.signalStatus.setPadding(DPToPx(context, 5))
+        addView(this.signalStatus, signalLayout)
     }
 
     fun setBackground() {

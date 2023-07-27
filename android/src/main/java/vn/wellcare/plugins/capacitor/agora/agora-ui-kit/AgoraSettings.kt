@@ -71,7 +71,7 @@ class AgoraSettings {
 
     public enum class TopButton {
         FLASH,
-        // LAYOUT,
+         LAYOUT,
         BLUETOOTH,
         FLIP
     }
@@ -105,7 +105,7 @@ class AgoraSettings {
             BuiltinButton.PARTICIPANTS, BuiltinButton.CAMERA, BuiltinButton.END, BuiltinButton.MIC, BuiltinButton.CHAT
     )
     public var topButtons: MutableSet<TopButton> = mutableSetOf(
-            // TopButton.LAYOUT,
+            TopButton.LAYOUT,
             TopButton.FLIP,
             TopButton.BLUETOOTH,
             TopButton.FLASH
@@ -164,7 +164,7 @@ class AgoraViewerColors {
     /**
      * Background colour of the scrollable floating viewer
      */
-    var floatingBackgroundColor: Int = Color.LTGRAY
+    var floatingBackgroundColor: Int = Color.RED
 
     /**
      * Opacity of the floating viewer background (0-255)
